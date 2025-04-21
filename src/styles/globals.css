@@ -1,9 +1,10 @@
-@import "tailwindcss/preflight";
+@tailwind base;
+@tailwind components;
 @tailwind utilities;
 
 @layer base {
   html {
-    font-family: var(--font-poppins), sans-serif;
+    font-family: var(--font-poppins), system-ui, sans-serif;
   }
 
   body {

@@ -2,8 +2,7 @@ import React, { useEffect } from 'react';
 import Head from 'next/head';
 import { ChakraProvider } from '@chakra-ui/react';
 import { Inter, Merriweather, Poppins } from 'next/font/google';
-import '../styles/globals.css'; // instead of '@/styles/globals.css'
-
+import '../styles/globals.css';
 
 // Import styles for Swiper
 import 'swiper/css';
@@ -31,7 +30,9 @@ const poppins = Poppins({
 function MyApp({ Component, pageProps }) {
   // Prevent Lottie console warnings in development
   useEffect(() => {
-    window.console.warn = () => {};
+    if (process.env.NODE_ENV === 'development') {
+      window.console.warn = () => {};
+    }
   }, []);
 
   return (
@@ -42,7 +43,7 @@ function MyApp({ Component, pageProps }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       
-      <main className={`${inter.variable} ${merriweather.variable} ${poppins.variable}`}>
+      <main className={`${inter.variable} ${merriweather.variable} ${poppins.variable} font-sans`}>
         <ChakraProvider>
           <Component {...pageProps} />
         </ChakraProvider>
