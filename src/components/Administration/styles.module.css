@@ -1,0 +1,16 @@
+.carouselItem {
+    background-color: #000000;
+    background-image: -webkit-linear-gradient(135deg, #000000 80%, #CCE3FF 20%);
+  }
+  
+  .carouselItem img {
+    opacity: 100%;
+  }
+  
+  .text {
+    text-align: center;
+    font-size: large;
+    color: white;
+    padding-top: 5rem;
+    padding-inline: 15rem;
+  }
