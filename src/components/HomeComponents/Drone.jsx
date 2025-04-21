@@ -13,7 +13,8 @@ const Drone = () => {
       // Import Lottie only on client-side
       import('lottie-web').then((Lottie) => {
         // We'll use a placeholder animation
-        const animationPath = 'https://assets1.lottiefiles.com/packages/lf20_3enkatfu.json';
+        const animationPath = 'https://assets1.lottiefiles.com/packages/lf20_mjlh3hcy.json';
+
         
         const anim = Lottie.default.loadAnimation({
           container: animationContainer.current,

@@ -1,34 +1,26 @@
 @import "tailwindcss/preflight";
 @tailwind utilities;
 
-:root {
-  --primary-color: #172E7C;
-  --secondary-color: #CCE3FF;
-  --text-color: #333333;
-  --background-color: #ffffff;
-}
+@layer base {
+  html {
+    font-family: var(--font-poppins), sans-serif;
+  }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+  body {
+    @apply bg-white text-black antialiased;
+  }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-}
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-merriweather), serif;
+  }
 
-body {
-  color: var(--text-color);
-  background: var(--background-color);
-}
+  a {
+    @apply text-inherit no-underline;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
+  *, *::before, *::after {
+    @apply box-border;
+  }
 }
 
 .animLoad {

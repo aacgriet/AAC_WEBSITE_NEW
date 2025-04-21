@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import Head from 'next/head';
 import { ChakraProvider } from '@chakra-ui/react';
 import { Inter, Merriweather, Poppins } from 'next/font/google';
-import '@/styles/globals.css';
+import '../styles/globals.css'; // instead of '@/styles/globals.css'
+
 
 // Import styles for Swiper
 import 'swiper/css';

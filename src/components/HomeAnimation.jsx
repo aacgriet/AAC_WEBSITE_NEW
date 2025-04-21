@@ -1,25 +1,40 @@
-// components/HomeAnimation.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
+const generateCircles = (count) =>
+  Array.from({ length: count }).map(() => ({
+    width: Math.random() * 200 + 50,
+    height: Math.random() * 200 + 50,
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    x: Math.random() * 100 - 50,
+    y: Math.random() * 100 - 50,
+  }));
+
 const HomeAnimation = () => {
+  const [circles, setCircles] = useState([]);
+
+  useEffect(() => {
+    setCircles(generateCircles(20)); // only on client
+  }, []);
+
   return (
     <div className="relative w-full h-screen bg-gradient-to-br from-[#172E7C] to-black overflow-hidden">
       {/* Animated circles */}
       <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
+        {circles.map((circle, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full bg-blue-400 opacity-20"
             style={{
-              width: Math.random() * 200 + 50,
-              height: Math.random() * 200 + 50,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              width: circle.width,
+              height: circle.height,
+              left: circle.left,
+              top: circle.top,
             }}
             animate={{
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
+              x: [0, circle.x],
+              y: [0, circle.y],
             }}
             transition={{
               duration: Math.random() * 10 + 20,
@@ -30,8 +45,8 @@ const HomeAnimation = () => {
           />
         ))}
       </div>
-      
-      {/* Content */}
+
+      {/* Your content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-10">
         <motion.h1
           initial={{ opacity: 0, y: -50 }}
@@ -41,7 +56,7 @@ const HomeAnimation = () => {
         >
           Advanced Academic Center
         </motion.h1>
-        
+
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -50,7 +65,7 @@ const HomeAnimation = () => {
         >
           Innovation • Research • Excellence
         </motion.p>
-        
+
         <motion.button
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}

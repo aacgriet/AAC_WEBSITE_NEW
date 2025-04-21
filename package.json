@@ -19,6 +19,7 @@
     "@react-three/fiber": "^8.15.16",
     "@react-three/postprocessing": "^2.15.13",
     "@sanity/client": "^6.12.3",
+    "@tailwindcss/postcss": "^4.1.4",
     "framer-motion": "^11.0.3",
     "lottie-web": "^5.12.2",
     "next": "14.1.0",
