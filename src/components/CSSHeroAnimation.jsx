@@ -12,8 +12,22 @@ export const themeColors = {
 };
 
 const CSSHeroAnimation = () => {
+  // Function to handle smooth scroll to the next section
+  const scrollToNextSection = () => {
+    window.scrollTo({
+      top: window.innerHeight,
+      behavior: 'smooth'
+    });
+  };
+
   return (
-    <div className="relative w-full h-screen overflow-hidden hero-section" style={{ backgroundColor: themeColors.darkBg }}>
+    <div 
+      className="relative w-full h-screen overflow-hidden hero-section" 
+      style={{ 
+        backgroundColor: themeColors.darkBg,
+        marginTop: '-16px', // Slight negative margin to eliminate any gap
+      }}
+    >
       {/* Particles Background - Pure CSS */}
       <div className="absolute inset-0">
         {/* Generate 120 particle elements with random positions */}
@@ -31,25 +45,6 @@ const CSSHeroAnimation = () => {
             }}
           />
         ))}
-        
-        {/* Reduced to just 2 larger glowing orbs */}
-        {/* {[...Array(2)].map((_, i) => (
-          <div
-            key={`orb-${i}`}
-            className="absolute rounded-full bg-opacity-20"
-            style={{
-              backgroundColor: i === 0 ? themeColors.secondaryAccent1 : themeColors.secondaryAccent2,
-              top: i === 0 ? '35%' : '65%',
-              left: i === 0 ? '25%' : '75%',
-              width: `${(i === 0 ? 180 : 150)}px`,
-              height: `${(i === 0 ? 180 : 150)}px`,
-              filter: 'blur(10px)',
-              opacity: 0.2,
-              animation: `pulse ${i === 0 ? 8 : 10}s ease-in-out infinite alternate, 
-                         moveSlowly ${i === 0 ? 45 : 60}s linear infinite alternate`,
-            }}
-          />
-        ))} */}
         
         {/* Gradients that move */}
         <div
@@ -92,8 +87,8 @@ const CSSHeroAnimation = () => {
         />
       </div>
       
-      {/* Content Overlay - Adjusted to account for navbar */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 text-center pt-16">
+      {/* Content Overlay */}
+      <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 text-center">
         <motion.h1
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -130,7 +125,10 @@ const CSSHeroAnimation = () => {
       </div>
       
       {/* Down indicator that hints at scrolling for section continuity */}
-      <div className="absolute bottom-20 left-0 right-0 flex justify-center z-10 animate-bounce">
+      <div 
+        className="absolute bottom-3 left-0 right-0 flex justify-center z-10 animate-bounce cursor-pointer"
+        onClick={scrollToNextSection}
+      >
         <svg 
           className="w-10 h-10 text-white opacity-80" 
           fill="none" 
@@ -149,6 +147,14 @@ const CSSHeroAnimation = () => {
       
       {/* CSS Animations */}
       <style jsx global>{`
+        html {
+          scroll-snap-type: y proximity;
+        }
+        
+        .hero-section {
+          scroll-snap-align: start;
+        }
+        
         @keyframes floatParticle {
           0%, 100% {
             transform: translate(0, 0);

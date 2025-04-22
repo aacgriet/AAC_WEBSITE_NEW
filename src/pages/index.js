@@ -3,7 +3,7 @@ import React from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 import Layout from '@/components/Layout';
-// Import the new CSS animation instead of the ThreeJS one
+// Import the CSS animation
 import CSSHeroAnimation from '@/components/CSSHeroAnimation';
 import ExploreSection from '@/components/HomeComponents/ExploreSection';
 import ProjectsShowcase from '@/components/HomeComponents/ProjectsShowcase';
@@ -28,6 +28,23 @@ const Home = () => {
       <Head>
         <title>AAC - Advanced Academic Center | GRIET</title>
         <meta name="description" content="Advanced Academic Center (AAC) is an inter-disciplinary research centre at GRIET, Hyderabad focused on innovation and research." />
+        
+        {/* Add a style to prevent scrollbars on the landing page */}
+        <style>{`
+          html, body {
+            scrollbar-width: none; /* Firefox */
+          }
+          
+          html::-webkit-scrollbar, 
+          body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+          }
+          
+          html {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+          }
+        `}</style>
       </Head>
       
       {/* Hero Section with CSS Animation */}
@@ -63,7 +80,7 @@ const Home = () => {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-xl text-white  max-w-3xl mx-auto"
+              className="text-xl text-white max-w-3xl mx-auto"
             >
               The Advanced Academic Center (AAC) is an interdisciplinary hub where creativity, 
               research, and innovation converge to solve complex challenges and shape the future.

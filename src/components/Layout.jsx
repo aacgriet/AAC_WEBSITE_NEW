@@ -17,6 +17,9 @@ const Layout = ({ children }) => {
     document.body.style.backgroundColor = '#0e1421';
     document.documentElement.style.backgroundColor = '#0e1421';
     
+    // Prevent multiple scrollbars
+    document.documentElement.style.overflow = 'auto';
+    
     return () => {
       document.documentElement.style.scrollBehavior = 'auto';
     };
@@ -46,12 +49,18 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden" style={{ backgroundColor: '#0e1421' }}>
+    <div 
+      className="flex flex-col min-h-screen" 
+      style={{ 
+        backgroundColor: '#0e1421',
+        overflow: 'hidden'  // Prevent double scrollbars
+      }}
+    >
       <Navbar />
       
       <AnimatePresence mode="wait">
         <motion.main 
-          className="flex-grow pt-20 overflow-x-hidden w-full"
+          className="flex-grow w-full"
           initial="initial"
           animate="animate"
           exit="exit"
