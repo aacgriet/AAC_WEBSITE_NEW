@@ -8,6 +8,15 @@ const Layout = ({ children }) => {
   // Effect for smooth scroll behavior
   useEffect(() => {
     document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Prevent horizontal scrolling
+    document.body.style.overflowX = 'hidden';
+    document.documentElement.style.overflowX = 'hidden';
+    
+    // Set background color
+    document.body.style.backgroundColor = '#0e1421';
+    document.documentElement.style.backgroundColor = '#0e1421';
+    
     return () => {
       document.documentElement.style.scrollBehavior = 'auto';
     };
@@ -37,16 +46,17 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black">
+    <div className="flex flex-col min-h-screen overflow-x-hidden" style={{ backgroundColor: '#0e1421' }}>
       <Navbar />
       
       <AnimatePresence mode="wait">
         <motion.main 
-          className="flex-grow pt-20"
+          className="flex-grow pt-20 overflow-x-hidden w-full"
           initial="initial"
           animate="animate"
           exit="exit"
           variants={pageVariants}
+          style={{ backgroundColor: '#0e1421' }}
         >
           {children}
         </motion.main>

@@ -14,6 +14,8 @@ module.exports = {
       colors: {
         primary: '#172E7C',
         secondary: '#CCE3FF',
+        background: '#0e1421',
+        accent: '#57e1ff',
       },
       borderWidth: {
         '6': '6px',

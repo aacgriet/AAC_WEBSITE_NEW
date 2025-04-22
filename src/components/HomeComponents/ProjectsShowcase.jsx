@@ -116,7 +116,7 @@ const ProjectsShowcase = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-4xl md:text-5xl font-bold mb-6"
+          className="text-4xl md:text-5xl text-white  font-bold mb-6"
         >
           Featured Projects
         </motion.h2>
@@ -125,7 +125,7 @@ const ProjectsShowcase = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1, duration: 0.8 }}
-          className="text-xl text-gray-600 max-w-3xl mx-auto mb-10"
+          className="text-xl text-white  max-w-3xl mx-auto mb-10"
         >
           Explore our innovative research and development projects creating real-world impact.
         </motion.p>

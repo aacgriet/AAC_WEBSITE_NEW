@@ -3,7 +3,8 @@ import React from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
 import Layout from '@/components/Layout';
-import HeroAnimation from '@/components/HeroAnimation';
+// Import the new CSS animation instead of the ThreeJS one
+import CSSHeroAnimation from '@/components/CSSHeroAnimation';
 import ExploreSection from '@/components/HomeComponents/ExploreSection';
 import ProjectsShowcase from '@/components/HomeComponents/ProjectsShowcase';
 import ContactSection from '@/components/HomeComponents/ContactSection';
@@ -29,8 +30,8 @@ const Home = () => {
         <meta name="description" content="Advanced Academic Center (AAC) is an inter-disciplinary research centre at GRIET, Hyderabad focused on innovation and research." />
       </Head>
       
-      {/* Hero Section with ThreeJS Animation */}
-      <HeroAnimation />
+      {/* Hero Section with CSS Animation */}
+      <CSSHeroAnimation />
       
       {/* About Section */}
       <motion.section
@@ -54,7 +55,7 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
-              className="text-4xl md:text-5xl font-bold mb-6"
+              className="text-4xl text-white md:text-5xl font-bold mb-6"
             >
               Pushing Boundaries of Innovation
             </motion.h2>
@@ -62,7 +63,7 @@ const Home = () => {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-xl text-gray-600 max-w-3xl mx-auto"
+              className="text-xl text-white  max-w-3xl mx-auto"
             >
               The Advanced Academic Center (AAC) is an interdisciplinary hub where creativity, 
               research, and innovation converge to solve complex challenges and shape the future.
@@ -83,7 +84,7 @@ const Home = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 + index * 0.1, duration: 0.6 }}
                 whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                className={`${stat.color} text-white rounded-2xl shadow-lg overflow-hidden backdrop-blur-sm p-8 flex flex-col items-center justify-center`}
+                className={`${stat.color} text-white rounded-2xl shadow-lg overflow-hidden backdrop-blur-sm p-8 flex flex-col items-center`}
               >
                 <span className="text-5xl font-bold mb-2">{stat.number}</span>
                 <span className="text-lg">{stat.label}</span>
@@ -99,7 +100,7 @@ const Home = () => {
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
         variants={sectionVariants}
-        className="py-24 px-4 bg-gray-50"
+        className="py-24 px-4 bg-[#0e1421"
       >
         <ExploreSection />
       </motion.section>

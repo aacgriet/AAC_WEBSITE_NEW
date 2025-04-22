@@ -6,10 +6,14 @@
   html {
     font-family: var(--font-poppins), 'Inter', system-ui, sans-serif;
     scroll-behavior: smooth;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    background-color: #0e1421;
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply text-gray-100 antialiased;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    background-color: #0e1421;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -107,6 +111,18 @@
   background: linear-gradient(135deg, #172E7C 0%, #DB2777 100%);
 }
 
+/* Neon button style */
+.neon-button {
+  border: 2px solid #57e1ff;
+  box-shadow: 0 0 15px #57e1ff;
+  transition: all 0.3s ease;
+}
+
+.neon-button:hover {
+  box-shadow: 0 0 25px #57e1ff;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+}
+
 /* Line Clamp */
 .line-clamp-1 {
   display: -webkit-box;
@@ -135,7 +151,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #0e1421;
 }
 
 ::-webkit-scrollbar-thumb {

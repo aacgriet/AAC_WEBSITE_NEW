@@ -1,162 +1,205 @@
 // src/components/HeroAnimation.jsx
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { motion } from 'framer-motion';
 
 const HeroAnimation = () => {
-  const containerRef = useRef(null);
-  const animationRef = useRef(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-
-    // Scene setup
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.z = 20;
-
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-    });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    
-    // Clear any existing canvas
-    if (containerRef.current.firstChild) {
-      containerRef.current.removeChild(containerRef.current.firstChild);
-    }
-    containerRef.current.appendChild(renderer.domElement);
-
-    // Create particles
-    const particlesGeometry = new THREE.BufferGeometry();
+    let scene, camera, renderer, particlesMesh, animationId;
     const particlesCount = 2000;
     
-    const posArray = new Float32Array(particlesCount * 3);
-    const colorArray = new Float32Array(particlesCount * 3);
-    
-    // Main color palette
-    const colors = [
-      new THREE.Color('#172E7C'), // Primary blue
-      new THREE.Color('#4E63BD'), // Lighter blue
-      new THREE.Color('#7389F0'), // Even lighter blue
-      new THREE.Color('#2D3F99'), // Medium blue
-      new THREE.Color('#FFFFFF')  // White accent
-    ];
-
-    // Fill positions and colors
-    for (let i = 0; i < particlesCount * 3; i++) {
-      // Position: random in a sphere
-      const i3 = i * 3;
-      const radius = 15 + Math.random() * 5;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
+    // Initialize everything inside a function to better control timing
+    const init = () => {
+      // Create scene
+      scene = new THREE.Scene();
       
-      posArray[i3] = radius * Math.sin(phi) * Math.cos(theta);
-      posArray[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      posArray[i3 + 2] = radius * Math.cos(phi);
+      // Camera setup
+      camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      camera.position.z = 20;
       
-      // Random color from palette
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      colorArray[i3] = color.r;
-      colorArray[i3 + 1] = color.g;
-      colorArray[i3 + 2] = color.b;
-    }
-    
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
-    
-    // Material for particles
-    const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.05,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.7,
-      sizeAttenuation: true,
-    });
-
-    // Points mesh
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particlesMesh);
-
-    // Handle window resize
-    const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
+      // Renderer setup
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+      });
       renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    // Mouse interaction
-    const mouse = {
-      x: 0,
-      y: 0
-    };
-
-    const handleMouseMove = (event) => {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-
-    // Animation loop
-    const animate = () => {
-      particlesMesh.rotation.x += 0.0005;
-      particlesMesh.rotation.y += 0.0005;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       
-      // Gentle wave effect
-      const positions = particlesGeometry.attributes.position.array;
-      const time = Date.now() * 0.0005;
+      // Clean DOM and append
+      const container = document.getElementById('animation-container');
+      if (!container) return;
       
-      for (let i = 0; i < particlesCount; i++) {
-        const i3 = i * 3;
-        const x = positions[i3];
-        const y = positions[i3 + 1];
-        const z = positions[i3 + 2];
-        
-        // Add subtle wave motion
-        positions[i3] = x + Math.sin(time + x * 0.1) * 0.05;
-        positions[i3 + 1] = y + Math.sin(time + y * 0.1) * 0.05;
-        positions[i3 + 2] = z + Math.sin(time + z * 0.1) * 0.05;
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
       }
       
-      particlesGeometry.attributes.position.needsUpdate = true;
+      container.appendChild(renderer.domElement);
       
-      // Interactive rotation based on mouse
-      particlesMesh.rotation.x += mouse.y * 0.001;
-      particlesMesh.rotation.y += mouse.x * 0.001;
+      // Particle geometry
+      const particlesGeometry = new THREE.BufferGeometry();
       
-      renderer.render(scene, camera);
-      animationRef.current = requestAnimationFrame(animate);
+      const posArray = new Float32Array(particlesCount * 3);
+      const colorArray = new Float32Array(particlesCount * 3);
+      
+      // Color palette
+      const colors = [
+        new THREE.Color('#172E7C'), // Primary blue
+        new THREE.Color('#4E63BD'), // Lighter blue
+        new THREE.Color('#7389F0'), // Even lighter blue
+        new THREE.Color('#2D3F99'), // Medium blue
+        new THREE.Color('#FFFFFF')  // White accent
+      ];
+      
+      // Fill position and color arrays
+      for (let i = 0; i < particlesCount; i++) {
+        const i3 = i * 3;
+        
+        // Position: random in a sphere
+        const radius = 15 + Math.random() * 5;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        
+        posArray[i3] = radius * Math.sin(phi) * Math.cos(theta);
+        posArray[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+        posArray[i3 + 2] = radius * Math.cos(phi);
+        
+        // Color
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        colorArray[i3] = color.r;
+        colorArray[i3 + 1] = color.g;
+        colorArray[i3 + 2] = color.b;
+      }
+      
+      particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+      particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+      
+      // Material
+      const particlesMaterial = new THREE.PointsMaterial({
+        size: 0.05,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.7,
+        sizeAttenuation: true,
+      });
+      
+      // Create mesh and add to scene
+      particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+      scene.add(particlesMesh);
+      
+      // Global mouse state
+      const mouse = { x: 0, y: 0 };
+      
+      // Animation loop
+      const animate = () => {
+        // Rotation
+        particlesMesh.rotation.x += 0.0005;
+        particlesMesh.rotation.y += 0.0005;
+        
+        // Wave effect
+        const positions = particlesGeometry.attributes.position.array;
+        const time = Date.now() * 0.0005;
+        
+        for (let i = 0; i < particlesCount; i++) {
+          const i3 = i * 3;
+          const x = positions[i3];
+          const y = positions[i3 + 1];
+          const z = positions[i3 + 2];
+          
+          positions[i3] = x + Math.sin(time + x * 0.1) * 0.05;
+          positions[i3 + 1] = y + Math.sin(time + y * 0.1) * 0.05;
+          positions[i3 + 2] = z + Math.sin(time + z * 0.1) * 0.05;
+        }
+        
+        particlesGeometry.attributes.position.needsUpdate = true;
+        
+        // Mouse interaction
+        particlesMesh.rotation.x += mouse.y * 0.001;
+        particlesMesh.rotation.y += mouse.x * 0.001;
+        
+        // Render
+        renderer.render(scene, camera);
+        animationId = requestAnimationFrame(animate);
+      };
+      
+      // Start animation
+      animate();
+      
+      // Event listeners
+      const handleResize = () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      };
+      
+      const handleMouseMove = (event) => {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      };
+      
+      window.addEventListener('resize', handleResize);
+      window.addEventListener('mousemove', handleMouseMove);
+      
+      // Track initialization
+      setIsInitialized(true);
+      
+      // Return cleanup function for event listeners
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        window.removeEventListener('mousemove', handleMouseMove);
+      };
     };
     
-    animate();
-
-    // Cleanup function
+    // Initialize the scene
+    const cleanupEvents = init();
+    
+    // Comprehensive cleanup
     return () => {
-      cancelAnimationFrame(animationRef.current);
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
+      // Cancel animation
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
       
-      scene.remove(particlesMesh);
-      particlesGeometry.dispose();
-      particlesMaterial.dispose();
-      renderer.dispose();
+      // Clean event listeners
+      if (cleanupEvents) {
+        cleanupEvents();
+      }
+      
+      // Dispose resources
+      if (particlesMesh && particlesMesh.geometry) {
+        particlesMesh.geometry.dispose();
+      }
+      
+      if (particlesMesh && particlesMesh.material) {
+        particlesMesh.material.dispose();
+      }
+      
+      if (scene) {
+        scene.clear();
+      }
+      
+      if (renderer) {
+        renderer.dispose();
+        
+        const container = document.getElementById('animation-container');
+        if (container && container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+      }
     };
-  }, []);
+  }, []);  // Empty dependency array - run once on mount
 
   return (
     <div className="relative w-full h-screen">
       {/* Container for Three.js animation */}
       <div 
-        ref={containerRef} 
+        id="animation-container" 
         className="absolute inset-0 -z-10"
       />
       
@@ -186,7 +229,7 @@ const HeroAnimation = () => {
           transition={{ duration: 0.8, delay: 0.6 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="px-8 py-3 bg-white bg-opacity-20 backdrop-blur-md border border-white border-opacity-20 rounded-full text-white font-medium transition-all hover:bg-opacity-30"
+          className="px-8 py-3 bg-white bg-opacity-20 backdrop-blur-md border-2 border-[#57e1ff] rounded-full text-white font-medium transition-all hover:bg-opacity-30 shadow-[0_0_15px_#57e1ff]"
         >
           Explore
         </motion.button>
