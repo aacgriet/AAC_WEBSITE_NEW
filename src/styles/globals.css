@@ -4,10 +4,13 @@
 
 @layer base {
   html {
-    font-family: var(--font-poppins), 'Inter', system-ui, sans-serif;
+    font-family: "Work Sans Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     scroll-behavior: smooth;
     overflow-x: hidden; /* Prevent horizontal scrolling */
     background-color: #0e1421;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
   }
 
   body {
@@ -169,7 +172,25 @@
 }
 
 .font-sans {
-  font-family: var(--font-poppins), 'Inter', sans-serif;
+  font-family: "Work Sans Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* Text gradient for hero section */
+.text-gradient {
+  background: linear-gradient(90deg, #fff 0%, #57e1ff 50%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: textShine 3s ease-in-out infinite alternate;
+}
+
+@keyframes textShine {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
 }
 
 /* Custom Swiper Styles */

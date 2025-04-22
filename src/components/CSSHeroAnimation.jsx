@@ -93,7 +93,11 @@ const CSSHeroAnimation = () => {
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-5xl md:text-7xl font-bold mb-6 text-white"
+          className="text-5xl md:text-7xl font-normal mb-6 text-gradient"
+          style={{ 
+            fontFamily: '"Work Sans Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+            fontWeight: 400
+          }}
         >
           Advanced Academic Center
         </motion.h1>
@@ -103,6 +107,10 @@ const CSSHeroAnimation = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.3 }}
           className="text-xl md:text-2xl text-center max-w-2xl mx-auto mb-12 text-gray-100"
+          style={{ 
+            fontFamily: '"Work Sans Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+            fontWeight: 400
+          }}
         >
           Innovation • Research • Excellence
         </motion.p>
@@ -113,8 +121,10 @@ const CSSHeroAnimation = () => {
           transition={{ duration: 0.8, delay: 0.6 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="px-8 py-3 bg-white bg-opacity-20 backdrop-blur-md rounded-full text-white font-medium transition-all hover:bg-opacity-30"
+          className="px-8 py-3 bg-white bg-opacity-20 backdrop-blur-md rounded-full text-white font-normal transition-all hover:bg-opacity-30"
           style={{ 
+            fontFamily: '"Work Sans Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+            fontWeight: 400,
             borderWidth: '2px',
             borderColor: themeColors.primaryAccent,
             boxShadow: `0 0 15px ${themeColors.primaryAccent}`
@@ -147,14 +157,6 @@ const CSSHeroAnimation = () => {
       
       {/* CSS Animations */}
       <style jsx global>{`
-        html {
-          scroll-snap-type: y proximity;
-        }
-        
-        .hero-section {
-          scroll-snap-align: start;
-        }
-        
         @keyframes floatParticle {
           0%, 100% {
             transform: translate(0, 0);
@@ -167,26 +169,6 @@ const CSSHeroAnimation = () => {
           }
           75% {
             transform: translate(-50px, 50px);
-          }
-        }
-        
-        @keyframes pulse {
-          0% {
-            transform: scale(1);
-            opacity: 0.1;
-          }
-          100% {
-            transform: scale(1.5);
-            opacity: 0.3;
-          }
-        }
-        
-        @keyframes moveSlowly {
-          0% {
-            transform: translate(0, 0);
-          }
-          100% {
-            transform: translate(calc(100vw - 100%), calc(100vh - 100%));
           }
         }
         

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
-import { Inter, Merriweather, Plus_Jakarta_Sans, Sora } from 'next/font/google';
+import { Inter, Merriweather, Plus_Jakarta_Sans, Sora, Work_Sans } from 'next/font/google';
 import { AnimatePresence } from 'framer-motion';
 import '../styles/globals.css';
 
@@ -11,7 +11,14 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
-// Load modern fonts
+// Load Work Sans Variable font
+const workSans = Work_Sans({
+  subsets: ['latin'],
+  variable: '--font-work-sans',
+  display: 'swap',
+});
+
+// Load other modern fonts
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
@@ -54,8 +61,8 @@ const theme = extendTheme({
     },
   },
   fonts: {
-    heading: 'var(--font-sora), var(--font-merriweather)',
-    body: 'var(--font-inter), var(--font-jakarta)',
+    heading: 'var(--font-work-sans), var(--font-sora), var(--font-merriweather)',
+    body: 'var(--font-work-sans), var(--font-inter), var(--font-jakarta)',
   },
   components: {
     Button: {
@@ -111,7 +118,7 @@ function MyApp({ Component, pageProps, router }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       
-      <main className={`${inter.variable} ${merriweather.variable} ${jakarta.variable} ${sora.variable} font-sans`}>
+      <main className={`${inter.variable} ${merriweather.variable} ${jakarta.variable} ${sora.variable} ${workSans.variable} font-sans`}>
         <ChakraProvider theme={theme}>
           {loading && <LoadingScreen />}
           
