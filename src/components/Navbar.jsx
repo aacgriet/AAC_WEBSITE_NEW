@@ -1,120 +1,165 @@
-import React, { useState } from "react";
+// src/components/Navbar.jsx
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Handle scroll effect for navbar transparency
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 10;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [scrolled]);
+
+  // Variants for the navbar animation
+  const navVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.5,
+        ease: "easeInOut" 
+      }
+    }
+  };
+
+  // Menu button animation variants
+  const menuButtonVariants = {
+    open: { rotate: 180 },
+    closed: { rotate: 0 }
+  };
+
+  // Link animation variants
+  const linkVariants = {
+    closed: { opacity: 0, y: -10 },
+    open: i => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.1,
+        duration: 0.3
+      }
+    })
+  };
 
   return (
-    <nav className="bg-[#172E7C] text-[#CCE3FF]">
+    <motion.nav 
+      initial="hidden"
+      animate="visible"
+      variants={navVariants}
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        scrolled ? "backdrop-blur-md bg-white/20 shadow-lg" : ""
+      }`}
+    >
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          <button
-            className="md:hidden"
+        <div className="flex h-20 items-center justify-between">
+          {/* Mobile menu button */}
+          <motion.button
+            variants={menuButtonVariants}
+            animate={isOpen ? "open" : "closed"}
+            transition={{ duration: 0.3 }}
+            className="md:hidden z-50"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle Menu"
           >
             {isOpen ? (
-              <CloseIcon color="black" boxSize={6} />
+              <CloseIcon color="white" boxSize={6} />
             ) : (
-              <HamburgerIcon color="white" boxSize={6} />
+              <HamburgerIcon color={scrolled ? "black" : "white"} boxSize={6} />
             )}
-          </button>
+          </motion.button>
 
+          {/* Desktop navigation */}
           <div className="hidden md:flex w-full items-center justify-between">
-            <div className="flex w-full justify-between items-center space-x-4">
-              <Link
-                href="/Research"
-                className="px-2 py-1 rounded-md hover:bg-gray-200 hover:text-gray-700"
-              >
-                RESEARCH
-              </Link>
-              <Link
-                href="/Events"
-                className="px-2 py-1 rounded-md hover:bg-gray-200 hover:text-gray-700"
-              >
-                EVENTS
-              </Link>
-              <Link
-                href="/"
-                className="nav-logo bg-[#CCE3FF] rounded-b-[30px] px-5 py-4 z-10"
-              >
-                <div className="nav-img mt-4 px-2">
-                  <Image
-                    width={190}
-                    height={75}
-                    src="/images/logo.png" // Local image path
-                    alt="AAC Logo"
-                  />
-                </div>
-              </Link>
-              <Link
-                href="/News"
-                className="px-2 py-1 rounded-md hover:bg-gray-200 hover:text-gray-700"
-              >
-                NEWS
-              </Link>
-              <Link
-                href="/Administration"
-                className="px-2 py-1 rounded-md hover:bg-gray-200 hover:text-gray-700"
-              >
-                ADMINISTRATION
-              </Link>
-            </div>
+            <Link 
+              href="/Research"
+              className={`px-4 py-2 rounded-full ${scrolled ? 'text-black' : 'text-white'} hover:bg-white/20 transition duration-300`}
+            >
+              Research
+            </Link>
+            <Link 
+              href="/Events"
+              className={`px-4 py-2 rounded-full ${scrolled ? 'text-black' : 'text-white'} hover:bg-white/20 transition duration-300`}
+            >
+              Events
+            </Link>
+            
+            {/* Logo */}
+            <Link href="/" className="absolute left-1/2 transform -translate-x-1/2">
+              <div className="bg-white/90 backdrop-blur-md rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300">
+                <Image
+                  width={80}
+                  height={80}
+                  src="/images/logo.png"
+                  alt="AAC Logo"
+                  className="transition-transform hover:scale-105 duration-300"
+                />
+              </div>
+            </Link>
+            
+            <div className="flex-1"></div> {/* Spacer */}
+            
+            <Link 
+              href="/News"
+              className={`px-4 py-2 rounded-full ${scrolled ? 'text-black' : 'text-white'} hover:bg-white/20 transition duration-300`}
+            >
+              News
+            </Link>
+            <Link 
+              href="/Administration"
+              className={`px-4 py-2 rounded-full ${scrolled ? 'text-black' : 'text-white'} hover:bg-white/20 transition duration-300`}
+            >
+              Administration
+            </Link>
           </div>
         </div>
 
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden pb-4"
-          >
-            <div className="flex flex-col space-y-4">
-              <Link
-                href="/"
-                className="px-2 py-1 rounded-md hover:text-gray-300"
-                onClick={() => setIsOpen(false)}
-              >
-                HOME
-              </Link>
-              <Link
-                href="/Research"
-                className="px-2 py-1 rounded-md hover:text-gray-300"
-                onClick={() => setIsOpen(false)}
-              >
-                RESEARCH
-              </Link>
-              <Link
-                href="/Events"
-                className="px-2 py-1 rounded-md hover:text-gray-300"
-                onClick={() => setIsOpen(false)}
-              >
-                EVENTS
-              </Link>
-              <Link
-                href="/News"
-                className="px-2 py-1 rounded-md hover:text-gray-300"
-                onClick={() => setIsOpen(false)}
-              >
-                NEWS
-              </Link>
-              <Link
-                href="/Administration"
-                className="px-2 py-1 rounded-md hover:text-gray-300"
-                onClick={() => setIsOpen(false)}
-              >
-                ADMINISTRATION
-              </Link>
-            </div>
-          </motion.div>
-        )}
+        {/* Mobile menu */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "100vh" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-[#172E7C] bg-opacity-95 backdrop-blur-lg flex flex-col items-center justify-center z-40"
+            >
+              <div className="flex flex-col space-y-6 text-center">
+                {["Home", "Research", "Events", "News", "Administration"].map((item, i) => (
+                  <motion.div
+                    key={item}
+                    custom={i}
+                    variants={linkVariants}
+                    initial="closed"
+                    animate="open"
+                  >
+                    <Link
+                      href={item === "Home" ? "/" : `/${item}`}
+                      className="text-white text-3xl font-light tracking-wide hover:text-gray-200 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.toUpperCase()}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 

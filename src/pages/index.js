@@ -1,16 +1,27 @@
+// src/pages/index.js
 import React from 'react';
-import Layout from '../components/Layout';
-import HomeAnimation from '../components/HomeAnimation';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
 import Head from 'next/head';
-
-// Import components for the home page sections
-import Exploreus from '../components/HomeComponents/Exploreus';
-import Achievements from '../components/HomeComponents/Achievements';
-import Drones from '@/components/HomeComponents/Drone';
+import { motion } from 'framer-motion';
+import Layout from '@/components/Layout';
+import HeroAnimation from '@/components/HeroAnimation';
+import ExploreSection from '@/components/HomeComponents/ExploreSection';
+import ProjectsShowcase from '@/components/HomeComponents/ProjectsShowcase';
+import ContactSection from '@/components/HomeComponents/ContactSection';
 
 const Home = () => {
+  // Animation variants for sections
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.8,
+        ease: [0.6, 0.05, 0.01, 0.99]
+      }
+    }
+  };
+
   return (
     <Layout>
       <Head>
@@ -19,55 +30,100 @@ const Home = () => {
       </Head>
       
       {/* Hero Section with ThreeJS Animation */}
-      <HomeAnimation />
+      <HeroAnimation />
       
-      {/* Explore Us Section */}
+      {/* About Section */}
       <motion.section
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={sectionVariants}
+        className="py-24 px-4"
       >
-        <Exploreus />
-      </motion.section>
-      
-      {/* Achievements Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        <Achievements />
-      </motion.section>
-      
-      {/* Drones Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-      >
-        <Drones />
-      </motion.section>
-      
-      {/* CTA Section */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7, delay: 0.4 }}
-        className="bg-gray-900 text-white py-20"
-      >
-        <div className="container mx-auto text-center px-4">
-          <h2 className="text-4xl font-bold mb-6">Join the Innovation Journey</h2>
-          <p className="text-xl max-w-2xl mx-auto mb-10">
-            Be part of AAC and collaborate with brilliant minds to build the future of technology.
-          </p>
-          <Link href="/Contact" className="inline-block bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-full text-lg font-medium transition duration-300">
-            Get in Touch
-          </Link>
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <motion.span 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+              className="inline-block px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full mb-4"
+            >
+              About Us
+            </motion.span>
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="text-4xl md:text-5xl font-bold mb-6"
+            >
+              Pushing Boundaries of Innovation
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+              className="text-xl text-gray-600 max-w-3xl mx-auto"
+            >
+              The Advanced Academic Center (AAC) is an interdisciplinary hub where creativity, 
+              research, and innovation converge to solve complex challenges and shape the future.
+            </motion.p>
+          </div>
+          
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { number: "50+", label: "Research Projects", color: "bg-gradient-to-br from-blue-500 to-purple-600" },
+              { number: "200+", label: "Students Involved", color: "bg-gradient-to-br from-pink-500 to-orange-400" },
+              { number: "30+", label: "Published Papers", color: "bg-gradient-to-br from-green-400 to-cyan-500" },
+            ].map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 + index * 0.1, duration: 0.6 }}
+                whileHover={{ y: -10, transition: { duration: 0.3 } }}
+                className={`${stat.color} text-white rounded-2xl shadow-lg overflow-hidden backdrop-blur-sm p-8 flex flex-col items-center justify-center`}
+              >
+                <span className="text-5xl font-bold mb-2">{stat.number}</span>
+                <span className="text-lg">{stat.label}</span>
+              </motion.div>
+            ))}
+          </div>
         </div>
+      </motion.section>
+      
+      {/* Explore Section */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={sectionVariants}
+        className="py-24 px-4 bg-gray-50"
+      >
+        <ExploreSection />
+      </motion.section>
+      
+      {/* Projects Showcase */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={sectionVariants}
+        className="py-24 px-4"
+      >
+        <ProjectsShowcase />
+      </motion.section>
+      
+      {/* Contact Section */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={sectionVariants}
+        className="py-24 px-4 bg-gradient-to-r from-blue-900 to-indigo-900 text-white"
+      >
+        <ContactSection />
       </motion.section>
     </Layout>
   );
