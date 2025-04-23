@@ -28,15 +28,23 @@ export async function getStaticProps({ params }) {
     };
   }
   
+  // Get a selection of random projects for "More Projects" section
+  const allProjects = await getAllProjects();
+  const moreProjects = allProjects
+    .filter(p => p._id !== project._id)
+    .sort(() => 0.5 - Math.random()) // Shuffle array
+    .slice(0, 3); // Take first 3
+  
   return {
     props: {
       project,
+      moreProjects
     },
     revalidate: 60 // Revalidate every minute
   };
 }
 
-const ProjectDetail = ({ project }) => {
+const ProjectDetail = ({ project, moreProjects }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [scrolled, setScrolled] = useState(false);
   const [likes, setLikes] = useState(42); // Sample starting value
@@ -54,14 +62,14 @@ const ProjectDetail = ({ project }) => {
   // Components for portable text content
   const components = {
     block: {
-      normal: ({ children }) => <p className="text-base md:text-lg mb-6 text-gray-700">{children}</p>,
-      h1: ({ children }) => <h1 className="text-3xl md:text-4xl font-bold mb-6">{children}</h1>,
-      h2: ({ children }) => <h2 className="text-2xl md:text-3xl font-bold mb-5">{children}</h2>,
-      h3: ({ children }) => <h3 className="text-xl md:text-2xl font-bold mb-4">{children}</h3>,
+      normal: ({ children }) => <p className="text-base md:text-lg mb-6 text-gray-300">{children}</p>,
+      h1: ({ children }) => <h1 className="text-3xl md:text-4xl font-bold mb-6 text-white">{children}</h1>,
+      h2: ({ children }) => <h2 className="text-2xl md:text-3xl font-bold mb-5 text-white">{children}</h2>,
+      h3: ({ children }) => <h3 className="text-xl md:text-2xl font-bold mb-4 text-white">{children}</h3>,
     },
     list: {
-      bullet: ({ children }) => <ul className="list-disc pl-6 mb-6 text-gray-700">{children}</ul>,
-      number: ({ children }) => <ol className="list-decimal pl-6 mb-6 text-gray-700">{children}</ol>,
+      bullet: ({ children }) => <ul className="list-disc pl-6 mb-6 text-gray-300">{children}</ul>,
+      number: ({ children }) => <ol className="list-decimal pl-6 mb-6 text-gray-300">{children}</ol>,
     },
     listItem: {
       bullet: ({ children }) => <li className="mb-2">{children}</li>,
@@ -165,7 +173,7 @@ const ProjectDetail = ({ project }) => {
       {/* Sticky Navigation Bar */}
       <motion.div 
         className={`sticky top-20 z-30 py-4 transition-all duration-300 ${
-          scrolled ? 'bg-white shadow-md' : 'bg-transparent'
+          scrolled ? 'bg-[#0e1421] shadow-md border-b border-gray-800' : 'bg-transparent'
         }`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -178,8 +186,8 @@ const ProjectDetail = ({ project }) => {
                 onClick={() => setActiveTab('overview')}
                 className={`px-4 py-2 transition-colors ${
                   activeTab === 'overview' 
-                    ? 'text-blue-600 border-b-2 border-blue-600 font-medium' 
-                    : 'text-gray-600 hover:text-blue-600'
+                    ? 'text-blue-400 border-b-2 border-blue-400 font-medium' 
+                    : 'text-gray-400 hover:text-blue-400'
                 }`}
               >
                 Overview
@@ -189,8 +197,8 @@ const ProjectDetail = ({ project }) => {
                   onClick={() => setActiveTab('team')}
                   className={`px-4 py-2 transition-colors ${
                     activeTab === 'team' 
-                      ? 'text-blue-600 border-b-2 border-blue-600 font-medium' 
-                      : 'text-gray-600 hover:text-blue-600'
+                      ? 'text-blue-400 border-b-2 border-blue-400 font-medium' 
+                      : 'text-gray-400 hover:text-blue-400'
                   }`}
                 >
                   Team
@@ -200,8 +208,8 @@ const ProjectDetail = ({ project }) => {
                 onClick={() => setActiveTab('gallery')}
                 className={`px-4 py-2 transition-colors ${
                   activeTab === 'gallery' 
-                    ? 'text-blue-600 border-b-2 border-blue-600 font-medium' 
-                    : 'text-gray-600 hover:text-blue-600'
+                    ? 'text-blue-400 border-b-2 border-blue-400 font-medium' 
+                    : 'text-gray-400 hover:text-blue-400'
                 }`}
               >
                 Gallery
@@ -218,11 +226,11 @@ const ProjectDetail = ({ project }) => {
                 }}
                 className={`flex items-center space-x-1 px-3 py-1.5 rounded-full ${
                   isLiked 
-                    ? 'bg-red-100 text-red-600' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-red-900/50 text-red-400 border border-red-700/50' 
+                    : 'bg-[#1a2535] text-gray-300 hover:bg-[#1a2535]/80 border border-gray-700'
                 }`}
               >
-                <FaHeart className={isLiked ? 'text-red-600' : 'text-gray-400'} />
+                <FaHeart className={isLiked ? 'text-red-400' : 'text-gray-500'} />
                 <span>{likes}</span>
               </motion.button>
               
@@ -232,20 +240,20 @@ const ProjectDetail = ({ project }) => {
                 onClick={() => setIsBookmarked(!isBookmarked)}
                 className={`flex items-center space-x-1 px-3 py-1.5 rounded-full ${
                   isBookmarked 
-                    ? 'bg-blue-100 text-blue-600' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-blue-900/50 text-blue-400 border border-blue-700/50' 
+                    : 'bg-[#1a2535] text-gray-300 hover:bg-[#1a2535]/80 border border-gray-700'
                 }`}
               >
-                <FaBookmark className={isBookmarked ? 'text-blue-600' : 'text-gray-400'} />
+                <FaBookmark className={isBookmarked ? 'text-blue-400' : 'text-gray-500'} />
                 <span>Save</span>
               </motion.button>
               
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center space-x-1 px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
+                className="flex items-center space-x-1 px-3 py-1.5 rounded-full bg-[#1a2535] text-gray-300 hover:bg-[#1a2535]/80 border border-gray-700"
               >
-                <FaShare className="text-gray-400" />
+                <FaShare className="text-gray-500" />
                 <span>Share</span>
               </motion.button>
             </div>
@@ -272,23 +280,23 @@ const ProjectDetail = ({ project }) => {
                     variants={staggerContainer}
                     initial="hidden"
                     animate="visible"
-                    className="bg-white rounded-2xl shadow-lg p-8"
+                    className="bg-[#1a2535] rounded-2xl shadow-lg p-8 border border-gray-700"
                   >
                     <motion.h2 
                       variants={fadeIn}
-                      className="text-2xl font-bold mb-6 pb-4 border-b"
+                      className="text-2xl font-bold mb-6 pb-4 border-b border-gray-700 text-white"
                     >
                       Project Overview
                     </motion.h2>
                     
-                    <motion.div variants={fadeIn} className="prose prose-lg max-w-none">
+                    <motion.div variants={fadeIn} className="prose prose-lg max-w-none prose-invert">
                       {project._rawBody ? (
                         <PortableText
                           value={project._rawBody}
                           components={components}
                         />
                       ) : (
-                        <p className="text-gray-600">
+                        <p className="text-gray-400">
                           No detailed information available for this project. Please check back later or contact the team for more information.
                         </p>
                       )}
@@ -302,25 +310,25 @@ const ProjectDetail = ({ project }) => {
                     variants={fadeIn}
                     initial="hidden"
                     animate="visible"
-                    className="bg-white rounded-2xl shadow-lg p-6 mb-6"
+                    className="bg-[#1a2535] rounded-2xl shadow-lg p-6 mb-6 border border-gray-700"
                   >
-                    <h3 className="text-lg font-bold mb-4 pb-2 border-b">Project Details</h3>
+                    <h3 className="text-lg font-bold mb-4 pb-2 border-b border-gray-700 text-white">Project Details</h3>
                     <ul className="space-y-3">
                       <li className="flex justify-between">
-                        <span className="text-gray-600">Status:</span>
-                        <span className="font-medium">Completed</span>
+                        <span className="text-gray-400">Status:</span>
+                        <span className="font-medium text-gray-300">Completed</span>
                       </li>
                       <li className="flex justify-between">
-                        <span className="text-gray-600">Duration:</span>
-                        <span className="font-medium">6 months</span>
+                        <span className="text-gray-400">Duration:</span>
+                        <span className="font-medium text-gray-300">6 months</span>
                       </li>
                       <li className="flex justify-between">
-                        <span className="text-gray-600">Category:</span>
-                        <span className="font-medium">{project.categories || 'Research'}</span>
+                        <span className="text-gray-400">Category:</span>
+                        <span className="font-medium text-gray-300">{project.categories || 'Research'}</span>
                       </li>
                       <li className="flex justify-between">
-                        <span className="text-gray-600">Date:</span>
-                        <span className="font-medium">{publishDate}</span>
+                        <span className="text-gray-400">Date:</span>
+                        <span className="font-medium text-gray-300">{publishDate}</span>
                       </li>
                     </ul>
                   </motion.div>
@@ -331,16 +339,16 @@ const ProjectDetail = ({ project }) => {
                       initial="hidden"
                       animate="visible"
                       transition={{ delay: 0.2 }}
-                      className="bg-white rounded-2xl shadow-lg p-6"
+                      className="bg-[#1a2535] rounded-2xl shadow-lg p-6 border border-gray-700"
                     >
-                      <h3 className="text-lg font-bold mb-4 pb-2 border-b">Team Members</h3>
+                      <h3 className="text-lg font-bold mb-4 pb-2 border-b border-gray-700 text-white">Team Members</h3>
                       <ul className="space-y-2">
                         {project.names.map((name, index) => (
                           <li key={index} className="flex items-center py-1">
-                            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-medium mr-3">
+                            <div className="w-8 h-8 rounded-full bg-blue-900/50 border border-blue-700/50 flex items-center justify-center text-blue-300 font-medium mr-3">
                               {name.charAt(0)}
                             </div>
-                            <span>{name}</span>
+                            <span className="text-gray-300">{name}</span>
                           </li>
                         ))}
                       </ul>
@@ -358,8 +366,8 @@ const ProjectDetail = ({ project }) => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="bg-white rounded-2xl shadow-lg p-8">
-                  <h2 className="text-2xl font-bold mb-8 pb-4 border-b">Project Team</h2>
+                <div className="bg-[#1a2535] rounded-2xl shadow-lg p-8 border border-gray-700">
+                  <h2 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-700 text-white">Project Team</h2>
                   
                   {project.names && project.names.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -369,15 +377,15 @@ const ProjectDetail = ({ project }) => {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.1, duration: 0.5 }}
-                          className="bg-gray-50 rounded-xl p-6 flex flex-col items-center"
+                          className="bg-[#0e1421] rounded-xl p-6 flex flex-col items-center border border-gray-700"
                         >
-                          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-3xl font-bold mb-4">
+                          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-800 to-indigo-900 text-white flex items-center justify-center text-3xl font-bold mb-4 border border-blue-700/50">
                             {name.charAt(0)}
                           </div>
-                          <h3 className="text-xl font-bold mb-1">{name}</h3>
-                          <p className="text-gray-500 text-center">Team Member</p>
+                          <h3 className="text-xl font-bold mb-1 text-white">{name}</h3>
+                          <p className="text-gray-400 text-center">Team Member</p>
                           <div className="mt-4 flex space-x-2">
-                            <button className="px-4 py-2 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors">
+                            <button className="px-4 py-2 bg-blue-900/30 text-blue-300 rounded-full hover:bg-blue-900/50 transition-colors border border-blue-700/50">
                               Contact
                             </button>
                           </div>
@@ -385,7 +393,7 @@ const ProjectDetail = ({ project }) => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-600">No team information available for this project.</p>
+                    <p className="text-gray-400">No team information available for this project.</p>
                   )}
                 </div>
               </motion.div>
@@ -399,8 +407,8 @@ const ProjectDetail = ({ project }) => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="bg-white rounded-2xl shadow-lg p-8">
-                  <h2 className="text-2xl font-bold mb-8 pb-4 border-b">Project Gallery</h2>
+                <div className="bg-[#1a2535] rounded-2xl shadow-lg p-8 border border-gray-700">
+                  <h2 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-700 text-white">Project Gallery</h2>
                   
                   {project.mainImage ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -418,19 +426,19 @@ const ProjectDetail = ({ project }) => {
                         />
                       </motion.div>
                       
-                      <p className="flex items-center justify-center text-gray-500 h-full">
+                      <p className="flex items-center justify-center text-gray-400 h-full">
                         More project images will be available soon.
                       </p>
                     </div>
                   ) : (
-                    <p className="text-gray-600">No gallery images available for this project.</p>
+                    <p className="text-gray-400">No gallery images available for this project.</p>
                   )}
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
           
-          {/* Related Projects */}
+          {/* More Projects */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -438,25 +446,21 @@ const ProjectDetail = ({ project }) => {
             transition={{ duration: 0.8 }}
             className="mt-16"
           >
-            <h2 className="text-2xl font-bold mb-8">Related Projects</h2>
-            <p className="text-gray-600 mb-8">
-              Explore more innovative projects from Advanced Academic Center
-            </p>
+            <h2 className="text-2xl font-bold mb-8 text-white">More Projects</h2>
             
-            <div className="flex space-x-6 overflow-x-auto pb-6">
-              {[1, 2, 3].map((item) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {moreProjects.map((item) => (
                 <motion.div
-                  key={item}
+                  key={item._id}
                   whileHover={{ y: -10 }}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden flex-shrink-0 w-80"
+                  className="bg-[#1a2535] rounded-xl shadow-lg overflow-hidden flex-shrink-0 border border-gray-700"
                 >
-                  <div className="h-48 bg-gray-200"></div>
                   <div className="p-6">
-                    <h3 className="text-lg font-bold mb-2">Similar Project {item}</h3>
-                    <p className="text-gray-600 mb-4">A brief description of this related project.</p>
+                    <h3 className="text-lg font-bold mb-2 text-white">{item.title}</h3>
+                    <p className="text-gray-400 mb-4 line-clamp-2">{item.slug || "Explore this innovative project..."}</p>
                     <Link 
-                      href="/projects"
-                      className="text-blue-600 hover:text-blue-800 font-medium"
+                      href={`/projects/${item._id}`}
+                      className="text-blue-400 hover:text-blue-300 font-medium"
                     >
                       View details →
                     </Link>

@@ -4,6 +4,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '@/components/Layout';
+import PageHero from '@/components/PageHero';
 
 const publicationsData = [
   {
@@ -16,6 +17,7 @@ const publicationsData = [
     category: "Machine Learning",
     year: 2024
   },
+  // Other publications data remains the same...
   {
     id: "oct",
     title: "Deep Learning and OCT Imaging: A Novel Ensemble Approach for Eye Disease Diagnosis",
@@ -87,7 +89,7 @@ const PublicationCard = ({ publication, onClick }) => {
     <motion.div
       whileHover={{ y: -10 }}
       transition={{ duration: 0.3 }}
-      className="bg-white rounded-xl shadow-xl overflow-hidden h-full flex flex-col"
+      className="bg-[#1a2535] rounded-xl shadow-xl overflow-hidden h-full flex flex-col border border-gray-700"
       onClick={() => onClick(publication.id)}
     >
       <div className="relative h-64 w-full overflow-hidden">
@@ -97,7 +99,7 @@ const PublicationCard = ({ publication, onClick }) => {
           fill
           className="object-cover transition-transform duration-500 hover:scale-110"
         />
-        <div className="absolute top-4 right-4 bg-blue-600 text-white text-xs font-medium px-2.5 py-1 rounded-full">
+        <div className="absolute top-4 right-4 bg-blue-900 text-blue-300 text-xs font-medium px-2.5 py-1 rounded-full border border-blue-700">
           {publication.year}
         </div>
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent h-20"></div>
@@ -105,24 +107,24 @@ const PublicationCard = ({ publication, onClick }) => {
       
       <div className="p-6 flex-grow flex flex-col">
         <div className="mb-3">
-          <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+          <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-900/50 text-blue-300 rounded-full border border-blue-700/50">
             {publication.category}
           </span>
         </div>
-        <h3 className="text-lg font-bold mb-2 line-clamp-2">{publication.title}</h3>
-        <p className="text-gray-600 text-sm line-clamp-3 mb-4">{publication.abstract}</p>
+        <h3 className="text-lg font-bold mb-2 line-clamp-2 text-white">{publication.title}</h3>
+        <p className="text-gray-300 text-sm line-clamp-3 mb-4">{publication.abstract}</p>
         
         <div className="mt-auto">
           <div className="flex space-x-1">
             {publication.authors.slice(0, 2).map((author, index) => (
-              <span key={index} className="text-sm text-gray-500">
+              <span key={index} className="text-sm text-gray-400">
                 {author.split(',')[0]}{index < Math.min(1, publication.authors.length - 1) ? ',' : ''}
                 {publication.authors.length > 2 && index === 1 ? ' et al.' : ''}
               </span>
             ))}
           </div>
           <div className="mt-4 flex justify-between items-center">
-            <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            <button className="text-blue-400 hover:text-blue-300 text-sm font-medium">
               Read More →
             </button>
           </div>
@@ -146,7 +148,7 @@ const PublicationDetail = ({ publication, onClose }) => {
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
         transition={{ duration: 0.3 }}
-        className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-[#1a2535] rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-700"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative">
@@ -160,7 +162,7 @@ const PublicationDetail = ({ publication, onClose }) => {
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg"
+              className="absolute top-4 right-4 bg-[#0e1421] text-white rounded-full p-2 shadow-lg border border-gray-700"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -170,7 +172,7 @@ const PublicationDetail = ({ publication, onClose }) => {
             
             <div className="absolute bottom-6 left-6 right-6 text-white">
               <div className="mb-2">
-                <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-600 rounded-full">
+                <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-900 rounded-full border border-blue-700">
                   {publication.category}
                 </span>
                 <span className="inline-block ml-2 px-3 py-1 text-xs font-medium bg-gray-700 bg-opacity-70 rounded-full">
@@ -183,26 +185,26 @@ const PublicationDetail = ({ publication, onClose }) => {
           
           <div className="p-6">
             <div className="mb-6">
-              <h3 className="text-lg font-bold mb-2 text-blue-800">Abstract</h3>
-              <p className="text-gray-700 leading-relaxed">{publication.abstract}</p>
+              <h3 className="text-lg font-bold mb-2 text-blue-300">Abstract</h3>
+              <p className="text-gray-300 leading-relaxed">{publication.abstract}</p>
             </div>
             
             <div className="mb-6">
-              <h3 className="text-lg font-bold mb-2 text-blue-800">Authors</h3>
+              <h3 className="text-lg font-bold mb-2 text-blue-300">Authors</h3>
               <ul className="list-disc list-inside space-y-1">
                 {publication.authors.map((author, index) => (
-                  <li key={index} className="text-gray-700">{author}</li>
+                  <li key={index} className="text-gray-300">{author}</li>
                 ))}
               </ul>
             </div>
             
             <div className="mb-6">
-              <h3 className="text-lg font-bold mb-2 text-blue-800">Publication</h3>
-              <p className="text-gray-700">{publication.publication}</p>
+              <h3 className="text-lg font-bold mb-2 text-blue-300">Publication</h3>
+              <p className="text-gray-300">{publication.publication}</p>
             </div>
             
             <div className="flex justify-end mt-8">
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              <button className="bg-blue-900 text-blue-300 border border-blue-700 px-6 py-2 rounded-lg hover:bg-blue-800 transition-colors">
                 Download PDF
               </button>
             </div>
@@ -218,209 +220,131 @@ const Publications = () => {
   const [yearFilter, setYearFilter] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPublication, setSelectedPublication] = useState(null);
-  const publicationsRef = useRef(null);
   
-  // Filter publications based on category, year, and search term
+  // Filter publications based on search, category, and year
   const filteredPublications = publicationsData.filter(publication => {
-    const matchesCategory = categoryFilter === "All" || publication.category === categoryFilter;
-    const matchesYear = yearFilter === "All" || publication.year.toString() === yearFilter;
-    const matchesSearch = publication.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const matchesSearch = publication.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           publication.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           publication.authors.some(author => author.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    return matchesCategory && matchesYear && matchesSearch;
+    const matchesCategory = categoryFilter === "All" || publication.category === categoryFilter;
+    const matchesYear = yearFilter === "All" || publication.year === parseInt(yearFilter);
+    
+    return matchesSearch && matchesCategory && matchesYear;
   });
   
-  const handlePublicationClick = (id) => {
-    const publication = publicationsData.find(pub => pub.id === id);
+  const handleViewPublication = (id) => {
+    const publication = publicationsData.find(p => p.id === id);
     setSelectedPublication(publication);
-  };
-  
-  const handleCloseModal = () => {
-    setSelectedPublication(null);
   };
   
   return (
     <Layout>
       <Head>
         <title>Publications | AAC - Advanced Academic Center</title>
-        <meta name="description" content="Research publications from Advanced Academic Center at GRIET" />
+        <meta name="description" content="Academic publications from Advanced Academic Center at GRIET" />
       </Head>
       
-      <div className="py-24 px-4">
+      <PageHero 
+        title="Publications" 
+        subtitle="Explore our research papers and academic contributions in various domains"
+        tag="Academic Research"
+      />
+      
+      <div className="px-4 pb-24">
         <div className="container mx-auto max-w-6xl">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full mb-4">
-              Research
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Our Publications
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Explore our research work and publications contributed by students and faculty at AAC.
-            </p>
-          </motion.div>
-          
-          {/* Filters and search */}
-          <div className="mb-12" ref={publicationsRef}>
-            <div className="bg-white rounded-xl shadow-md p-6">
+          {/* Filter controls */}
+          <div className="mb-12">
+            <div className="bg-[#1a2535] rounded-xl p-6 shadow-lg border border-gray-700">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Search */}
+                <div>
+                  <label htmlFor="search" className="block text-sm font-medium text-gray-300 mb-2">
+                    Search Publications
+                  </label>
+                  <input
+                    type="text"
+                    id="search"
+                    placeholder="Search by title, abstract, or author..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                  />
+                </div>
+                
                 {/* Category filter */}
                 <div>
-                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-                    Category
+                  <label htmlFor="category" className="block text-sm font-medium text-gray-300 mb-2">
+                    Filter by Category
                   </label>
                   <select
                     id="category"
                     value={categoryFilter}
                     onChange={(e) => setCategoryFilter(e.target.value)}
-                    className="block w-full py-2.5 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
                   >
-                    {categories.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
+                    {categories.map(category => (
+                      <option key={category} value={category}>{category}</option>
                     ))}
                   </select>
                 </div>
                 
                 {/* Year filter */}
                 <div>
-                  <label htmlFor="year" className="block text-sm font-medium text-gray-700 mb-2">
-                    Year
+                  <label htmlFor="year" className="block text-sm font-medium text-gray-300 mb-2">
+                    Filter by Year
                   </label>
                   <select
                     id="year"
                     value={yearFilter}
                     onChange={(e) => setYearFilter(e.target.value)}
-                    className="block w-full py-2.5 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
                   >
-                    {years.map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
+                    {years.map(year => (
+                      <option key={year} value={year}>{year}</option>
                     ))}
                   </select>
-                </div>
-                
-                {/* Search input */}
-                <div>
-                  <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
-                    Search
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </div>
-                    <input
-                      type="text"
-                      id="search"
-                      placeholder="Search publications..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="block w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
                 </div>
               </div>
             </div>
           </div>
           
+          {/* Results count */}
+          <div className="mb-6">
+            <p className="text-gray-300">
+              Showing {filteredPublications.length} of {publicationsData.length} publications
+            </p>
+          </div>
+          
           {/* Publications grid */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            {filteredPublications.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredPublications.map((publication) => (
-                  <PublicationCard
-                    key={publication.id}
-                    publication={publication}
-                    onClick={handlePublicationClick}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="bg-white rounded-xl shadow-md p-12 text-center">
-                <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.5 3.25H14.5C16.57 3.25 18.25 4.93 18.25 7V19.25L12 14.75L5.75 19.25V7C5.75 4.93 7.43 3.25 9.5 3.25Z" />
-                </svg>
-                <h3 className="mt-4 text-xl font-medium text-gray-900">No publications found</h3>
-                <p className="mt-2 text-gray-600">
-                  Try adjusting your filters or search criteria.
-                </p>
-                <button
-                  onClick={() => {
-                    setCategoryFilter("All");
-                    setYearFilter("All");
-                    setSearchTerm("");
-                  }}
-                  className="mt-6 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-                >
-                  Clear filters
-                </button>
-              </div>
-            )}
-          </motion.div>
-          
-          {/* Publication detail modal */}
-          <AnimatePresence>
-            {selectedPublication && (
-              <PublicationDetail
-                publication={selectedPublication}
-                onClose={handleCloseModal}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredPublications.map((publication) => (
+              <PublicationCard
+                key={publication.id}
+                publication={publication}
+                onClick={handleViewPublication}
               />
+            ))}
+            
+            {filteredPublications.length === 0 && (
+              <div className="col-span-3 py-16 text-center">
+                <h3 className="text-2xl text-gray-300 mb-2">No publications found</h3>
+                <p className="text-gray-400">Try adjusting your search filters</p>
+              </div>
             )}
-          </AnimatePresence>
-          
-          {/* Stats section */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-24 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-xl overflow-hidden"
-          >
-            <div className="py-12 px-6 md:px-12">
-              <div className="text-center mb-10">
-                <h2 className="text-3xl font-bold text-white mb-4">Research Impact</h2>
-                <p className="text-blue-100 max-w-2xl mx-auto">
-                  Our publications have contributed to advancements in various fields of technology and research.
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {[
-                  { number: "25+", label: "Publications" },
-                  { number: "15+", label: "Conferences" },
-                  { number: "30+", label: "Citations" }
-                ].map((stat, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 * index, duration: 0.5 }}
-                    className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-6 text-center"
-                  >
-                    <div className="text-4xl font-bold text-white mb-2">{stat.number}</div>
-                    <div className="text-blue-100">{stat.label}</div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
+          </div>
         </div>
       </div>
+      
+      {/* Publication detail modal */}
+      <AnimatePresence>
+        {selectedPublication && (
+          <PublicationDetail
+            publication={selectedPublication}
+            onClose={() => setSelectedPublication(null)}
+          />
+        )}
+      </AnimatePresence>
     </Layout>
   );
 };

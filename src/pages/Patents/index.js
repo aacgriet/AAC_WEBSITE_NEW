@@ -4,6 +4,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '@/components/Layout';
+import PageHero from '@/components/PageHero';
 
 const patentsData = [
   {
@@ -58,17 +59,17 @@ const fallbackImages = {
 
 const PatentCard = ({ patent, onView }) => {
   const gradientColors = {
-    "blue": "from-blue-600 to-indigo-700",
-    "purple": "from-purple-600 to-pink-600",
+    "blue": "from-blue-900 to-indigo-800",
+    "purple": "from-purple-900 to-indigo-900",
   };
   
-  const gradientClass = gradientColors[patent.color] || "from-blue-600 to-indigo-700";
+  const gradientClass = gradientColors[patent.color] || "from-blue-900 to-indigo-800";
   
   return (
     <motion.div
       whileHover={{ y: -10 }}
       transition={{ duration: 0.3 }}
-      className="bg-white rounded-xl shadow-xl overflow-hidden flex flex-col h-full"
+      className="bg-[#1a2535] rounded-xl shadow-xl overflow-hidden flex flex-col h-full border border-gray-700"
     >
       <div className={`bg-gradient-to-r ${gradientClass} p-8 text-white`}>
         <div className="flex justify-between items-start mb-4">
@@ -86,30 +87,30 @@ const PatentCard = ({ patent, onView }) => {
       </div>
       
       <div className="p-6 flex-grow flex flex-col">
-        <h4 className="text-gray-700 font-medium mb-4">Key Inventors:</h4>
+        <h4 className="text-gray-300 font-medium mb-4">Key Inventors:</h4>
         <div className="flex flex-wrap gap-2 mb-6">
           {patent.inventors.slice(0, 3).map((inventor, idx) => (
-            <span key={idx} className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
+            <span key={idx} className="bg-[#0e1421] text-gray-300 border border-gray-700 text-xs px-2 py-1 rounded">
               {inventor.split(',')[0]}
             </span>
           ))}
           {patent.inventors.length > 3 && (
-            <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded">
+            <span className="bg-[#0e1421] text-gray-300 border border-gray-700 text-xs px-2 py-1 rounded">
               +{patent.inventors.length - 3} more
             </span>
           )}
         </div>
         
-        <div className="text-sm text-gray-600 mb-2">
+        <div className="text-sm text-gray-400 mb-2">
           <span className="font-semibold">Patent Application:</span> {patent.applicationNumber}
         </div>
-        <div className="text-sm text-gray-600 mb-4">
+        <div className="text-sm text-gray-400 mb-4">
           <span className="font-semibold">Status:</span> {patent.status}
         </div>
         
         <button
           onClick={() => onView(patent.id)}
-          className="mt-auto py-2 px-4 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-lg shadow hover:from-gray-900 hover:to-black transition-all duration-300 w-full"
+          className="mt-auto py-2 px-4 bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-lg hover:from-blue-800 hover:to-indigo-800 transition-all duration-300 w-full border border-blue-700"
         >
           View Patent Details
         </button>
@@ -120,11 +121,11 @@ const PatentCard = ({ patent, onView }) => {
 
 const PatentDetailModal = ({ patent, onClose }) => {
   const gradientColors = {
-    "blue": "from-blue-600 to-indigo-700",
-    "purple": "from-purple-600 to-pink-600",
+    "blue": "from-blue-900 to-indigo-800",
+    "purple": "from-purple-900 to-indigo-900",
   };
   
-  const gradientClass = gradientColors[patent.color] || "from-blue-600 to-indigo-700";
+  const gradientClass = gradientColors[patent.color] || "from-blue-900 to-indigo-800";
   
   return (
     <motion.div
@@ -140,7 +141,7 @@ const PatentDetailModal = ({ patent, onClose }) => {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ duration: 0.3 }}
-        className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-[#1a2535] rounded-xl shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-700"
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`bg-gradient-to-r ${gradientClass} p-8 relative`}>
@@ -169,43 +170,43 @@ const PatentDetailModal = ({ patent, onClose }) => {
         
         <div className="p-8">
           <div className="mb-8">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">Full Patent Title</h3>
-            <p className="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+            <h3 className="text-xl font-bold mb-4 text-blue-300">Full Patent Title</h3>
+            <p className="text-gray-300 bg-[#0e1421] p-4 rounded-lg border border-gray-700">
               {patent.title}
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">Inventors</h3>
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <h3 className="text-xl font-bold mb-4 text-blue-300">Inventors</h3>
+              <div className="bg-[#0e1421] p-4 rounded-lg border border-gray-700">
                 <ul className="list-disc list-inside space-y-2">
                   {patent.inventors.map((inventor, idx) => (
-                    <li key={idx} className="text-gray-700">{inventor}</li>
+                    <li key={idx} className="text-gray-300">{inventor}</li>
                   ))}
                 </ul>
               </div>
             </div>
             
             <div>
-              <h3 className="text-xl font-bold mb-4 text-gray-800">Patent Information</h3>
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+              <h3 className="text-xl font-bold mb-4 text-blue-300">Patent Information</h3>
+              <div className="bg-[#0e1421] p-4 rounded-lg border border-gray-700">
                 <div className="space-y-2">
                   <div className="flex">
-                    <span className="text-gray-600 font-medium w-36">Patent Office:</span>
-                    <span className="text-gray-700">{patent.patentOffice}</span>
+                    <span className="text-gray-400 font-medium w-36">Patent Office:</span>
+                    <span className="text-gray-300">{patent.patentOffice}</span>
                   </div>
                   <div className="flex">
-                    <span className="text-gray-600 font-medium w-36">Application No:</span>
-                    <span className="text-gray-700">{patent.applicationNumber}</span>
+                    <span className="text-gray-400 font-medium w-36">Application No:</span>
+                    <span className="text-gray-300">{patent.applicationNumber}</span>
                   </div>
                   <div className="flex">
-                    <span className="text-gray-600 font-medium w-36">Filed Date:</span>
-                    <span className="text-gray-700">{patent.date}</span>
+                    <span className="text-gray-400 font-medium w-36">Filed Date:</span>
+                    <span className="text-gray-300">{patent.date}</span>
                   </div>
                   <div className="flex">
-                    <span className="text-gray-600 font-medium w-36">Status:</span>
-                    <span className="text-gray-700">{patent.status}</span>
+                    <span className="text-gray-400 font-medium w-36">Status:</span>
+                    <span className="text-gray-300">{patent.status}</span>
                   </div>
                 </div>
               </div>
@@ -213,8 +214,8 @@ const PatentDetailModal = ({ patent, onClose }) => {
           </div>
           
           <div className="mb-8">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">Description</h3>
-            <p className="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+            <h3 className="text-xl font-bold mb-4 text-blue-300">Description</h3>
+            <p className="text-gray-300 bg-[#0e1421] p-4 rounded-lg border border-gray-700">
               {patent.description}
             </p>
           </div>
@@ -222,7 +223,7 @@ const PatentDetailModal = ({ patent, onClose }) => {
           <div className="flex justify-end mt-8 space-x-4">
             <button
               onClick={onClose}
-              className="py-2 px-6 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="py-2 px-6 border border-gray-600 text-gray-300 bg-[#0e1421] rounded-lg hover:bg-[#15202d] transition-colors"
             >
               Close
             </button>
@@ -230,7 +231,7 @@ const PatentDetailModal = ({ patent, onClose }) => {
               href={`https://ipindiaservices.gov.in/PublicSearch/PublicationSearch/PatentDetails?ApplicationNumber=${patent.applicationNumber}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="py-2 px-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg hover:from-blue-700 hover:to-indigo-800 transition-colors"
+              className="py-2 px-6 bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-lg hover:from-blue-800 hover:to-indigo-800 transition-colors border border-blue-700"
             >
               View Official Patent
             </a>
@@ -260,25 +261,14 @@ const Patents = () => {
         <meta name="description" content="Patents filed by Advanced Academic Center at GRIET" />
       </Head>
       
-      <div className="py-24 px-4">
+      <PageHero 
+        title="Our Patents" 
+        subtitle="Discover the innovative technologies developed and patented by our students and faculty"
+        tag="Innovation"
+      />
+      
+      <div className="px-4 pb-24">
         <div className="container mx-auto max-w-6xl">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full mb-4">
-              Innovation
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Our Patents
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover the innovative technologies developed and patented by our students and faculty.
-            </p>
-          </motion.div>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {patentsData.map((patent) => (
               <motion.div
@@ -304,14 +294,14 @@ const Patents = () => {
             className="mt-24"
           >
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Our Patent Process</h2>
-              <p className="text-gray-600 max-w-3xl mx-auto">
+              <h2 className="text-3xl font-bold mb-4 text-white">Our Patent Process</h2>
+              <p className="text-gray-300 max-w-3xl mx-auto">
                 From idea conception to patent filing, we guide our innovators through every step of the process.
               </p>
             </div>
             
-            <div className="bg-white rounded-xl overflow-hidden shadow-xl">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-700 py-1"></div>
+            <div className="bg-[#1a2535] rounded-xl overflow-hidden shadow-xl border border-gray-700">
+              <div className="bg-gradient-to-r from-blue-900 to-indigo-900 py-1"></div>
               <div className="p-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   {[
@@ -339,12 +329,12 @@ const Patents = () => {
                       transition={{ delay: 0.1 * index, duration: 0.5 }}
                       className="relative"
                     >
-                      <div className="absolute -top-2 -left-2 w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold">
+                      <div className="absolute -top-2 -left-2 w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center text-xl font-bold border border-blue-700">
                         {process.step}
                       </div>
-                      <div className="bg-gray-50 p-6 pt-12 rounded-lg border border-gray-100 h-full">
-                        <h3 className="text-xl font-bold mb-2">{process.title}</h3>
-                        <p className="text-gray-600">{process.description}</p>
+                      <div className="bg-[#0e1421] p-6 pt-12 rounded-lg border border-gray-700 h-full">
+                        <h3 className="text-xl font-bold mb-2 text-white">{process.title}</h3>
+                        <p className="text-gray-300">{process.description}</p>
                       </div>
                     </motion.div>
                   ))}
@@ -361,12 +351,12 @@ const Patents = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="mt-24 text-center"
           >
-            <div className="bg-gradient-to-br from-blue-900 to-indigo-900 text-white rounded-2xl px-6 py-12 shadow-xl">
+            <div className="bg-gradient-to-br from-blue-900 to-indigo-900 text-white rounded-2xl px-6 py-12 shadow-xl border border-blue-700/50">
               <h2 className="text-3xl font-bold mb-4">Have an Innovative Idea?</h2>
-              <p className="max-w-2xl mx-auto mb-8">
+              <p className="max-w-2xl mx-auto mb-8 text-blue-100">
                 We're always looking for the next big innovation. If you have an idea with potential, we can help you develop and patent it.
               </p>
-              <button className="px-8 py-3 bg-white text-blue-900 rounded-full font-medium hover:bg-blue-50 transition-colors">
+              <button className="px-8 py-3 bg-[#0e1421] text-white rounded-full font-medium hover:bg-[#15202d] transition-colors border border-white/10">
                 Submit Your Idea
               </button>
             </div>

@@ -4,6 +4,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Layout from '@/components/Layout';
+import PageHero from '@/components/PageHero';
 
 const AdministrationPage = () => {
   // State to track the active category
@@ -124,6 +125,77 @@ const AdministrationPage = () => {
     },
   ];
   
+  // Components for different display types
+  const InstigatorCard = ({ data }) => (
+    <motion.div 
+      variants={itemVariants}
+      className="bg-[#1a2535] rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row border border-gray-700"
+    >
+      <div className="md:w-1/3 p-8 flex items-center justify-center bg-gradient-to-br from-blue-900/30 to-indigo-900/30">
+        <div className="relative w-64 h-64 rounded-full overflow-hidden border-4 border-blue-900/50 shadow-lg">
+          <Image 
+            src={data.image} 
+            alt={data.name} 
+            fill 
+            className="object-cover"
+          />
+        </div>
+      </div>
+      <div className="md:w-2/3 p-8">
+        <h3 className="text-2xl font-bold mb-4 text-white">{data.name}</h3>
+        <p className="text-gray-300 leading-relaxed">{data.about}</p>
+      </div>
+    </motion.div>
+  );
+  
+  const AdvisorCard = ({ data }) => (
+    <motion.div
+      variants={itemVariants}
+      className="bg-[#1a2535] rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row border border-gray-700"
+    >
+      <div className="md:w-1/3 p-8 flex items-center justify-center bg-gradient-to-br from-blue-900/30 to-indigo-900/30">
+        <div className="relative w-64 h-64 rounded-full overflow-hidden border-4 border-blue-900/50 shadow-lg">
+          <Image 
+            src={data.image} 
+            alt={data.name} 
+            fill 
+            className="object-cover"
+          />
+        </div>
+      </div>
+      <div className="md:w-2/3 p-8">
+        <h3 className="text-2xl font-bold mb-2 text-white">{data.name}</h3>
+        <h4 className="text-xl text-blue-400 mb-4">{data.occupation}</h4>
+        <p className="text-gray-300 leading-relaxed">{data.about}</p>
+      </div>
+    </motion.div>
+  );
+  
+  const CommitteeMemberCard = ({ data }) => (
+    <motion.div
+      variants={itemVariants}
+      whileHover={{ y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="bg-[#1a2535] rounded-xl shadow-xl overflow-hidden border border-gray-700"
+    >
+      <div className="aspect-square relative">
+        <Image 
+          src={data.Image} 
+          alt={data.Name} 
+          fill 
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+          <p className="text-white">{data.Designation}</p>
+        </div>
+      </div>
+      <div className="p-4">
+        <h3 className="text-xl font-bold text-white">{data.Name}</h3>
+        <p className="text-blue-400">{data.Designation}</p>
+      </div>
+    </motion.div>
+  );
+  
   // Get the active data based on category
   const getActiveData = () => {
     switch (activeCategory) {
@@ -137,77 +209,6 @@ const AdministrationPage = () => {
         return instigatorData;
     }
   };
-  
-  // Components for different display types
-  const InstigatorCard = ({ data }) => (
-    <motion.div 
-      variants={itemVariants}
-      className="bg-white rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row"
-    >
-      <div className="md:w-1/3 p-8 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="relative w-64 h-64 rounded-full overflow-hidden border-4 border-white shadow-lg">
-          <Image 
-            src={data.image} 
-            alt={data.name} 
-            fill 
-            className="object-cover"
-          />
-        </div>
-      </div>
-      <div className="md:w-2/3 p-8">
-        <h3 className="text-2xl font-bold mb-4">{data.name}</h3>
-        <p className="text-gray-600 leading-relaxed">{data.about}</p>
-      </div>
-    </motion.div>
-  );
-  
-  const AdvisorCard = ({ data }) => (
-    <motion.div
-      variants={itemVariants}
-      className="bg-white rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row"
-    >
-      <div className="md:w-1/3 p-8 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="relative w-64 h-64 rounded-full overflow-hidden border-4 border-white shadow-lg">
-          <Image 
-            src={data.image} 
-            alt={data.name} 
-            fill 
-            className="object-cover"
-          />
-        </div>
-      </div>
-      <div className="md:w-2/3 p-8">
-        <h3 className="text-2xl font-bold mb-2">{data.name}</h3>
-        <h4 className="text-xl text-blue-600 mb-4">{data.occupation}</h4>
-        <p className="text-gray-600 leading-relaxed">{data.about}</p>
-      </div>
-    </motion.div>
-  );
-  
-  const CommitteeMemberCard = ({ data }) => (
-    <motion.div
-      variants={itemVariants}
-      whileHover={{ y: -10 }}
-      transition={{ duration: 0.3 }}
-      className="bg-white rounded-xl shadow-xl overflow-hidden"
-    >
-      <div className="aspect-square relative">
-        <Image 
-          src={data.Image} 
-          alt={data.Name} 
-          fill 
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-          <p className="text-white">{data.Designation}</p>
-        </div>
-      </div>
-      <div className="p-4">
-        <h3 className="text-xl font-bold">{data.Name}</h3>
-        <p className="text-blue-600">{data.Designation}</p>
-      </div>
-    </motion.div>
-  );
   
   // Render category content
   const renderCategoryContent = () => {
@@ -242,25 +243,14 @@ const AdministrationPage = () => {
         <meta name="description" content="Meet the administration team at Advanced Academic Center, GRIET" />
       </Head>
       
-      <div className="py-24 px-4">
+      <PageHero 
+        title="The People Behind AAC" 
+        subtitle="Dedicated faculty and students working together to advance research and innovation at GRIET"
+        tag="Our Team"
+      />
+      
+      <div className="py-12 px-4">
         <div className="container mx-auto max-w-6xl">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full mb-4">
-              Our Team
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Meet the People Behind AAC
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Dedicated faculty and students working together to advance research and innovation at GRIET.
-            </p>
-          </motion.div>
-          
           {/* Category tabs */}
           <div className="flex flex-wrap items-center justify-center space-x-2 md:space-x-4 mb-12">
             {[
@@ -275,8 +265,8 @@ const AdministrationPage = () => {
                 onClick={() => setActiveCategory(category.id)}
                 className={`px-6 py-3 rounded-full text-sm md:text-base font-medium transition-all duration-300 ${
                   activeCategory === category.id
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    ? 'bg-blue-800 text-white shadow-lg border border-blue-700'
+                    : 'bg-[#0e1421] text-gray-300 hover:bg-[#172E7C]/30 border border-gray-700'
                 }`}
               >
                 {category.label}
