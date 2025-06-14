@@ -1,4 +1,4 @@
-// src/components/Forms/ProjectsForm.jsx
+// src/components/Forms/ProjectsForm.jsx - Updated with Schema
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
@@ -8,6 +8,7 @@ import { STORAGE_KEYS } from '@/lib/storage';
 
 const PROJECT_CATEGORIES = [
   'Machine Learning',
+  'Deep Learning',
   'Web Development',
   'Mobile Development',
   'IoT',
@@ -17,6 +18,7 @@ const PROJECT_CATEGORIES = [
   'Blockchain',
   'Cloud Computing',
   'AI/ML',
+  'Healthcare',
   'Research',
   'Other'
 ];
@@ -29,21 +31,17 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
-    content: '',
     publishedAt: new Date().toISOString().split('T')[0],
     author: '',
-    teamMembers: [''],
     categories: '',
+    names: [''],
     mainImage: {
       url: '',
       altText: ''
     },
-    status: 'draft',
-    duration: '',
-    technologies: [''],
-    githubUrl: '',
-    liveUrl: '',
-    description: ''
+    body: '',
+    _rawBody: '',
+    status: 'published'
   });
 
   useEffect(() => {
@@ -55,8 +53,10 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
           publishedAt: existingProject.publishedAt ? 
             new Date(existingProject.publishedAt).toISOString().split('T')[0] : 
             new Date().toISOString().split('T')[0],
-          teamMembers: existingProject.names || existingProject.teamMembers || [''],
-          technologies: existingProject.technologies || ['']
+          names: existingProject.names || [''],
+          mainImage: existingProject.mainImage || { url: '', altText: '' },
+          body: existingProject.body || '',
+          _rawBody: existingProject._rawBody || ''
         });
       }
     }
@@ -69,6 +69,7 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
       [name]: value
     }));
     
+    // Auto-generate slug from title
     if (name === 'title' && !projectId) {
       const slug = value.toLowerCase()
         .replace(/[^a-z0-9 -]/g, '')
@@ -120,8 +121,8 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
       newErrors.slug = 'Slug is required';
     }
     
-    if (!formData.content.trim()) {
-      newErrors.content = 'Content is required';
+    if (!formData._rawBody.trim()) {
+      newErrors._rawBody = 'Project description is required';
     }
     
     if (!formData.categories) {
@@ -133,12 +134,12 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
     }
 
     if (!formData.author.trim()) {
-      newErrors.author = 'Author/Lead is required';
+      newErrors.author = 'Author/Team is required';
     }
 
-    const validTeamMembers = formData.teamMembers.filter(member => member.trim());
-    if (validTeamMembers.length === 0) {
-      newErrors.teamMembers = 'At least one team member is required';
+    const validNames = formData.names.filter(name => name.trim());
+    if (validNames.length === 0) {
+      newErrors.names = 'At least one team member is required';
     }
 
     if (!projectId) {
@@ -167,10 +168,13 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
       const projectItem = {
         ...formData,
         publishedAt: new Date(formData.publishedAt).toISOString(),
-        mainImage: formData.mainImage.url ? formData.mainImage : null,
-        names: formData.teamMembers.filter(member => member.trim()),
-        teamMembers: formData.teamMembers.filter(member => member.trim()),
-        technologies: formData.technologies.filter(tech => tech.trim())
+        names: formData.names.filter(name => name.trim()),
+        mainImage: formData.mainImage.url ? {
+          asset: {
+            url: formData.mainImage.url,
+            altText: formData.mainImage.altText
+          }
+        } : null
       };
       
       let result;
@@ -211,7 +215,7 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
         />
         
         <FormField
-          label="Slug"
+          label="URL Slug"
           name="slug"
           value={formData.slug}
           onChange={handleInputChange}
@@ -242,26 +246,6 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
           error={errors.publishedAt}
         />
 
-        <FormField
-          label="Duration"
-          name="duration"
-          value={formData.duration}
-          onChange={handleInputChange}
-          placeholder="e.g., 3 months"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          label="Project Lead/Author"
-          name="author"
-          value={formData.author}
-          onChange={handleInputChange}
-          placeholder="Enter lead developer name"
-          required
-          error={errors.author}
-        />
-
         <SelectField
           label="Status"
           name="status"
@@ -269,70 +253,34 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
           onChange={handleInputChange}
           options={[
             { value: 'draft', label: 'Draft' },
-            { value: 'in-progress', label: 'In Progress' },
-            { value: 'completed', label: 'Completed' },
-            { value: 'published', label: 'Published' }
+            { value: 'published', label: 'Published' },
+            { value: 'archived', label: 'Archived' }
           ]}
           required
         />
       </div>
 
-      <TextAreaField
-        label="Project Description"
-        name="description"
-        value={formData.description}
+      <FormField
+        label="Team/Author"
+        name="author"
+        value={formData.author}
         onChange={handleInputChange}
-        placeholder="Brief description of the project"
-        rows={3}
+        placeholder="Enter team or author name"
+        required
+        error={errors.author}
       />
 
       <ArrayField
-        label="Team Members"
-        values={formData.teamMembers}
-        onChange={handleArrayChange('teamMembers')}
+        label="Team Member Names"
+        values={formData.names}
+        onChange={handleArrayChange('names')}
         placeholder="Enter team member name"
         required
-        error={errors.teamMembers}
-      />
-
-      <ArrayField
-        label="Technologies Used"
-        values={formData.technologies}
-        onChange={handleArrayChange('technologies')}
-        placeholder="Enter technology/framework"
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          label="GitHub URL"
-          name="githubUrl"
-          type="url"
-          value={formData.githubUrl}
-          onChange={handleInputChange}
-          placeholder="https://github.com/..."
-        />
-
-        <FormField
-          label="Live Demo URL"
-          name="liveUrl"
-          type="url"
-          value={formData.liveUrl}
-          onChange={handleInputChange}
-          placeholder="https://..."
-        />
-      </div>
-
-      <RichTextEditor
-        label="Detailed Content"
-        value={formData.content}
-        onChange={handleInputChange}
-        placeholder="Write detailed project information, methodology, results, etc..."
-        required
-        error={errors.content}
+        error={errors.names}
       />
 
       <ImageUpload
-        label="Project Image"
+        label="Main Project Image"
         value={formData.mainImage.url}
         onChange={handleImageChange}
         error={errors.mainImage}
@@ -347,6 +295,24 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
           placeholder="Describe the image for accessibility"
         />
       )}
+
+      <RichTextEditor
+        label="Project Description (Main Content)"
+        name="_rawBody"
+        value={formData._rawBody}
+        onChange={handleInputChange}
+        placeholder="Write detailed project information, methodology, technologies used, results, etc..."
+        required
+        error={errors._rawBody}
+      />
+
+      <RichTextEditor
+        label="Additional Content (Optional)"
+        name="body"
+        value={formData.body}
+        onChange={handleInputChange}
+        placeholder="Any additional content or notes..."
+      />
 
       {errors.submit && (
         <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg">

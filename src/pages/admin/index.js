@@ -1,4 +1,4 @@
-// src/pages/admin/index.js - Completely Fixed Version
+// src/pages/admin/index.js - Complete Admin Dashboard with Patents Form
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,140 +12,59 @@ const ADMIN_SECTIONS = [
   { key: 'events', label: 'Events', icon: '📅', storageKey: STORAGE_KEYS.EVENTS },
   { key: 'publications', label: 'Publications', icon: '📄', storageKey: STORAGE_KEYS.PUBLICATIONS },
   { key: 'patents', label: 'Patents', icon: '⚖️', storageKey: STORAGE_KEYS.PATENTS },
-  { key: 'books', label: 'Books', icon: '📚', storageKey: STORAGE_KEYS.BOOKS },
-  { key: 'alumni', label: 'Alumni', icon: '🎓', storageKey: STORAGE_KEYS.ALUMNI },
-  { key: 'committee', label: 'Core Committee', icon: '👥', storageKey: STORAGE_KEYS.CORE_COMMITTEE }
+  { key: 'startups', label: 'Startups', icon: '🏢', storageKey: STORAGE_KEYS.STARTUPS },
+  { key: 'books', label: 'Books & Blogs', icon: '📚', storageKey: STORAGE_KEYS.BOOKS },
+  { key: 'alumni', label: 'Alumni', icon: '🎓', storageKey: STORAGE_KEYS.ALUMNI }
 ];
-
-// Simple Migration Component
-const SimpleMigrationComponent = () => {
-  const [stats, setStats] = useState(null);
-  const [migrating, setMigrating] = useState(false);
-
-  const handleMigration = async () => {
-    setMigrating(true);
-    try {
-      // Add sample data for testing
-      const sampleData = {
-        [STORAGE_KEYS.NEWS]: [
-          {
-            id: 'sample-news-1',
-            title: 'Sample News Article',
-            slug: 'This is a sample news article to test the system.',
-            content: 'This is the detailed content of the sample news article.',
-            publishedAt: new Date().toISOString(),
-            categories: 'NOTICE',
-            status: 'published',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          }
-        ],
-        [STORAGE_KEYS.PATENTS]: [
-          {
-            id: 'sample-patent-1',
-            title: 'Sample Patent for Testing',
-            shortTitle: 'Test Patent',
-            description: 'This is a sample patent entry for testing the system.',
-            inventors: ['John Doe', 'Jane Smith'],
-            patentOffice: 'India',
-            applicationNumber: '123456789',
-            date: '2024-01-01',
-            status: 'Published Online',
-            category: 'Technology',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          }
-        ]
-      };
-
-      Object.entries(sampleData).forEach(([key, data]) => {
-        const existing = StorageManager.get(key);
-        const combined = [...existing, ...data];
-        StorageManager.set(key, combined);
-      });
-
-      setStats({ migrated: true, timestamp: new Date().toISOString() });
-      alert('Sample data added successfully!');
-      window.location.reload(); // Refresh to show new data
-    } catch (error) {
-      console.error('Migration error:', error);
-      alert('Migration failed. Check console for details.');
-    } finally {
-      setMigrating(false);
-    }
-  };
-
-  const handleClearData = () => {
-    if (window.confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
-      StorageManager.clearAll();
-      alert('All data cleared successfully!');
-      window.location.reload();
-    }
-  };
-
-  useEffect(() => {
-    const currentStats = {};
-    Object.values(STORAGE_KEYS).forEach(key => {
-      const data = StorageManager.get(key);
-      currentStats[key] = data.length;
-    });
-    setStats(currentStats);
-  }, []);
-
-  return (
-    <div className="bg-[#1a2535] rounded-xl p-6 border border-gray-700">
-      <h3 className="text-xl font-bold mb-4 text-white">Data Migration Utility</h3>
-      
-      <div className="space-y-4 mb-6">
-        <button
-          onClick={handleMigration}
-          disabled={migrating}
-          className="px-4 py-2 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors disabled:opacity-50 border border-blue-700"
-        >
-          {migrating ? 'Adding Sample Data...' : 'Add Sample Data'}
-        </button>
-        
-        <button
-          onClick={handleClearData}
-          disabled={migrating}
-          className="px-4 py-2 bg-red-900 text-red-300 rounded-lg hover:bg-red-800 transition-colors disabled:opacity-50 border border-red-700 ml-4"
-        >
-          Clear All Data
-        </button>
-      </div>
-
-      {stats && (
-        <div className="bg-[#0e1421] rounded-lg p-4 border border-gray-700">
-          <h4 className="font-semibold mb-3 text-white">Current Data Stats:</h4>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            {Object.entries(stats).map(([key, count]) => (
-              <div key={key} className="text-gray-300">
-                <span className="font-medium">{key}:</span> {typeof count === 'number' ? `${count} items` : count}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
 
 // Patents Form Component
 const PatentsForm = ({ patentId = null, onSuccess, onCancel }) => {
   const { data: patentsData, addItem, updateItem, getItemById, refresh } = useLocalStorage(STORAGE_KEYS.PATENTS);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
   
   const [formData, setFormData] = useState({
     title: '',
-    shortTitle: '',
-    description: '',
-    inventors: '',
+    inventors: [''],
     patentOffice: 'India',
     applicationNumber: '',
-    date: new Date().toISOString().split('T')[0],
+    filingDate: new Date().toISOString().split('T')[0],
     status: 'Published Online',
-    category: ''
+    description: '',
+    category: '',
+    image: ''
   });
+
+  const PATENT_OFFICES = [
+    'India',
+    'USA',
+    'Europe',
+    'China',
+    'Japan',
+    'Other'
+  ];
+
+  const PATENT_STATUSES = [
+    'Published Online',
+    'Pending',
+    'Approved',
+    'Granted',
+    'Rejected',
+    'Withdrawn'
+  ];
+
+  const PATENT_CATEGORIES = [
+    'Assistive Technology',
+    'Healthcare',
+    'IoT',
+    'Robotics',
+    'Machine Learning',
+    'Software',
+    'Hardware',
+    'Communication',
+    'Security',
+    'Other'
+  ];
 
   useEffect(() => {
     if (patentId) {
@@ -153,10 +72,10 @@ const PatentsForm = ({ patentId = null, onSuccess, onCancel }) => {
       if (existingPatent) {
         setFormData({
           ...existingPatent,
-          date: existingPatent.date ? 
-            new Date(existingPatent.date).toISOString().split('T')[0] : 
+          filingDate: existingPatent.filingDate ? 
+            new Date(existingPatent.filingDate).toISOString().split('T')[0] : 
             new Date().toISOString().split('T')[0],
-          inventors: Array.isArray(existingPatent.inventors) ? existingPatent.inventors.join(', ') : existingPatent.inventors || ''
+          inventors: Array.isArray(existingPatent.inventors) ? existingPatent.inventors : ['']
         });
       }
     }
@@ -167,21 +86,63 @@ const PatentsForm = ({ patentId = null, onSuccess, onCancel }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleInventorsChange = (values) => {
+    setFormData(prev => ({ ...prev, inventors: values }));
+  };
+
+  const handleImageChange = (url) => {
+    setFormData(prev => ({ ...prev, image: url }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.title.trim()) {
+      newErrors.title = 'Patent title is required';
+    }
+    
+    const validInventors = formData.inventors.filter(inv => inv.trim());
+    if (validInventors.length === 0) {
+      newErrors.inventors = 'At least one inventor is required';
+    }
+    
+    if (!formData.applicationNumber.trim()) {
+      newErrors.applicationNumber = 'Application number is required';
+    }
+    
+    if (!formData.filingDate) {
+      newErrors.filingDate = 'Filing date is required';
+    }
+    
+    if (!formData.description.trim()) {
+      newErrors.description = 'Patent description is required';
+    }
+    
+    if (!formData.category) {
+      newErrors.category = 'Category is required';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
-      console.log('Submitting patent data:', formData);
-      
       const patentItem = {
         ...formData,
-        inventors: formData.inventors.split(',').map(inv => inv.trim()).filter(inv => inv),
+        inventors: formData.inventors.filter(inv => inv.trim()),
+        filingDate: new Date(formData.filingDate).toISOString(),
         createdAt: patentId ? undefined : new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
-      
-      console.log('Processed patent item:', patentItem);
       
       let result;
       if (patentId) {
@@ -190,20 +151,15 @@ const PatentsForm = ({ patentId = null, onSuccess, onCancel }) => {
         result = addItem(patentItem);
       }
       
-      console.log('Save result:', result);
-      
       if (result) {
-        console.log('Patent saved successfully');
-        // Force refresh the data
         refresh();
         onSuccess?.(result);
       } else {
-        console.error('Failed to save patent');
-        alert('Failed to save patent. Please try again.');
+        setErrors({ submit: 'Failed to save patent' });
       }
     } catch (error) {
       console.error('Error saving patent:', error);
-      alert('Error saving patent: ' + error.message);
+      setErrors({ submit: 'Error saving patent: ' + error.message });
     } finally {
       setIsSubmitting(false);
     }
@@ -220,116 +176,168 @@ const PatentsForm = ({ patentId = null, onSuccess, onCancel }) => {
             name="title"
             value={formData.title}
             onChange={handleInputChange}
+            placeholder="Enter patent title"
             required
             className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            placeholder="Enter patent title"
           />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Short Title</label>
-          <input
-            type="text"
-            name="shortTitle"
-            value={formData.shortTitle}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            placeholder="Enter short title"
-          />
+          {errors.title && <p className="text-red-400 text-sm mt-1">{errors.title}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Patent Description *</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleInputChange}
+            placeholder="Describe what the patent covers, its innovation, and applications"
             rows={4}
+            required
             className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-vertical"
-            placeholder="Enter patent description"
           />
+          {errors.description && <p className="text-red-400 text-sm mt-1">{errors.description}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Inventors (comma separated)</label>
-          <input
-            type="text"
-            name="inventors"
-            value={formData.inventors}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            placeholder="John Doe, Jane Smith, etc."
-          />
+          <label className="block text-sm font-medium text-gray-300 mb-2">Inventors *</label>
+          <div className="space-y-2">
+            {formData.inventors.map((inventor, index) => (
+              <div key={index} className="flex space-x-2">
+                <input
+                  type="text"
+                  value={inventor}
+                  onChange={(e) => {
+                    const newInventors = [...formData.inventors];
+                    newInventors[index] = e.target.value;
+                    handleInventorsChange(newInventors);
+                  }}
+                  placeholder={`Inventor ${index + 1}`}
+                  className="flex-1 px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newInventors = formData.inventors.filter((_, i) => i !== index);
+                    handleInventorsChange(newInventors);
+                  }}
+                  className="px-3 py-2 bg-red-900 text-red-300 rounded-lg hover:bg-red-800 transition-colors border border-red-700"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => handleInventorsChange([...formData.inventors, ''])}
+              className="px-4 py-2 bg-green-900 text-green-300 rounded-lg hover:bg-green-800 transition-colors border border-green-700"
+            >
+              Add Inventor
+            </button>
+          </div>
+          {errors.inventors && <p className="text-red-400 text-sm mt-1">{errors.inventors}</p>}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Patent Office</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Patent Office *</label>
             <select
               name="patentOffice"
               value={formData.patentOffice}
               onChange={handleInputChange}
               className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             >
-              <option value="India">India</option>
-              <option value="USA">USA</option>
-              <option value="Europe">Europe</option>
-              <option value="Other">Other</option>
+              {PATENT_OFFICES.map(office => (
+                <option key={office} value={office}>{office}</option>
+              ))}
             </select>
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Application Number</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Application Number *</label>
             <input
               type="text"
               name="applicationNumber"
               value={formData.applicationNumber}
               onChange={handleInputChange}
+              placeholder="Enter application number"
+              required
               className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              placeholder="123456789"
             />
+            {errors.applicationNumber && <p className="text-red-400 text-sm mt-1">{errors.applicationNumber}</p>}
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Date</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Filing Date *</label>
             <input
               type="date"
-              name="date"
-              value={formData.date}
+              name="filingDate"
+              value={formData.filingDate}
               onChange={handleInputChange}
+              required
               className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             />
+            {errors.filingDate && <p className="text-red-400 text-sm mt-1">{errors.filingDate}</p>}
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Status *</label>
             <select
               name="status"
               value={formData.status}
               onChange={handleInputChange}
               className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             >
-              <option value="Published Online">Published Online</option>
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
+              {PATENT_STATUSES.map(status => (
+                <option key={status} value={status}>{status}</option>
+              ))}
             </select>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Category</label>
-          <input
-            type="text"
+          <label className="block text-sm font-medium text-gray-300 mb-2">Category *</label>
+          <select
             name="category"
             value={formData.category}
             onChange={handleInputChange}
+            required
             className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            placeholder="Technology, Healthcare, etc."
-          />
+          >
+            <option value="">Select a category</option>
+            {PATENT_CATEGORIES.map(category => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+          {errors.category && <p className="text-red-400 text-sm mt-1">{errors.category}</p>}
         </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Patent Diagram/Illustration (Optional)</label>
+          <input
+            type="url"
+            value={formData.image}
+            onChange={(e) => handleImageChange(e.target.value)}
+            placeholder="Enter image URL"
+            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+          />
+          {formData.image && (
+            <div className="mt-2">
+              <img 
+                src={formData.image} 
+                alt="Patent diagram preview" 
+                className="w-32 h-32 object-cover rounded-lg"
+                onError={() => console.log('Image failed to load')}
+              />
+            </div>
+          )}
+        </div>
+
+        {errors.submit && (
+          <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg">
+            {errors.submit}
+          </div>
+        )}
 
         <div className="flex justify-end space-x-4 pt-6 border-t border-gray-700">
           <button
@@ -357,6 +365,7 @@ const PatentsForm = ({ patentId = null, onSuccess, onCancel }) => {
 const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
   const { data: newsData, addItem, updateItem, getItemById, refresh } = useLocalStorage(STORAGE_KEYS.NEWS);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
   
   const [formData, setFormData] = useState({
     title: '',
@@ -388,6 +397,12 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!formData.title.trim() || !formData.content.trim()) {
+      setErrors({ submit: 'Title and content are required' });
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
@@ -411,7 +426,7 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
       }
     } catch (error) {
       console.error('Error saving news:', error);
-      alert('Error saving news: ' + error.message);
+      setErrors({ submit: 'Error saving news: ' + error.message });
     } finally {
       setIsSubmitting(false);
     }
@@ -488,6 +503,12 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
           </div>
         </div>
 
+        {errors.submit && (
+          <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg">
+            {errors.submit}
+          </div>
+        )}
+
         <div className="flex justify-end space-x-4 pt-6 border-t border-gray-700">
           <button
             type="button"
@@ -511,20 +532,47 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
 };
 
 // Projects Form Component
+// Updated ProjectsForm component for the admin dashboard
+// Replace the existing ProjectsForm in your admin dashboard with this version
+
 const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
   const { data: projectsData, addItem, updateItem, getItemById, refresh } = useLocalStorage(STORAGE_KEYS.PROJECTS);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
   
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
-    description: '',
-    content: '',
     publishedAt: new Date().toISOString().split('T')[0],
     author: '',
-    categories: 'Web Development',
+    categories: '',
+    names: [''],
+    mainImage: {
+      url: '',
+      altText: ''
+    },
+    description: '',
+    _rawBody: '',
+    body: '',
     status: 'published'
   });
+
+  const PROJECT_CATEGORIES = [
+    'Machine Learning',
+    'Deep Learning',
+    'Web Development',
+    'Mobile Development',
+    'IoT',
+    'Robotics',
+    'Data Science',
+    'Cybersecurity',
+    'Blockchain',
+    'Cloud Computing',
+    'AI/ML',
+    'Healthcare',
+    'Research',
+    'Other'
+  ];
 
   useEffect(() => {
     if (projectId) {
@@ -534,7 +582,12 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
           ...existingProject,
           publishedAt: existingProject.publishedAt ? 
             new Date(existingProject.publishedAt).toISOString().split('T')[0] : 
-            new Date().toISOString().split('T')[0]
+            new Date().toISOString().split('T')[0],
+          names: existingProject.names || [''],
+          mainImage: existingProject.mainImage || { url: '', altText: '' },
+          description: existingProject.description || '',
+          _rawBody: existingProject._rawBody || '',
+          body: existingProject.body || ''
         });
       }
     }
@@ -542,17 +595,117 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Auto-generate slug from title
+    if (name === 'title' && !projectId) {
+      const slug = value.toLowerCase()
+        .replace(/[^a-z0-9 -]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+      setFormData(prev => ({
+        ...prev,
+        slug
+      }));
+    }
+  };
+
+  const handleNamesChange = (values) => {
+    setFormData(prev => ({
+      ...prev,
+      names: values
+    }));
+  };
+
+  const handleImageChange = (url) => {
+    setFormData(prev => ({
+      ...prev,
+      mainImage: {
+        ...prev.mainImage,
+        url
+      }
+    }));
+  };
+
+  const handleImageAltChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      mainImage: {
+        ...prev.mainImage,
+        altText: e.target.value
+      }
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.title.trim()) {
+      newErrors.title = 'Title is required';
+    }
+    
+    if (!formData.slug.trim()) {
+      newErrors.slug = 'Slug is required';
+    }
+    
+    if (!formData._rawBody.trim()) {
+      newErrors._rawBody = 'Project description is required';
+    }
+    
+    if (!formData.categories) {
+      newErrors.categories = 'Category is required';
+    }
+    
+    if (!formData.publishedAt) {
+      newErrors.publishedAt = 'Project date is required';
+    }
+
+    if (!formData.author.trim()) {
+      newErrors.author = 'Author/Team is required';
+    }
+
+    const validNames = formData.names.filter(name => name.trim());
+    if (validNames.length === 0) {
+      newErrors.names = 'At least one team member is required';
+    }
+
+    if (!projectId) {
+      const slugExists = projectsData.some(item => 
+        item.slug === formData.slug && item.id !== projectId
+      );
+      if (slugExists) {
+        newErrors.slug = 'Slug already exists';
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
       const projectItem = {
         ...formData,
         publishedAt: new Date(formData.publishedAt).toISOString(),
+        names: formData.names.filter(name => name.trim()),
+        mainImage: formData.mainImage.url ? {
+          asset: {
+            url: formData.mainImage.url,
+            altText: formData.mainImage.altText
+          }
+        } : null,
         createdAt: projectId ? undefined : new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -570,7 +723,7 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
       }
     } catch (error) {
       console.error('Error saving project:', error);
-      alert('Error saving project: ' + error.message);
+      setErrors({ submit: 'Failed to save project' });
     } finally {
       setIsSubmitting(false);
     }
@@ -580,99 +733,212 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
     <div className="bg-[#1a2535] rounded-xl shadow-lg p-8 border border-gray-700">
       <h2 className="text-2xl font-bold mb-6 text-white">{projectId ? 'Edit Project' : 'Add Project'}</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Project Title *</label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+              placeholder="Enter project title"
+            />
+            {errors.title && <p className="text-red-400 text-sm mt-1">{errors.title}</p>}
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">URL Slug *</label>
+            <input
+              type="text"
+              name="slug"
+              value={formData.slug}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+              placeholder="url-friendly-title"
+            />
+            {errors.slug && <p className="text-red-400 text-sm mt-1">{errors.slug}</p>}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Category *</label>
+            <select
+              name="categories"
+              value={formData.categories}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            >
+              <option value="">Select a category</option>
+              {PROJECT_CATEGORIES.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+            {errors.categories && <p className="text-red-400 text-sm mt-1">{errors.categories}</p>}
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Project Date *</label>
+            <input
+              type="date"
+              name="publishedAt"
+              value={formData.publishedAt}
+              onChange={handleInputChange}
+              required
+              className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            />
+            {errors.publishedAt && <p className="text-red-400 text-sm mt-1">{errors.publishedAt}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            >
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+        </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Project Title *</label>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Team/Author *</label>
           <input
             type="text"
-            name="title"
-            value={formData.title}
+            name="author"
+            value={formData.author}
             onChange={handleInputChange}
             required
             className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            placeholder="Enter project title"
+            placeholder="Enter team or author name"
           />
+          {errors.author && <p className="text-red-400 text-sm mt-1">{errors.author}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Project URL Slug</label>
-          <input
-            type="text"
-            name="slug"
-            value={formData.slug}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            placeholder="project-url-slug"
-          />
+          <label className="block text-sm font-medium text-gray-300 mb-2">Team Member Names *</label>
+          <div className="space-y-2">
+            {formData.names.map((name, index) => (
+              <div key={index} className="flex space-x-2">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => {
+                    const newNames = [...formData.names];
+                    newNames[index] = e.target.value;
+                    handleNamesChange(newNames);
+                  }}
+                  placeholder={`Team member ${index + 1}`}
+                  className="flex-1 px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newNames = formData.names.filter((_, i) => i !== index);
+                    handleNamesChange(newNames);
+                  }}
+                  className="px-3 py-2 bg-red-900 text-red-300 rounded-lg hover:bg-red-800 transition-colors border border-red-700"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => handleNamesChange([...formData.names, ''])}
+              className="px-4 py-2 bg-green-900 text-green-300 rounded-lg hover:bg-green-800 transition-colors border border-green-700"
+            >
+              Add Team Member
+            </button>
+          </div>
+          {errors.names && <p className="text-red-400 text-sm mt-1">{errors.names}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Brief Description</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleInputChange}
             rows={3}
             className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-vertical"
-            placeholder="Brief project description"
+            placeholder="Brief project description for cards"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Detailed Content *</label>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Main Project Image</label>
+          <input
+            type="url"
+            value={formData.mainImage.url}
+            onChange={(e) => handleImageChange(e.target.value)}
+            placeholder="Enter image URL"
+            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+          />
+          {formData.mainImage.url && (
+            <div className="mt-2">
+              <img 
+                src={formData.mainImage.url} 
+                alt="Project preview" 
+                className="w-32 h-32 object-cover rounded-lg"
+                onError={() => console.log('Image failed to load')}
+              />
+            </div>
+          )}
+        </div>
+
+        {formData.mainImage.url && (
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Image Alt Text</label>
+            <input
+              type="text"
+              value={formData.mainImage.altText}
+              onChange={handleImageAltChange}
+              placeholder="Describe the image for accessibility"
+              className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            />
+          </div>
+        )}
+
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Project Description (Main Content) *</label>
           <textarea
-            name="content"
-            value={formData.content}
+            name="_rawBody"
+            value={formData._rawBody}
             onChange={handleInputChange}
             rows={8}
             required
             className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-vertical"
-            placeholder="Enter detailed project information, methodology, technologies used, etc..."
+            placeholder="Write detailed project information, methodology, technologies used, results, etc..."
           />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Author/Lead *</label>
-            <input
-              type="text"
-              name="author"
-              value={formData.author}
-              onChange={handleInputChange}
-              required
-              className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-              placeholder="Project lead name"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Category</label>
-            <select
-              name="categories"
-              value={formData.categories}
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            >
-              <option value="Web Development">Web Development</option>
-              <option value="Mobile Development">Mobile Development</option>
-              <option value="Machine Learning">Machine Learning</option>
-              <option value="IoT">IoT</option>
-              <option value="Robotics">Robotics</option>
-              <option value="Data Science">Data Science</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
+          {errors._rawBody && <p className="text-red-400 text-sm mt-1">{errors._rawBody}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Project Date</label>
-          <input
-            type="date"
-            name="publishedAt"
-            value={formData.publishedAt}
+          <label className="block text-sm font-medium text-gray-300 mb-2">Additional Content (Optional)</label>
+          <textarea
+            name="body"
+            value={formData.body}
             onChange={handleInputChange}
-            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            rows={4}
+            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-vertical"
+            placeholder="Any additional content or notes..."
           />
         </div>
+
+        {errors.submit && (
+          <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg">
+            {errors.submit}
+          </div>
+        )}
 
         <div className="flex justify-end space-x-4 pt-6 border-t border-gray-700">
           <button
@@ -692,6 +958,119 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
           </button>
         </div>
       </form>
+    </div>
+  );
+};
+
+// Simple Migration Component
+const SimpleMigrationComponent = () => {
+  const [stats, setStats] = useState(null);
+  const [migrating, setMigrating] = useState(false);
+
+  const handleMigration = async () => {
+    setMigrating(true);
+    try {
+      // Add sample data for testing based on schema
+      const sampleData = {
+        [STORAGE_KEYS.NEWS]: [
+          {
+            id: 'sample-news-1',
+            title: 'AAC Students Win National Hackathon',
+            slug: 'AAC team secures first place at the prestigious coding competition.',
+            content: 'The Advanced Academic Center team has achieved remarkable success at the National Hackathon 2024...',
+            publishedAt: new Date().toISOString(),
+            categories: 'ACHIEVEMENT',
+            status: 'published',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
+        ],
+        [STORAGE_KEYS.PATENTS]: [
+          {
+            id: 'sample-patent-1',
+            title: 'A Smart Glove for Recognizing and Communicating Sign Language',
+            inventors: ['Jashwanth Kranthi Bopanna', 'Santosh Sanjeev', 'Bharath Varma Kantheti'],
+            patentOffice: 'India',
+            applicationNumber: '202041038106',
+            filingDate: new Date('2020-09-03').toISOString(),
+            status: 'Published Online',
+            description: 'A device for recognizing sign language gestures and converting them to speech or text...',
+            category: 'Assistive Technology',
+            image: '',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
+        ]
+      };
+
+      Object.entries(sampleData).forEach(([key, data]) => {
+        const existing = StorageManager.get(key);
+        const combined = [...existing, ...data];
+        StorageManager.set(key, combined);
+      });
+
+      setStats({ migrated: true, timestamp: new Date().toISOString() });
+      alert('Sample data added successfully!');
+      window.location.reload();
+    } catch (error) {
+      console.error('Migration error:', error);
+      alert('Migration failed. Check console for details.');
+    } finally {
+      setMigrating(false);
+    }
+  };
+
+  const handleClearData = () => {
+    if (window.confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+      StorageManager.clearAll();
+      alert('All data cleared successfully!');
+      window.location.reload();
+    }
+  };
+
+  useEffect(() => {
+    const currentStats = {};
+    Object.values(STORAGE_KEYS).forEach(key => {
+      const data = StorageManager.get(key);
+      currentStats[key] = data.length;
+    });
+    setStats(currentStats);
+  }, []);
+
+  return (
+    <div className="bg-[#1a2535] rounded-xl p-6 border border-gray-700">
+      <h3 className="text-xl font-bold mb-4 text-white">Data Migration Utility</h3>
+      
+      <div className="space-y-4 mb-6">
+        <button
+          onClick={handleMigration}
+          disabled={migrating}
+          className="px-4 py-2 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors disabled:opacity-50 border border-blue-700"
+        >
+          {migrating ? 'Adding Sample Data...' : 'Add Sample Data'}
+        </button>
+        
+        <button
+          onClick={handleClearData}
+          disabled={migrating}
+          className="px-4 py-2 bg-red-900 text-red-300 rounded-lg hover:bg-red-800 transition-colors disabled:opacity-50 border border-red-700 ml-4"
+        >
+          Clear All Data
+        </button>
+      </div>
+
+      {stats && (
+        <div className="bg-[#0e1421] rounded-lg p-4 border border-gray-700">
+          <h4 className="font-semibold mb-3 text-white">Current Data Stats:</h4>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            {Object.entries(stats).map(([key, count]) => (
+              <div key={key} className="text-gray-300">
+                <span className="font-medium">{key}:</span> {typeof count === 'number' ? `${count} items` : count}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -876,39 +1255,54 @@ const AdminDashboard = () => {
           >
             <div className="flex justify-between items-start">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-white mb-2">{item.title || item.name}</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {item.title || item.name}
+                </h3>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {item.categories && (
                     <span className="px-2 py-1 bg-blue-900/50 text-blue-300 text-xs rounded border border-blue-700/50">
                       {item.categories}
                     </span>
                   )}
+                  {item.category && (
+                    <span className="px-2 py-1 bg-blue-900/50 text-blue-300 text-xs rounded border border-blue-700/50">
+                      {item.category}
+                    </span>
+                  )}
                   {item.status && (
                     <span className={`px-2 py-1 text-xs rounded border ${
-                      item.status === 'published' 
+                      item.status === 'published' || item.status === 'Published Online' || item.status === 'Granted'
                         ? 'bg-green-900/50 text-green-300 border-green-700/50'
                         : 'bg-yellow-900/50 text-yellow-300 border-yellow-700/50'
                     }`}>
                       {item.status}
                     </span>
                   )}
-                  {item.date && (
+                  {(item.publishedAt || item.filingDate) && (
                     <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded">
-                      {new Date(item.date).toLocaleDateString()}
+                      {new Date(item.publishedAt || item.filingDate).toLocaleDateString()}
                     </span>
                   )}
                 </div>
+                
+                {/* Display relevant information based on section */}
                 {item.description && (
                   <p className="text-gray-400 text-sm line-clamp-2 mb-2">{item.description}</p>
                 )}
-                {item.shortTitle && (
-                  <p className="text-gray-400 text-sm">Short Title: {item.shortTitle}</p>
+                {item.slug && typeof item.slug === 'string' && (
+                  <p className="text-gray-400 text-sm line-clamp-2 mb-2">{item.slug}</p>
                 )}
                 {item.author && (
                   <p className="text-gray-400 text-sm">Author: {item.author}</p>
                 )}
                 {item.inventors && Array.isArray(item.inventors) && (
                   <p className="text-gray-400 text-sm">Inventors: {item.inventors.join(', ')}</p>
+                )}
+                {item.applicationNumber && (
+                  <p className="text-gray-400 text-sm">App No: {item.applicationNumber}</p>
+                )}
+                {item.patentOffice && (
+                  <p className="text-gray-400 text-sm">Patent Office: {item.patentOffice}</p>
                 )}
               </div>
               <div className="flex space-x-2 ml-4">

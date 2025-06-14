@@ -1,82 +1,43 @@
-// src/pages/projects/[id].js
+// src/pages/projects/[id].js - Updated with localStorage integration
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PortableText } from '@portabletext/react';
 import Layout from '@/components/Layout';
-import { getAllProjects, getProjectById } from '@/lib/sanity';
-import { FaArrowLeft, FaCalendar, FaUserAlt, FaFolder, FaShare, FaHeart, FaBookmark } from 'react-icons/fa';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { STORAGE_KEYS } from '@/lib/storage';
+import { FaArrowLeft, FaCalendar, FaUserAlt, FaFolder, FaShare, FaHeart, FaBookmark, FaClock, FaTags } from 'react-icons/fa';
 
-export async function getStaticPaths() {
-  const projects = await getAllProjects();
+const ProjectDetail = () => {
+  const router = useRouter();
+  const { id } = router.query;
+  const { data: projects, loading } = useLocalStorage(STORAGE_KEYS.PROJECTS);
   
-  const paths = projects.map((project) => ({
-    params: { id: project._id },
-  }));
-  
-  return { paths, fallback: 'blocking' };
-}
-
-export async function getStaticProps({ params }) {
-  const project = await getProjectById(params.id);
-  
-  if (!project) {
-    return {
-      notFound: true,
-    };
-  }
-  
-  // Get a selection of random projects for "More Projects" section
-  const allProjects = await getAllProjects();
-  const moreProjects = allProjects
-    .filter(p => p._id !== project._id)
-    .sort(() => 0.5 - Math.random()) // Shuffle array
-    .slice(0, 3); // Take first 3
-  
-  return {
-    props: {
-      project,
-      moreProjects
-    },
-    revalidate: 60 // Revalidate every minute
-  };
-}
-
-const ProjectDetail = ({ project, moreProjects }) => {
+  const [project, setProject] = useState(null);
+  const [moreProjects, setMoreProjects] = useState([]);
   const [activeTab, setActiveTab] = useState('overview');
   const [scrolled, setScrolled] = useState(false);
-  const [likes, setLikes] = useState(42); // Sample starting value
+  const [likes, setLikes] = useState(42);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  
-  const publishDate = project.publishedAt 
-    ? new Date(project.publishedAt).toLocaleDateString('en-US', {
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric'
-      }) 
-    : '';
-  
-  // Components for portable text content
-  const components = {
-    block: {
-      normal: ({ children }) => <p className="text-base md:text-lg mb-6 text-gray-300">{children}</p>,
-      h1: ({ children }) => <h1 className="text-3xl md:text-4xl font-bold mb-6 text-white">{children}</h1>,
-      h2: ({ children }) => <h2 className="text-2xl md:text-3xl font-bold mb-5 text-white">{children}</h2>,
-      h3: ({ children }) => <h3 className="text-xl md:text-2xl font-bold mb-4 text-white">{children}</h3>,
-    },
-    list: {
-      bullet: ({ children }) => <ul className="list-disc pl-6 mb-6 text-gray-300">{children}</ul>,
-      number: ({ children }) => <ol className="list-decimal pl-6 mb-6 text-gray-300">{children}</ol>,
-    },
-    listItem: {
-      bullet: ({ children }) => <li className="mb-2">{children}</li>,
-      number: ({ children }) => <li className="mb-2">{children}</li>,
-    },
-  };
-  
+
+  // Find the project by ID
+  useEffect(() => {
+    if (id && projects.length > 0) {
+      const foundProject = projects.find(p => p.id === id);
+      setProject(foundProject);
+      
+      // Get random projects for "More Projects" section
+      const otherProjects = projects
+        .filter(p => p.id !== id)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3);
+      setMoreProjects(otherProjects);
+    }
+  }, [id, projects]);
+
   // Handle scroll effects
   useEffect(() => {
     const handleScroll = () => {
@@ -89,7 +50,44 @@ const ProjectDetail = ({ project, moreProjects }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [scrolled]);
-  
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-gray-400">Loading project...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!project) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white mb-4">Project Not Found</h1>
+            <p className="text-gray-400 mb-6">The project you're looking for doesn't exist.</p>
+            <Link href="/projects" className="px-6 py-3 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors border border-blue-700">
+              Back to Projects
+            </Link>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  const publishDate = project.publishedAt 
+    ? new Date(project.publishedAt).toLocaleDateString('en-US', {
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric'
+      }) 
+    : '';
+
   // Animation variants
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
@@ -109,22 +107,22 @@ const ProjectDetail = ({ project, moreProjects }) => {
       }
     }
   };
-  
+
   return (
     <Layout>
       <Head>
         <title>{project.title} | AAC Projects</title>
-        <meta name="description" content={project.slug || 'AAC Project Details'} />
+        <meta name="description" content={project.description || project._rawBody || 'AAC Project Details'} />
       </Head>
       
       {/* Project Header */}
-      <div className="relative h-[60vh] bg-blue-900">
+      <div className="relative h-[60vh] bg-gradient-to-b from-blue-800 to-blue-900">
         {/* Background Image or Gradient */}
-        {project.mainImage ? (
+        {project.mainImage?.asset?.url ? (
           <>
             <div className="absolute inset-0">
               <Image
-                src={project.mainImage.url}
+                src={project.mainImage.asset.url}
                 alt={project.title}
                 fill
                 className="object-cover"
@@ -151,7 +149,7 @@ const ProjectDetail = ({ project, moreProjects }) => {
                 {project.title}
               </h1>
               
-              <div className="flex flex-wrap gap-4 items-center text-white/80">
+              <div className="flex flex-wrap gap-4 items-center text-white/80 mb-4">
                 <div className="flex items-center">
                   <FaCalendar className="mr-2" />
                   <span>{publishDate}</span>
@@ -164,7 +162,19 @@ const ProjectDetail = ({ project, moreProjects }) => {
                   <FaFolder className="mr-2" />
                   <span>{project.categories || 'Research'}</span>
                 </div>
+                {project.status && (
+                  <div className="flex items-center">
+                    <FaClock className="mr-2" />
+                    <span className="capitalize">{project.status}</span>
+                  </div>
+                )}
               </div>
+              
+              {project.description && (
+                <p className="text-white/80 text-lg max-w-3xl">
+                  {project.description}
+                </p>
+              )}
             </motion.div>
           </div>
         </div>
@@ -291,10 +301,13 @@ const ProjectDetail = ({ project, moreProjects }) => {
                     
                     <motion.div variants={fadeIn} className="prose prose-lg max-w-none prose-invert">
                       {project._rawBody ? (
-                        <PortableText
-                          value={project._rawBody}
-                          components={components}
-                        />
+                        <div className="text-gray-300 whitespace-pre-wrap leading-relaxed">
+                          {project._rawBody}
+                        </div>
+                      ) : project.body ? (
+                        <div className="text-gray-300 whitespace-pre-wrap leading-relaxed">
+                          {project.body}
+                        </div>
                       ) : (
                         <p className="text-gray-400">
                           No detailed information available for this project. Please check back later or contact the team for more information.
@@ -316,7 +329,7 @@ const ProjectDetail = ({ project, moreProjects }) => {
                     <ul className="space-y-3">
                       <li className="flex justify-between">
                         <span className="text-gray-400">Status:</span>
-                        <span className="font-medium text-gray-300">Completed</span>
+                        <span className="font-medium text-gray-300 capitalize">{project.status || 'Completed'}</span>
                       </li>
                       <li className="flex justify-between">
                         <span className="text-gray-400">Duration:</span>
@@ -367,7 +380,7 @@ const ProjectDetail = ({ project, moreProjects }) => {
                 transition={{ duration: 0.5 }}
               >
                 <div className="bg-[#1a2535] rounded-2xl shadow-lg p-8 border border-gray-700">
-                  <h2 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-700 text-white">Project Team</h2>
+                  <h2 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-700 text-white">Team Members</h2>
                   
                   {project.names && project.names.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -382,9 +395,9 @@ const ProjectDetail = ({ project, moreProjects }) => {
                           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-800 to-indigo-900 text-white flex items-center justify-center text-3xl font-bold mb-4 border border-blue-700/50">
                             {name.charAt(0)}
                           </div>
-                          <h3 className="text-xl font-bold mb-1 text-white">{name}</h3>
-                          <p className="text-gray-400 text-center">Team Member</p>
-                          <div className="mt-4 flex space-x-2">
+                          <h3 className="text-xl font-bold mb-1 text-white text-center">{name}</h3>
+                          <p className="text-gray-400 text-center mb-4">Team Member</p>
+                          <div className="mt-auto">
                             <button className="px-4 py-2 bg-blue-900/30 text-blue-300 rounded-full hover:bg-blue-900/50 transition-colors border border-blue-700/50">
                               Contact
                             </button>
@@ -410,7 +423,7 @@ const ProjectDetail = ({ project, moreProjects }) => {
                 <div className="bg-[#1a2535] rounded-2xl shadow-lg p-8 border border-gray-700">
                   <h2 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-700 text-white">Project Gallery</h2>
                   
-                  {project.mainImage ? (
+                  {project.mainImage?.asset?.url ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -419,16 +432,16 @@ const ProjectDetail = ({ project, moreProjects }) => {
                         className="relative aspect-video rounded-xl overflow-hidden cursor-pointer"
                       >
                         <Image
-                          src={project.mainImage.url}
+                          src={project.mainImage.asset.url}
                           alt={project.title}
                           fill
                           className="object-cover hover:scale-105 transition-transform duration-500"
                         />
                       </motion.div>
                       
-                      <p className="flex items-center justify-center text-gray-400 h-full">
-                        More project images will be available soon.
-                      </p>
+                      <div className="flex items-center justify-center text-gray-400 h-full">
+                        <p>More project images will be available soon.</p>
+                      </div>
                     </div>
                   ) : (
                     <p className="text-gray-400">No gallery images available for this project.</p>
@@ -439,36 +452,40 @@ const ProjectDetail = ({ project, moreProjects }) => {
           </AnimatePresence>
           
           {/* More Projects */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="mt-16"
-          >
-            <h2 className="text-2xl font-bold mb-8 text-white">More Projects</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {moreProjects.map((item) => (
-                <motion.div
-                  key={item._id}
-                  whileHover={{ y: -10 }}
-                  className="bg-[#1a2535] rounded-xl shadow-lg overflow-hidden flex-shrink-0 border border-gray-700"
-                >
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold mb-2 text-white">{item.title}</h3>
-                    <p className="text-gray-400 mb-4 line-clamp-2">{item.slug || "Explore this innovative project..."}</p>
-                    <Link 
-                      href={`/projects/${item._id}`}
-                      className="text-blue-400 hover:text-blue-300 font-medium"
-                    >
-                      View details →
-                    </Link>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+          {moreProjects.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="mt-16"
+            >
+              <h2 className="text-2xl font-bold mb-8 text-white">More Projects</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {moreProjects.map((item) => (
+                  <motion.div
+                    key={item.id}
+                    whileHover={{ y: -10 }}
+                    className="bg-[#1a2535] rounded-xl shadow-lg overflow-hidden flex-shrink-0 border border-gray-700"
+                  >
+                    <div className="p-6">
+                      <h3 className="text-lg font-bold mb-2 text-white">{item.title}</h3>
+                      <p className="text-gray-400 mb-4 line-clamp-2">
+                        {item.description || item._rawBody || "Explore this innovative project..."}
+                      </p>
+                      <Link 
+                        href={`/projects/${item.id}`}
+                        className="text-blue-400 hover:text-blue-300 font-medium"
+                      >
+                        View details →
+                      </Link>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
     </Layout>

@@ -1,4 +1,4 @@
-// src/components/Forms/PublicationsForm.jsx
+// src/components/Forms/PublicationsForm.jsx - Updated with Schema
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
@@ -18,16 +18,7 @@ const PUBLICATION_CATEGORIES = [
   'Web Development',
   'Mobile Computing',
   'Robotics',
-  'Other'
-];
-
-const PUBLICATION_TYPES = [
-  'Journal Paper',
-  'Conference Paper',
-  'Workshop Paper',
-  'Book Chapter',
-  'Technical Report',
-  'Thesis',
+  'Signal Processing',
   'Other'
 ];
 
@@ -41,19 +32,9 @@ const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
     abstract: '',
     authors: [''],
     publication: '',
-    year: new Date().getFullYear(),
+    publishedAt: new Date().toISOString().split('T')[0],
     category: '',
-    type: 'Journal Paper',
-    image: '',
-    status: 'published',
-    doi: '',
-    url: '',
-    pdfUrl: '',
-    keywords: [''],
-    pages: '',
-    volume: '',
-    issue: '',
-    publisher: ''
+    image: ''
   });
 
   useEffect(() => {
@@ -62,8 +43,10 @@ const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
       if (existingPublication) {
         setFormData({
           ...existingPublication,
-          authors: existingPublication.authors || [''],
-          keywords: existingPublication.keywords || ['']
+          publishedAt: existingPublication.publishedAt ? 
+            new Date(existingPublication.publishedAt).toISOString().split('T')[0] : 
+            new Date().toISOString().split('T')[0],
+          authors: existingPublication.authors || ['']
         });
       }
     }
@@ -108,11 +91,11 @@ const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
     }
     
     if (!formData.publication.trim()) {
-      newErrors.publication = 'Publication venue is required';
+      newErrors.publication = 'Publication details are required';
     }
     
-    if (!formData.year || formData.year < 1900 || formData.year > new Date().getFullYear() + 5) {
-      newErrors.year = 'Valid year is required';
+    if (!formData.publishedAt) {
+      newErrors.publishedAt = 'Publication date is required';
     }
     
     if (!formData.category) {
@@ -136,8 +119,7 @@ const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
       const publicationItem = {
         ...formData,
         authors: formData.authors.filter(author => author.trim()),
-        keywords: formData.keywords.filter(keyword => keyword.trim()),
-        year: parseInt(formData.year)
+        publishedAt: new Date(formData.publishedAt).toISOString()
       };
       
       let result;
@@ -188,12 +170,23 @@ const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
       />
 
       <ArrayField
-        label="Authors"
+        label="Authors (with affiliations)"
         values={formData.authors}
         onChange={handleArrayChange('authors')}
-        placeholder="Enter author name"
+        placeholder="Enter author name with affiliation"
         required
         error={errors.authors}
+      />
+
+      <TextAreaField
+        label="Publication Details"
+        name="publication"
+        value={formData.publication}
+        onChange={handleInputChange}
+        placeholder="Journal/Conference name, volume, pages, DOI, etc."
+        rows={3}
+        required
+        error={errors.publication}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -207,126 +200,22 @@ const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
           error={errors.category}
         />
         
-        <SelectField
-          label="Publication Type"
-          name="type"
-          value={formData.type}
-          onChange={handleInputChange}
-          options={PUBLICATION_TYPES}
-        />
-      </div>
-
-      <FormField
-        label="Publication Venue"
-        name="publication"
-        value={formData.publication}
-        onChange={handleInputChange}
-        placeholder="Journal/Conference name, volume, pages, etc."
-        required
-        error={errors.publication}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
-          label="Publisher"
-          name="publisher"
-          value={formData.publisher}
+          label="Publication Date"
+          name="publishedAt"
+          type="date"
+          value={formData.publishedAt}
           onChange={handleInputChange}
-          placeholder="Publisher name"
-        />
-
-        <FormField
-          label="Year"
-          name="year"
-          type="number"
-          value={formData.year}
-          onChange={handleInputChange}
-          min="1900"
-          max={new Date().getFullYear() + 5}
           required
-          error={errors.year}
+          error={errors.publishedAt}
         />
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <FormField
-          label="Volume"
-          name="volume"
-          value={formData.volume}
-          onChange={handleInputChange}
-          placeholder="Volume number"
-        />
-
-        <FormField
-          label="Issue"
-          name="issue"
-          value={formData.issue}
-          onChange={handleInputChange}
-          placeholder="Issue number"
-        />
-
-        <FormField
-          label="Pages"
-          name="pages"
-          value={formData.pages}
-          onChange={handleInputChange}
-          placeholder="e.g., 123-135"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          label="DOI"
-          name="doi"
-          value={formData.doi}
-          onChange={handleInputChange}
-          placeholder="10.1000/123456"
-        />
-
-        <FormField
-          label="Publication URL"
-          name="url"
-          type="url"
-          value={formData.url}
-          onChange={handleInputChange}
-          placeholder="https://..."
-        />
-      </div>
-
-      <FormField
-        label="PDF URL"
-        name="pdfUrl"
-        type="url"
-        value={formData.pdfUrl}
-        onChange={handleInputChange}
-        placeholder="https://... (link to PDF)"
-      />
-
-      <ArrayField
-        label="Keywords"
-        values={formData.keywords}
-        onChange={handleArrayChange('keywords')}
-        placeholder="Enter keyword"
-      />
 
       <ImageUpload
-        label="Publication Image/Diagram"
+        label="Publication Image/Thumbnail"
         value={formData.image}
         onChange={handleImageChange}
-      />
-
-      <SelectField
-        label="Status"
-        name="status"
-        value={formData.status}
-        onChange={handleInputChange}
-        options={[
-          { value: 'published', label: 'Published' },
-          { value: 'accepted', label: 'Accepted' },
-          { value: 'under-review', label: 'Under Review' },
-          { value: 'draft', label: 'Draft' }
-        ]}
-        required
+        error={errors.image}
       />
 
       {errors.submit && (
