@@ -1,4 +1,4 @@
-// src/pages/News/index.js
+// src/pages/News/index.js - Updated to use localStorage
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -7,85 +7,31 @@ import Layout from '@/components/Layout';
 import Link from 'next/link';
 import { FaCalendar, FaSearch, FaFilter } from 'react-icons/fa';
 import PageHero from '@/components/PageHero';
-
-// Mock data for development - replace with your actual data when Sanity is connected
-const mockNewsData = [
-  {
-    _id: "news-1",
-    title: "AAC Students Win National Hackathon",
-    slug: "AAC team secures first place at the prestigious coding competition with their innovative healthcare solution.",
-    publishedAt: "2025-03-15T10:00:00Z",
-    categories: "ACHIEVEMENT",
-    mainImage: {
-      url: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100162/AAC-web/news_events/Juniorshackathon2_opwpyj.jpg"
-    }
-  },
-  {
-    _id: "news-2",
-    title: "New Research Partnership with Microsoft",
-    slug: "AAC announces collaboration with Microsoft on artificial intelligence research projects.",
-    publishedAt: "2025-02-20T09:30:00Z",
-    categories: "RESEARCH",
-    mainImage: {
-      url: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100167/AAC-web/news_events/nrsc5_e8it62.jpg"
-    }
-  },
-  {
-    _id: "news-3",
-    title: "Opulence 2025 Registration Now Open",
-    slug: "Register now for AAC's flagship event featuring workshops, competitions, and renowned industry speakers.",
-    publishedAt: "2025-04-01T12:00:00Z",
-    categories: "EVENT",
-    mainImage: {
-      url: "https://res.cloudinary.com/aacgriet/image/upload/v1730825381/AAC-web/news_events/opulence2023/zdcnmfzelmh4u20wyr1x.jpg"
-    }
-  },
-  {
-    _id: "news-4",
-    title: "Important Changes to Summer Internship Program",
-    slug: "Updates to the application process and new industry partners for this year's internships.",
-    publishedAt: "2025-03-10T15:00:00Z",
-    categories: "NOTICE",
-    mainImage: {
-      url: "https://res.cloudinary.com/aacgriet/image/upload/v1730825380/AAC-web/news_events/opulence2023/gor2ysygdbqylqjgqybv.jpg"
-    }
-  },
-  {
-    _id: "news-5",
-    title: "AAC Website Redesign Launched",
-    slug: "Explore the new features and modern design of our updated website.",
-    publishedAt: "2025-01-15T11:00:00Z",
-    categories: "UPDATE",
-    mainImage: null
-  },
-  {
-    _id: "news-6",
-    title: "Student Research Published in International Journal",
-    slug: "Third-year students' work on machine learning algorithm recognized by top-tier publication.",
-    publishedAt: "2025-02-05T14:30:00Z",
-    categories: "ACHIEVEMENT",
-    mainImage: null
-  }
-];
-
-// Extract all unique categories
-const allCategories = ["All"];
-mockNewsData.forEach(news => {
-  if (news.categories && !allCategories.includes(news.categories)) {
-    allCategories.push(news.categories);
-  }
-});
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { STORAGE_KEYS } from '@/lib/storage';
 
 const News = () => {
+  const { data: newsData, loading } = useLocalStorage(STORAGE_KEYS.NEWS);
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredNews, setFilteredNews] = useState(mockNewsData);
+  const [filteredNews, setFilteredNews] = useState([]);
   const [sortOrder, setSortOrder] = useState("newest");
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
   
+  // Extract all unique categories from news data
+  const allCategories = ["All"];
+  newsData.forEach(news => {
+    if (news.categories && !allCategories.includes(news.categories)) {
+      allCategories.push(news.categories);
+    }
+  });
+  
   // Filter and sort news based on category, search term, and sort order
   useEffect(() => {
-    let filtered = [...mockNewsData];
+    let filtered = [...newsData];
+    
+    // Only show published news
+    filtered = filtered.filter(item => item.status === 'published');
     
     // Filter by category
     if (activeCategory !== "All") {
@@ -109,7 +55,7 @@ const News = () => {
     });
     
     setFilteredNews(filtered);
-  }, [activeCategory, searchTerm, sortOrder]);
+  }, [newsData, activeCategory, searchTerm, sortOrder]);
   
   // Animation variants
   const container = {
@@ -141,6 +87,16 @@ const News = () => {
     
     return categoryMap[category.toUpperCase()] || 'from-blue-900 to-indigo-900';
   };
+  
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-white">Loading news...</div>
+        </div>
+      </Layout>
+    );
+  }
   
   return (
     <Layout>
@@ -253,17 +209,17 @@ const News = () => {
             >
               {filteredNews.map((newsItem, index) => (
                 <motion.div 
-                  key={newsItem._id}
+                  key={newsItem.id}
                   variants={item}
                   transition={{ delay: index * 0.05 }}
                   className="h-full flex flex-col overflow-hidden rounded-xl shadow-lg bg-[#1a2535] hover:shadow-xl transition-shadow duration-300 border border-gray-700"
                 >
                   {/* Card Header with Image or Gradient */}
                   <div className="relative h-48">
-                    {newsItem.mainImage ? (
+                    {newsItem.mainImage?.url ? (
                       <Image
                         src={newsItem.mainImage.url}
-                        alt={newsItem.title}
+                        alt={newsItem.mainImage.altText || newsItem.title}
                         fill
                         className="object-cover transition-transform duration-500 hover:scale-110"
                       />
@@ -309,7 +265,7 @@ const News = () => {
                   
                   {/* Card Content */}
                   <div className="p-6 flex-grow flex flex-col">
-                    <Link href={`/News/${newsItem._id}`}>
+                    <Link href={`/News/${newsItem.id}`}>
                       <h3 className="text-xl font-bold mb-3 line-clamp-2 hover:text-blue-400 transition-colors text-white">
                         {newsItem.title}
                       </h3>
@@ -321,7 +277,7 @@ const News = () => {
                     
                     <div className="mt-auto pt-4 border-t border-gray-700">
                       <Link 
-                        href={`/News/${newsItem._id}`}
+                        href={`/News/${newsItem.id}`}
                         className="inline-flex items-center text-blue-400 hover:text-blue-300 font-medium"
                       >
                         Read More

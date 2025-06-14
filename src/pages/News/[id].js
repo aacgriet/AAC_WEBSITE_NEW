@@ -1,99 +1,79 @@
-// src/pages/News/[id].js
-import React from 'react';
+// src/pages/News/[id].js - Updated to use localStorage
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 import { FaCalendar, FaArrowLeft, FaShare, FaLinkedin, FaTwitter, FaFacebook } from 'react-icons/fa';
-import { PortableText } from '@portabletext/react';
 import Layout from '@/components/Layout';
-import { getAllNews, getNewsById } from '@/lib/sanity';
+import { useLocalStorageItem } from '@/hooks/useLocalStorage';
+import { STORAGE_KEYS } from '@/lib/storage';
 
-export async function getStaticPaths() {
-  const news = await getAllNews();
+const NewsDetail = () => {
+  const router = useRouter();
+  const { id } = router.query;
+  const { item: news, loading, error } = useLocalStorageItem(STORAGE_KEYS.NEWS, id);
+  const [relatedNews, setRelatedNews] = useState([]);
   
-  const paths = news.map((item) => ({
-    params: { id: item._id },
-  }));
+  useEffect(() => {
+    if (news && typeof window !== 'undefined') {
+      // Get related news based on category
+      const allNews = JSON.parse(localStorage.getItem(STORAGE_KEYS.NEWS) || '[]');
+      let related = [];
+      
+      if (news.categories) {
+        related = allNews
+          .filter(item => 
+            item.id !== news.id && 
+            item.categories === news.categories &&
+            item.status === 'published'
+          )
+          .slice(0, 2);
+      }
+      
+      // If we don't have enough related news by category, add some random ones
+      if (related.length < 2) {
+        const randomNews = allNews
+          .filter(item => 
+            item.id !== news.id && 
+            item.status === 'published' &&
+            !related.some(rel => rel.id === item.id)
+          )
+          .slice(0, 2 - related.length);
+        
+        related = [...related, ...randomNews];
+      }
+      
+      setRelatedNews(related);
+    }
+  }, [news]);
   
-  return { paths, fallback: 'blocking' };
-}
-
-export async function getStaticProps({ params }) {
-  const news = await getNewsById(params.id);
-  
-  if (!news) {
-    return {
-      notFound: true,
-    };
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-white">Loading...</div>
+        </div>
+      </Layout>
+    );
   }
   
-  // Get two related news items based on category
-  const allNews = await getAllNews();
-  let relatedNews = [];
-  
-  if (news.categories) {
-    relatedNews = allNews
-      .filter(item => item._id !== news._id && item.categories === news.categories)
-      .slice(0, 2);
+  if (error || !news) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-white mb-4">News Not Found</h1>
+            <Link href="/News" className="text-blue-400 hover:underline">
+              Back to News
+            </Link>
+          </div>
+        </div>
+      </Layout>
+    );
   }
   
-  // If we don't have enough related news by category, add some random ones
-  if (relatedNews.length < 2) {
-    const randomNews = allNews
-      .filter(item => item._id !== news._id && !relatedNews.some(rel => rel._id === item._id))
-      .slice(0, 2 - relatedNews.length);
-    
-    relatedNews = [...relatedNews, ...randomNews];
-  }
-  
-  return {
-    props: {
-      news,
-      relatedNews
-    },
-    revalidate: 60 // Revalidate every minute
-  };
-}
-
-// Custom components for portable text content
-const portableTextComponents = {
-  block: {
-    normal: ({ children }) => <p className="text-gray-700 mb-6 leading-relaxed">{children}</p>,
-    h1: ({ children }) => <h1 className="text-3xl font-bold mb-6 text-gray-900">{children}</h1>,
-    h2: ({ children }) => <h2 className="text-2xl font-bold mb-4 text-gray-900">{children}</h2>,
-    h3: ({ children }) => <h3 className="text-xl font-bold mb-3 text-gray-900">{children}</h3>,
-    blockquote: ({ children }) => (
-      <blockquote className="border-l-4 border-blue-500 pl-4 italic my-6 text-gray-700">
-        {children}
-      </blockquote>
-    ),
-  },
-  list: {
-    bullet: ({ children }) => <ul className="list-disc pl-6 mb-6 text-gray-700 space-y-2">{children}</ul>,
-    number: ({ children }) => <ol className="list-decimal pl-6 mb-6 text-gray-700 space-y-2">{children}</ol>,
-  },
-  listItem: {
-    bullet: ({ children }) => <li>{children}</li>,
-    number: ({ children }) => <li>{children}</li>,
-  },
-  marks: {
-    link: ({ children, value }) => (
-      <a 
-        href={value.href} 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="text-blue-600 hover:underline"
-      >
-        {children}
-      </a>
-    ),
-    strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-    em: ({ children }) => <em className="italic">{children}</em>,
-  },
-};
-
-const NewsDetail = ({ news, relatedNews }) => {
   const publishDate = news.publishedAt 
     ? new Date(news.publishedAt).toLocaleDateString('en-US', {
         year: 'numeric', 
@@ -104,6 +84,26 @@ const NewsDetail = ({ news, relatedNews }) => {
     
   // Generate a sharing URL for the current page
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  
+  // Render content with basic markdown support
+  const renderContent = (content) => {
+    if (!content) return '';
+    
+    return content
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/`(.*?)`/g, '<code class="bg-gray-800 px-1 rounded text-blue-300">$1</code>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>')
+      .replace(/^#{1,6}\s+(.*$)/gm, (match, text) => {
+        const level = match.indexOf(' ');
+        return `<h${level} class="text-${4-level}xl font-bold mb-4 text-white">${text}</h${level}>`;
+      })
+      .replace(/^- (.*)$/gm, '<li class="ml-4 mb-2">• $1</li>')
+      .replace(/^> (.*)$/gm, '<blockquote class="border-l-4 border-blue-500 pl-4 italic mb-4 text-gray-300">$1</blockquote>')
+      .replace(/```([\s\S]*?)```/g, '<pre class="bg-gray-800 p-4 rounded overflow-x-auto mb-4"><code class="text-blue-300">$1</code></pre>')
+      .replace(/\n\n/g, '</p><p class="mb-4 text-gray-300">')
+      .replace(/\n/g, '<br>');
+  };
   
   return (
     <Layout>
@@ -170,7 +170,7 @@ const NewsDetail = ({ news, relatedNews }) => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             {/* Featured Image */}
-            {news.mainImage && (
+            {news.mainImage?.url && (
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -180,7 +180,7 @@ const NewsDetail = ({ news, relatedNews }) => {
                 <div className="relative w-full h-96 md:h-[500px]">
                   <Image
                     src={news.mainImage.url}
-                    alt={news.title}
+                    alt={news.mainImage.altText || news.title}
                     fill
                     className="object-cover"
                     priority
@@ -194,14 +194,16 @@ const NewsDetail = ({ news, relatedNews }) => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white rounded-xl shadow-lg p-6 md:p-10 mb-12"
+              className="bg-[#1a2535] rounded-xl shadow-lg p-6 md:p-10 mb-12 border border-gray-700"
             >
               {/* Body content */}
               <div className="prose prose-lg max-w-none">
-                {news._rawBody ? (
-                  <PortableText
-                    value={news._rawBody}
-                    components={portableTextComponents}
+                {news.content ? (
+                  <div 
+                    className="text-gray-300 leading-relaxed"
+                    dangerouslySetInnerHTML={{ 
+                      __html: `<p class="mb-4 text-gray-300">${renderContent(news.content)}</p>` 
+                    }}
                   />
                 ) : (
                   <p className="text-gray-500 italic">No content available for this article.</p>
@@ -209,9 +211,9 @@ const NewsDetail = ({ news, relatedNews }) => {
               </div>
               
               {/* Social sharing */}
-              <div className="mt-12 pt-6 border-t border-gray-100">
+              <div className="mt-12 pt-6 border-t border-gray-700">
                 <div className="flex items-center justify-between flex-wrap gap-4">
-                  <h3 className="text-gray-700 font-medium">Share this article</h3>
+                  <h3 className="text-gray-300 font-medium">Share this article</h3>
                   <div className="flex space-x-3">
                     <a 
                       href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(news.title)}`}
@@ -252,16 +254,16 @@ const NewsDetail = ({ news, relatedNews }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
-                <h2 className="text-2xl font-bold mb-6">Related News</h2>
+                <h2 className="text-2xl font-bold mb-6 text-white">Related News</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {relatedNews.map((relatedItem) => (
-                    <Link key={relatedItem._id} href={`/News/${relatedItem._id}`}>
-                      <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <Link key={relatedItem.id} href={`/News/${relatedItem.id}`}>
+                      <div className="bg-[#1a2535] rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-700">
                         <div className="relative h-40">
-                          {relatedItem.mainImage ? (
+                          {relatedItem.mainImage?.url ? (
                             <Image
                               src={relatedItem.mainImage.url}
-                              alt={relatedItem.title}
+                              alt={relatedItem.mainImage.altText || relatedItem.title}
                               fill
                               className="object-cover"
                             />
@@ -270,8 +272,8 @@ const NewsDetail = ({ news, relatedNews }) => {
                           )}
                         </div>
                         <div className="p-6">
-                          <h3 className="font-bold mb-2 line-clamp-2">{relatedItem.title}</h3>
-                          <p className="text-sm text-gray-500">
+                          <h3 className="font-bold mb-2 line-clamp-2 text-white">{relatedItem.title}</h3>
+                          <p className="text-sm text-gray-400">
                             {new Date(relatedItem.publishedAt).toLocaleDateString('en-US', {
                               year: 'numeric', 
                               month: 'short', 
