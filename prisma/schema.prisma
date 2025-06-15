@@ -1,0 +1,227 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model News {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String?
+  content     String?  @db.Text
+  rawBody     String?  @db.Text
+  publishedAt DateTime @default(now())
+  categories  String?
+  status      String   @default("draft")
+  
+  // Sanity-style fields for compatibility
+  sanityId    String?  @unique
+  sanityRev   String?
+  sanityType  String?  @default("News")
+  
+  // Main image fields
+  mainImageUrl    String?
+  mainImageAltText String?
+  
+  // Links as JSON
+  links       Json?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("news")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?  @db.Text
+  content     String?  @db.Text
+  rawBody     String?  @db.Text
+  publishedAt DateTime @default(now())
+  author      String?
+  categories  String?
+  status      String   @default("draft")
+  
+  // Team members as JSON array
+  names       Json?
+  
+  // Main image fields
+  mainImageUrl    String?
+  mainImageAltText String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("projects")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String?
+  description String?  @db.Text
+  detailedDescription String? @db.Text
+  date        String?  // Display date like "JUNE 2024"
+  actualDate  DateTime? // Actual date for sorting
+  location    String?  @default("GRIET Campus, Hyderabad")
+  organizer   String?  @default("Advanced Academic Center")
+  status      String   @default("upcoming")
+  
+  // Images
+  mainImageUrl String?
+  images       Json?    // Array of image URLs
+  
+  // Call to action
+  ctaText     String?
+  ctaLink     String?
+  
+  // URL path
+  path        String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("events")
+}
+
+model Publication {
+  id          String   @id @default(cuid())
+  title       String
+  abstract    String   @db.Text
+  publication String   @db.Text
+  category    String
+  year        Int
+  publishedAt DateTime @default(now())
+  
+  // Authors as JSON array
+  authors     Json
+  
+  // Optional fields
+  image       String?
+  downloadUrl String?
+  keywords    Json?
+  type        String?  @default("Journal Paper")
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("publications")
+}
+
+model Patent {
+  id                String   @id @default(cuid())
+  title             String   @db.Text
+  shortTitle        String
+  description       String   @db.Text
+  applicationNumber String
+  patentOffice      String
+  date              DateTime
+  status            String   @default("Published Online")
+  category          String
+  color             String   @default("purple")
+  
+  // Inventors as JSON array
+  inventors         Json
+  
+  // Optional fields
+  image             String?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@map("patents")
+}
+
+model Book {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  category    String
+  year        Int
+  cover       String?
+  color       String   @default("blue")
+  status      String   @default("published")
+  
+  // Authors as JSON array
+  authors     Json
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("books")
+}
+
+model Alumni {
+  id               String   @id @default(cuid())
+  name             String
+  designation      String?
+  company          String?
+  image            String?
+  graduationYear   Int?
+  department       String?
+  status           String   @default("active")
+  email            String?
+  linkedin         String?
+  currentLocation  String?
+  achievements     String?  @db.Text
+  bio              String?  @db.Text
+  
+  // Legacy field mapping
+  legacyId         String?  @unique
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@map("alumni")
+}
+
+model Startup {
+  id              String   @id @default(cuid())
+  name            String
+  description     String   @db.Text
+  mission         String   @db.Text
+  category        String
+  color           String   @default("blue")
+  status          String   @default("Active")
+  establishedDate DateTime
+  website         String?
+  logo            String?
+  image           String?
+  
+  // Founders as JSON array
+  founders        Json
+  
+  // App screenshots as JSON array
+  appScreenshots  Json?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("startups")
+}
+
+model CoreCommittee {
+  id          String   @id @default(cuid())
+  name        String
+  designation String
+  image       String?
+  year        Int      @default(2024)
+  department  String?
+  status      String   @default("active")
+  
+  // Legacy field mapping
+  legacyId    String?  @unique
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("core_committee")
+}

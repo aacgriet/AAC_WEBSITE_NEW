@@ -73,7 +73,7 @@ const EventsShowcase = () => {
       id: 1,
       title: "Opulence 2024",
       category: "Annual Symposium",
-      image: "https://res.cloudinary.com/aacgriet/image/upload/v1730825381/AAC-web/news_events/opulence2023/zdcnmfzelmh4u20wyr1x.jpg",
+      image: "",
       link: "/Events/Opulence2024"
     },
     {

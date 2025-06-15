@@ -1,4 +1,4 @@
-// src/hooks/useLocalStorage.js - Fixed version
+// src/hooks/useLocalStorage.js - Updated to work with async database operations
 import { useState, useEffect, useCallback } from 'react';
 import { StorageManager } from '@/lib/storage';
 
@@ -7,102 +7,137 @@ export function useLocalStorage(key, initialValue = []) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Load data from localStorage on mount
+  // Load data on mount
   useEffect(() => {
-    try {
-      console.log(`Loading data for key: ${key}`);
-      const storedData = StorageManager.get(key);
-      console.log(`Loaded data:`, storedData);
-      setData(storedData);
-      setLoading(false);
-    } catch (err) {
-      console.error(`Error loading data for key ${key}:`, err);
-      setError(err);
-      setLoading(false);
-    }
+    let isMounted = true;
+
+    const loadData = async () => {
+      try {
+        console.log(`useLocalStorage: Loading data for key: ${key}`);
+        setLoading(true);
+        const storedData = await StorageManager.get(key);
+        console.log(`useLocalStorage: Loaded data:`, storedData);
+        
+        if (isMounted) {
+          setData(storedData);
+          setError(null);
+        }
+      } catch (err) {
+        console.error(`useLocalStorage: Error loading data for key ${key}:`, err);
+        if (isMounted) {
+          setError(err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [key]);
 
-  const addItem = useCallback((item) => {
+  const addItem = useCallback(async (item) => {
     try {
-      console.log(`Adding item to ${key}:`, item);
-      const newItem = StorageManager.add(key, item);
-      console.log(`Item added successfully:`, newItem);
+      console.log(`useLocalStorage: Adding item to ${key}:`, item);
+      setError(null);
       
-      // Update local state immediately
-      setData(prevData => {
-        const updatedData = [...prevData, newItem];
-        console.log(`Updated data:`, updatedData);
-        return updatedData;
-      });
+      const newItem = await StorageManager.add(key, item);
+      console.log(`useLocalStorage: Item added successfully:`, newItem);
+      
+      if (newItem) {
+        // Update local state immediately for better UX
+        setData(prevData => {
+          const updatedData = [...prevData, newItem];
+          console.log(`useLocalStorage: Updated data:`, updatedData);
+          return updatedData;
+        });
+      }
       
       return newItem;
     } catch (err) {
-      console.error(`Error adding item to ${key}:`, err);
+      console.error(`useLocalStorage: Error adding item to ${key}:`, err);
       setError(err);
       return null;
     }
   }, [key]);
 
-  const updateItem = useCallback((id, updates) => {
+  const updateItem = useCallback(async (id, updates) => {
     try {
-      console.log(`Updating item ${id} in ${key}:`, updates);
-      const updatedItem = StorageManager.update(key, id, updates);
-      console.log(`Item updated successfully:`, updatedItem);
+      console.log(`useLocalStorage: Updating item ${id} in ${key}:`, updates);
+      setError(null);
+      
+      const updatedItem = await StorageManager.update(key, id, updates);
+      console.log(`useLocalStorage: Item updated successfully:`, updatedItem);
       
       if (updatedItem) {
-        // Update local state immediately
+        // Update local state immediately for better UX
         setData(prevData => {
-          const updatedData = prevData.map(item => item.id === id ? updatedItem : item);
-          console.log(`Updated data:`, updatedData);
+          const updatedData = prevData.map(item => 
+            (item.id === id || item._id === id) ? updatedItem : item
+          );
+          console.log(`useLocalStorage: Updated data:`, updatedData);
           return updatedData;
         });
       }
+      
       return updatedItem;
     } catch (err) {
-      console.error(`Error updating item ${id} in ${key}:`, err);
+      console.error(`useLocalStorage: Error updating item ${id} in ${key}:`, err);
       setError(err);
       return null;
     }
   }, [key]);
 
-  const deleteItem = useCallback((id) => {
+  const deleteItem = useCallback(async (id) => {
     try {
-      console.log(`Deleting item ${id} from ${key}`);
-      const success = StorageManager.delete(key, id);
-      console.log(`Delete success:`, success);
+      console.log(`useLocalStorage: Deleting item ${id} from ${key}`);
+      setError(null);
+      
+      const success = await StorageManager.delete(key, id);
+      console.log(`useLocalStorage: Delete success:`, success);
       
       if (success) {
-        // Update local state immediately
+        // Update local state immediately for better UX
         setData(prevData => {
-          const updatedData = prevData.filter(item => item.id !== id);
-          console.log(`Updated data after delete:`, updatedData);
+          const updatedData = prevData.filter(item => item.id !== id && item._id !== id);
+          console.log(`useLocalStorage: Updated data after delete:`, updatedData);
           return updatedData;
         });
       }
+      
       return success;
     } catch (err) {
-      console.error(`Error deleting item ${id} from ${key}:`, err);
+      console.error(`useLocalStorage: Error deleting item ${id} from ${key}:`, err);
       setError(err);
       return false;
     }
   }, [key]);
 
   const getItemById = useCallback((id) => {
-    const item = data.find(item => item.id === id) || null;
-    console.log(`Getting item ${id} from ${key}:`, item);
+    const item = data.find(item => (item.id === id || item._id === id)) || null;
+    console.log(`useLocalStorage: Getting item ${id} from ${key}:`, item);
     return item;
   }, [data, key]);
 
-  const refresh = useCallback(() => {
+  const refresh = useCallback(async () => {
     try {
-      console.log(`Refreshing data for ${key}`);
-      const storedData = StorageManager.get(key);
-      console.log(`Refreshed data:`, storedData);
-      setData(storedData);
+      console.log(`useLocalStorage: Refreshing data for ${key}`);
+      setLoading(true);
       setError(null);
+      
+      const storedData = await StorageManager.get(key);
+      console.log(`useLocalStorage: Refreshed data:`, storedData);
+      setData(storedData);
     } catch (err) {
-      console.error(`Error refreshing data for ${key}:`, err);
+      console.error(`useLocalStorage: Error refreshing data for ${key}:`, err);
       setError(err);
+    } finally {
+      setLoading(false);
     }
   }, [key]);
 
@@ -131,44 +166,73 @@ export function useLocalStorageItem(key, id) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    try {
-      console.log(`Loading item ${id} from ${key}`);
-      const storedItem = StorageManager.getById(key, id);
-      console.log(`Loaded item:`, storedItem);
-      setItem(storedItem);
-      setLoading(false);
-    } catch (err) {
-      console.error(`Error loading item ${id} from ${key}:`, err);
-      setError(err);
-      setLoading(false);
-    }
+    let isMounted = true;
+
+    const loadItem = async () => {
+      try {
+        console.log(`useLocalStorageItem: Loading item ${id} from ${key}`);
+        setLoading(true);
+        const storedItem = await StorageManager.getById(key, id);
+        console.log(`useLocalStorageItem: Loaded item:`, storedItem);
+        
+        if (isMounted) {
+          setItem(storedItem);
+          setError(null);
+        }
+      } catch (err) {
+        console.error(`useLocalStorageItem: Error loading item ${id} from ${key}:`, err);
+        if (isMounted) {
+          setError(err);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadItem();
+
+    return () => {
+      isMounted = false;
+    };
   }, [key, id]);
 
-  const updateItem = useCallback((updates) => {
+  const updateItem = useCallback(async (updates) => {
     try {
-      console.log(`Updating item ${id} in ${key}:`, updates);
-      const updatedItem = StorageManager.update(key, id, updates);
-      console.log(`Item updated successfully:`, updatedItem);
-      setItem(updatedItem);
+      console.log(`useLocalStorageItem: Updating item ${id} in ${key}:`, updates);
+      setError(null);
+      
+      const updatedItem = await StorageManager.update(key, id, updates);
+      console.log(`useLocalStorageItem: Item updated successfully:`, updatedItem);
+      
+      if (updatedItem) {
+        setItem(updatedItem);
+      }
+      
       return updatedItem;
     } catch (err) {
-      console.error(`Error updating item ${id} in ${key}:`, err);
+      console.error(`useLocalStorageItem: Error updating item ${id} in ${key}:`, err);
       setError(err);
       return null;
     }
   }, [key, id]);
 
-  const deleteItem = useCallback(() => {
+  const deleteItem = useCallback(async () => {
     try {
-      console.log(`Deleting item ${id} from ${key}`);
-      const success = StorageManager.delete(key, id);
-      console.log(`Delete success:`, success);
+      console.log(`useLocalStorageItem: Deleting item ${id} from ${key}`);
+      setError(null);
+      
+      const success = await StorageManager.delete(key, id);
+      console.log(`useLocalStorageItem: Delete success:`, success);
+      
       if (success) {
         setItem(null);
       }
+      
       return success;
     } catch (err) {
-      console.error(`Error deleting item ${id} from ${key}:`, err);
+      console.error(`useLocalStorageItem: Error deleting item ${id} from ${key}:`, err);
       setError(err);
       return false;
     }
