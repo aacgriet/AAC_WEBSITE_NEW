@@ -300,168 +300,271 @@ const AdminDashboard = () => {
 
   // Replace the handleImport function in src/pages/admin/index.js with this ASYNC version
 
-const handleImport = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = async (e) => { // Make this async
-      try {
-        const importData = JSON.parse(e.target.result);
-        console.log('Raw import data:', importData);
-        
-        // Handle different JSON formats
-        let processedData = {};
-        
-        if (Array.isArray(importData)) {
-          // If it's an array, we need to process it based on the content
-          console.log('Detected array format');
-          
-          // Check if it looks like books data (has id, title, authors, etc.)
-          if (importData.length > 0 && importData[0].id && importData[0].title && importData[0].authors) {
-            console.log('Detected books data format');
-            processedData[STORAGE_KEYS.BOOKS] = importData;
-          }
-          // Check if it looks like news data (has _id, title, etc.)
-          else if (importData.length > 0 && importData[0]._id && importData[0].title) {
-            console.log('Detected news data format');
-            
-            // Transform the data to match our storage format
-            const transformedNews = importData.map(item => ({
-              id: item._id,
-              _id: item._id,
-              title: item.title,
-              slug: typeof item.slug === 'object' ? item.slug.current : item.slug,
-              publishedAt: item.publishedAt,
-              categories: item.categories,
-              _rawBody: item._rawBody,
-              mainImage: item.mainImage,
-              links: item.links || [],
-              _type: item._type,
-              _createdAt: item._createdAt,
-              _updatedAt: item._updatedAt,
-              _rev: item._rev,
-              createdAt: item._createdAt || new Date().toISOString(),
-              updatedAt: item._updatedAt || new Date().toISOString()
-            }));
-            
-            processedData[STORAGE_KEYS.NEWS] = transformedNews;
-          } else {
-            // Assume it's for the current active section
-            processedData[currentSection?.storageKey] = importData;
-          }
-        } else if (typeof importData === 'object') {
-          // If it's an object, check if it has storage keys or alternative keys
-          if (Object.keys(importData).some(key => Object.values(STORAGE_KEYS).includes(key))) {
-            // Direct storage format
-            processedData = importData;
-          } else {
-            // Check for alternative keys and map them
-            const keyMappings = {
-              'aac_books': STORAGE_KEYS.BOOKS,
-              'aac_alumni': STORAGE_KEYS.ALUMNI,
-              'aac_startups': STORAGE_KEYS.STARTUPS,
-              'aac_news': STORAGE_KEYS.NEWS,
-              'aac_patents': STORAGE_KEYS.PATENTS,
-              'aac_publications': STORAGE_KEYS.PUBLICATIONS,
-              'aac_projects': STORAGE_KEYS.PROJECTS,
-              'aac_events': STORAGE_KEYS.EVENTS,
-              'aac_core_committee': STORAGE_KEYS.CORE_COMMITTEE
-            };
-            
-            Object.entries(importData).forEach(([key, value]) => {
-              const mappedKey = keyMappings[key] || key;
-              if (Object.values(STORAGE_KEYS).includes(mappedKey)) {
-                processedData[mappedKey] = value;
+  const handleImport = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const importData = JSON.parse(e.target.result);
+          console.log("Raw import data:", importData);
+
+          // Handle different JSON formats
+          let processedData = {};
+
+          if (Array.isArray(importData)) {
+            // If it's an array, we need to process it based on the content
+            console.log("Detected array format");
+
+            // Check if it looks like books data (has id, title, authors, etc.)
+            if (
+              importData.length > 0 &&
+              importData[0].id &&
+              importData[0].title &&
+              importData[0].authors
+            ) {
+              console.log("Detected books data format");
+              processedData[STORAGE_KEYS.BOOKS] = importData;
+            }
+            // Check if it looks like news data (has _id, title, etc.)
+            else if (
+              importData.length > 0 &&
+              importData[0]._id &&
+              importData[0].title
+            ) {
+              console.log("Detected news data format");
+              processedData[STORAGE_KEYS.NEWS] = importData;
+            }
+            // Check if it looks like alumni data (has Name, Id, etc.)
+            else if (
+              importData.length > 0 &&
+              (importData[0].Name || importData[0].name) &&
+              (importData[0].Id || importData[0].id)
+            ) {
+              console.log("Detected alumni data format");
+              processedData[STORAGE_KEYS.ALUMNI] = importData;
+            }
+            // Check if it looks like patents data
+            else if (
+              importData.length > 0 &&
+              importData[0].title &&
+              importData[0].inventors
+            ) {
+              console.log("Detected patents data format");
+              processedData[STORAGE_KEYS.PATENTS] = importData;
+            }
+            // Check if it looks like publications data
+            else if (
+              importData.length > 0 &&
+              importData[0].title &&
+              importData[0].abstract
+            ) {
+              console.log("Detected publications data format");
+              processedData[STORAGE_KEYS.PUBLICATIONS] = importData;
+            }
+            // Check if it looks like events data
+            else if (
+              importData.length > 0 &&
+              importData[0].event &&
+              importData[0].description
+            ) {
+              console.log("Detected events data format");
+              processedData[STORAGE_KEYS.EVENTS] = importData;
+            }
+            // Check if it looks like projects data
+            else if (
+              importData.length > 0 &&
+              importData[0].title &&
+              importData[0].slug
+            ) {
+              console.log("Detected projects data format");
+              processedData[STORAGE_KEYS.PROJECTS] = importData;
+            }
+            // Check if it looks like startups data
+            else if (
+              importData.length > 0 &&
+              importData[0].name &&
+              importData[0].founders
+            ) {
+              console.log("Detected startups data format");
+              processedData[STORAGE_KEYS.STARTUPS] = importData;
+            } else {
+              // If we can't auto-detect, ask the user
+              const dataType =
+                prompt(`Could not auto-detect data type. Please specify the type of data you're importing:
+1. books
+2. news
+3. alumni
+4. patents
+5. publications
+6. events
+7. projects
+8. startups
+
+Enter the number or name:`);
+
+              const typeMap = {
+                1: STORAGE_KEYS.BOOKS,
+                books: STORAGE_KEYS.BOOKS,
+                2: STORAGE_KEYS.NEWS,
+                news: STORAGE_KEYS.NEWS,
+                3: STORAGE_KEYS.ALUMNI,
+                alumni: STORAGE_KEYS.ALUMNI,
+                4: STORAGE_KEYS.PATENTS,
+                patents: STORAGE_KEYS.PATENTS,
+                5: STORAGE_KEYS.PUBLICATIONS,
+                publications: STORAGE_KEYS.PUBLICATIONS,
+                6: STORAGE_KEYS.EVENTS,
+                events: STORAGE_KEYS.EVENTS,
+                7: STORAGE_KEYS.PROJECTS,
+                projects: STORAGE_KEYS.PROJECTS,
+                8: STORAGE_KEYS.STARTUPS,
+                startups: STORAGE_KEYS.STARTUPS,
+              };
+
+              const selectedType = typeMap[dataType?.toLowerCase()];
+              if (selectedType) {
+                processedData[selectedType] = importData;
+              } else {
+                alert("Invalid data type selected. Import cancelled.");
+                return;
               }
-            });
-          }
-        }
-        
-        console.log('Processed data:', processedData);
-        
-        // Import the processed data - NOW WITH ASYNC/AWAIT
-        let totalImported = 0;
-        for (const [key, value] of Object.entries(processedData)) {
-          if (Array.isArray(value)) {
-            try {
-              // Get existing data safely - NOW ASYNC
-              const existing = await StorageManager.get(key);
-              console.log(`Existing data for ${key}:`, existing);
-              
-              // Ensure existing is an array before spreading
-              const existingArray = Array.isArray(existing) ? existing : [];
-              
-              // Check if we should replace or merge
-              const shouldReplace = window.confirm(
-                `Found ${value.length} items to import for ${key.replace('aac_', '').toUpperCase()}. ` +
-                `You currently have ${existingArray.length} items. ` +
-                `Click OK to REPLACE existing data, or Cancel to MERGE with existing data.`
+            }
+          } else if (typeof importData === "object") {
+            // If it's an object, check if it has our storage keys
+            console.log("Detected object format");
+
+            // Check if it's a full export with storage keys
+            const hasStorageKeys = Object.keys(importData).some((key) =>
+              Object.values(STORAGE_KEYS).includes(key)
+            );
+
+            if (hasStorageKeys) {
+              console.log("Detected full export format");
+              processedData = importData;
+            } else {
+              // Single item or unknown format
+              console.log("Unknown object format");
+              alert(
+                "Unknown JSON format. Please check your file and try again."
               );
-              
-              let finalData;
-              if (shouldReplace) {
-                finalData = value;
-              } else {
-                // Merge: Remove duplicates based on id or _id
-                const existingIds = new Set();
-                existingArray.forEach(item => {
-                  if (item.id) existingIds.add(item.id);
-                  if (item._id) existingIds.add(item._id);
-                });
-                
-                const newItems = value.filter(item => {
-                  const itemId = item.id || item._id;
-                  return itemId && !existingIds.has(itemId);
-                });
-                
-                finalData = [...existingArray, ...newItems];
-              }
-              
-              console.log(`Setting ${finalData.length} items for ${key}`);
-              // NOW ASYNC
-              const success = await StorageManager.set(key, finalData);
-              
-              if (success) {
-                totalImported += value.length;
-                console.log(`Successfully imported ${value.length} items for ${key}`);
-              } else {
-                console.error(`Failed to import data for ${key}`);
-              }
-            } catch (keyError) {
-              console.error(`Error processing ${key}:`, keyError);
+              return;
             }
           }
+
+          console.log("Processed data:", processedData);
+
+          // Now import the processed data
+          if (Object.keys(processedData).length === 0) {
+            alert("No valid data found to import.");
+            return;
+          }
+
+          // FIXED: Show confirmation dialog with proper async handling
+          let confirmMessage = "Import Summary:\n\n";
+          let totalItems = 0;
+
+          // Get current counts asynchronously
+          const currentCounts = {};
+          for (const key of Object.keys(processedData)) {
+            try {
+              const currentData = await StorageManager.get(key);
+              currentCounts[key] = Array.isArray(currentData)
+                ? currentData.length
+                : 0;
+            } catch (error) {
+              console.error(`Error getting current count for ${key}:`, error);
+              currentCounts[key] = 0;
+            }
+          }
+
+          for (const [key, items] of Object.entries(processedData)) {
+            const sectionName =
+              ADMIN_SECTIONS.find((s) => s.storageKey === key)?.label || key;
+            const currentCount = currentCounts[key];
+            confirmMessage += `${sectionName}: ${items.length} items (currently have ${currentCount})\n`;
+            totalItems += items.length;
+          }
+
+          confirmMessage += `\nTotal: ${totalItems} items to import.\n\nThis will REPLACE existing data. Continue?`;
+
+          if (window.confirm(confirmMessage)) {
+            // Import the data
+            let importedCount = 0;
+
+            for (const [key, items] of Object.entries(processedData)) {
+              try {
+                console.log(`Importing ${items.length} items for ${key}`);
+
+                // Add timestamps to items that don't have them
+                const itemsWithTimestamps = items.map((item) => ({
+                  ...item,
+                  id:
+                    item.id ||
+                    item.Id ||
+                    item._id ||
+                    StorageManager.generateId(),
+                  createdAt: item.createdAt || new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                }));
+
+                // Use StorageManager to set the data
+                const success = await StorageManager.set(
+                  key,
+                  itemsWithTimestamps
+                );
+
+                if (success) {
+                  importedCount += items.length;
+                  console.log(
+                    `Successfully imported ${items.length} items for ${key}`
+                  );
+                } else {
+                  console.error(`Failed to import items for ${key}`);
+                }
+              } catch (error) {
+                console.error(`Error importing ${key}:`, error);
+              }
+            }
+
+            if (importedCount > 0) {
+              alert(`Successfully imported ${importedCount} items!`);
+
+              // Refresh the current section if it was imported
+              if (processedData[currentSection?.storageKey]) {
+                await refresh();
+              }
+
+              // Clear the file input
+              event.target.value = "";
+
+              // Force a page refresh to ensure UI updates
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            } else {
+              alert("Import failed. Check console for details.");
+            }
+          }
+        } catch (error) {
+          console.error("Import error:", error);
+          alert("Import failed. Please check that your JSON file is valid.");
         }
-        
-        if (totalImported > 0) {
-          alert(`Successfully imported ${totalImported} items!`);
-          window.location.reload();
-        } else {
-          alert('No data was imported. Please check the file format.');
-        }
-        
-      } catch (error) {
-        console.error('Import failed:', error);
-        alert(`Import failed: ${error.message}`);
-      }
-    };
-    reader.readAsText(file);
-  }
-  
-  // Reset file input
-  event.target.value = '';
-};
+      };
+      reader.readAsText(file);
+    }
+  };
 
   const renderForm = () => {
     switch (activeSection) {
       case "news":
         return (
-        <NewsForm
-          newsId={editingId}
-          onSuccess={handleFormSuccess}
-          onCancel={handleFormCancel}
-        />
-      );
+          <NewsForm
+            newsId={editingId}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
+        );
       case "patents":
         return (
           <PatentsForm
@@ -585,7 +688,7 @@ const handleImport = (event) => {
                       {item.category}
                     </span>
                   )}
-                  
+
                   {/* Alumni specific badges */}
                   {item.Designation && (
                     <span className="px-2 py-1 bg-green-900/50 text-green-300 text-xs rounded border border-green-700/50">
@@ -602,7 +705,7 @@ const handleImport = (event) => {
                       Class of {item.graduationYear}
                     </span>
                   )}
-                  
+
                   {item.color && (
                     <span
                       className={`px-2 py-1 text-xs rounded border ${

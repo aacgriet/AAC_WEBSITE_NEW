@@ -1,23 +1,21 @@
-// Create src/pages/api/data/[...params].js
-// This will handle all database operations through API endpoints
-
+// src/pages/api/data/[...params].js
 import { DatabaseService } from '@/lib/database';
 
 export default async function handler(req, res) {
   const { params } = req.query;
-  const [operation, key, id] = params;
+  const [action, key, id] = params || [];
 
   try {
-    switch (operation) {
+    switch (action) {
       case 'get':
         if (id) {
-          // Get single item by ID
+          // Get specific item by ID
           const item = await DatabaseService.getById(key, id);
           return res.status(200).json({ success: true, data: item });
         } else {
-          // Get all items
-          const data = await DatabaseService.get(key);
-          return res.status(200).json({ success: true, data });
+          // Get all items for key
+          const items = await DatabaseService.get(key);
+          return res.status(200).json({ success: true, data: items });
         }
 
       case 'add':
@@ -25,7 +23,7 @@ export default async function handler(req, res) {
           return res.status(405).json({ success: false, error: 'Method not allowed' });
         }
         const newItem = await DatabaseService.add(key, req.body);
-        return res.status(201).json({ success: true, data: newItem });
+        return res.status(200).json({ success: true, data: newItem });
 
       case 'update':
         if (req.method !== 'PUT') {
@@ -38,29 +36,48 @@ export default async function handler(req, res) {
         if (req.method !== 'DELETE') {
           return res.status(405).json({ success: false, error: 'Method not allowed' });
         }
-        const success = await DatabaseService.delete(key, id);
-        return res.status(200).json({ success, data: null });
-
-      case 'export':
-        const exportData = await DatabaseService.exportData();
-        return res.status(200).json({ success: true, data: exportData });
+        const deleteSuccess = await DatabaseService.delete(key, id);
+        return res.status(200).json({ success: true, data: deleteSuccess });
 
       case 'import':
         if (req.method !== 'POST') {
           return res.status(405).json({ success: false, error: 'Method not allowed' });
         }
-        const importCount = await DatabaseService.importData(req.body);
-        return res.status(200).json({ success: true, data: { imported: importCount } });
+        
+        if (key === 'all') {
+          // Import all data
+          const imported = await DatabaseService.importData(req.body);
+          return res.status(200).json({ success: true, data: { imported } });
+        } else {
+          // Import specific key data
+          const success = await DatabaseService.set(key, req.body);
+          return res.status(200).json({ success: true, data: success });
+        }
+
+      case 'export':
+        if (key === 'all') {
+          const exportData = await DatabaseService.exportData();
+          return res.status(200).json({ success: true, data: exportData });
+        } else {
+          const keyData = await DatabaseService.get(key);
+          return res.status(200).json({ success: true, data: { [key]: keyData } });
+        }
 
       case 'stats':
-        const stats = await DatabaseService.getStorageStats();
-        return res.status(200).json({ success: true, data: stats });
+        if (key === 'all') {
+          const stats = await DatabaseService.getStorageStats();
+          return res.status(200).json({ success: true, data: stats });
+        }
+        break;
 
       default:
-        return res.status(400).json({ success: false, error: 'Invalid operation' });
+        return res.status(400).json({ success: false, error: 'Invalid action' });
     }
   } catch (error) {
     console.error('API Error:', error);
-    return res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({ 
+      success: false, 
+      error: error.message || 'Internal server error' 
+    });
   }
 }
