@@ -1,4 +1,4 @@
-// src/pages/News/index.js - Clean version without debug info
+// src/pages/News/index.js - DEBUG VERSION to see what's happening
 import React, { useState, useMemo } from 'react';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
@@ -16,13 +16,47 @@ const NewsPage = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [sortOrder, setSortOrder] = useState('newest');
 
+  // DEBUG: Log everything
+  // console.log('=== NEWS DEBUG INFO ===');
+  // console.log('Storage key being used:', STORAGE_KEYS.NEWS);
+  // console.log('Raw newsData:', newsData);
+  // console.log('newsData type:', typeof newsData);
+  // console.log('newsData length:', newsData?.length);
+  // console.log('Loading state:', loading);
+  // console.log('Error state:', error);
+  
+  // Check localStorage directly
+  if (typeof window !== 'undefined') {
+    const directData = localStorage.getItem(STORAGE_KEYS.NEWS);
+    console.log('Direct localStorage data:', directData);
+    if (directData) {
+      try {
+        const parsed = JSON.parse(directData);
+        console.log('Parsed localStorage data:', parsed);
+        console.log('Parsed data length:', parsed?.length);
+      } catch (e) {
+        console.log('Error parsing localStorage data:', e);
+      }
+    }
+  }
+
   // Normalize the news data structure
   const normalizedNewsData = useMemo(() => {
+    console.log('Normalizing data...');
+    
+    if (!newsData) {
+      console.log('No newsData available');
+      return [];
+    }
+    
     if (!Array.isArray(newsData)) {
+      console.log('newsData is not an array:', typeof newsData);
       return [];
     }
 
-    return newsData.map(news => {
+    const normalized = newsData.map((news, index) => {
+      console.log(`Processing news item ${index}:`, news);
+      
       // Handle different data structures
       const normalizedNews = {
         _id: news._id || news.id || `news-${Date.now()}-${Math.random()}`,
@@ -39,12 +73,17 @@ const NewsPage = () => {
         ...news
       };
 
+      console.log(`Normalized news item ${index}:`, normalizedNews);
       return normalizedNews;
     });
+    
+    console.log('Final normalized data:', normalized);
+    return normalized;
   }, [newsData]);
 
   // Get unique categories
   const categories = useMemo(() => {
+    console.log('Computing categories...');
     const allCategories = ['All'];
     normalizedNewsData.forEach(news => {
       const category = news.categories;
@@ -52,11 +91,13 @@ const NewsPage = () => {
         allCategories.push(category);
       }
     });
+    console.log('Available categories:', allCategories);
     return allCategories;
   }, [normalizedNewsData]);
 
   // Filter and sort news
   const filteredAndSortedNews = useMemo(() => {
+    console.log('Filtering and sorting...');
     let filtered = normalizedNewsData.filter(news => {
       const matchesSearch = news.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            (news.slug?.current && news.slug.current.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -77,6 +118,7 @@ const NewsPage = () => {
       }
     });
 
+    console.log('Filtered and sorted news:', filtered);
     return filtered;
   }, [normalizedNewsData, searchTerm, activeCategory, sortOrder]);
 
@@ -116,6 +158,29 @@ const NewsPage = () => {
       <div className="py-16 px-4">
         <div className="container mx-auto max-w-7xl">
           
+          {/* DEBUG INFO - Only show in development */}
+          {/* <div className="mb-8 p-4 bg-gray-800 rounded-lg text-white text-sm">
+            <h4 className="font-bold mb-2">🐛 DEBUG INFO:</h4>
+            <p><strong>Storage Key:</strong> {STORAGE_KEYS.NEWS}</p>
+            <p><strong>Raw Data Length:</strong> {newsData?.length || 0}</p>
+            <p><strong>Normalized Data Length:</strong> {normalizedNewsData.length}</p>
+            <p><strong>Filtered Data Length:</strong> {filteredAndSortedNews.length}</p>
+            <p><strong>Categories Found:</strong> {categories.join(', ')}</p>
+            <p><strong>Active Category:</strong> {activeCategory}</p>
+            <p><strong>Search Term:</strong> "{searchTerm}"</p>
+            <p><strong>Loading:</strong> {loading ? 'Yes' : 'No'}</p>
+            <p><strong>Error:</strong> {error ? error.message : 'None'}</p>
+            
+            {newsData && newsData.length > 0 && (
+              <details className="mt-4">
+                <summary className="cursor-pointer font-bold">📋 Raw Data Sample (First Item)</summary>
+                <pre className="mt-2 p-2 bg-gray-900 rounded text-xs overflow-auto max-h-40">
+                  {JSON.stringify(newsData[0], null, 2)}
+                </pre>
+              </details>
+            )}
+          </div> */}
+
           {/* Search and Filter Controls */}
           <NewsFilter
             categories={categories}
@@ -134,17 +199,26 @@ const NewsPage = () => {
                 {normalizedNewsData.length === 0 ? (
                   <>
                     <div className="text-6xl mb-4">📰</div>
-                    <h3 className="text-2xl font-semibold text-white mb-4">No News Available</h3>
-                    <p className="text-gray-400 mb-8">
-                      News articles will appear here once they are published. Check back soon for updates!
-                    </p>
+                    <h3 className="text-2xl font-semibold text-white mb-4">No News Data Found</h3>
+                    {/* <p className="text-gray-400 mb-8">
+                      Check the debug info above to see what's happening with the data loading.
+                    </p> */}
+                    {/* <div className="bg-yellow-900/50 border border-yellow-700 text-yellow-300 p-4 rounded-lg max-w-md mx-auto">
+                      <p className="font-bold">Troubleshooting Steps:</p>
+                      <ol className="text-left mt-2 text-sm">
+                        <li>1. Check if data was imported correctly</li>
+                        <li>2. Verify the storage key: {STORAGE_KEYS.NEWS}</li>
+                        <li>3. Check browser localStorage in DevTools</li>
+                        <li>4. Try refreshing the page</li>
+                      </ol>
+                    </div> */}
                   </>
                 ) : (
                   <>
                     <div className="text-6xl mb-4">🔍</div>
                     <h3 className="text-2xl font-semibold text-white mb-4">No Results Found</h3>
                     <p className="text-gray-400 mb-8">
-                      Try adjusting your search terms or filters to find what you're looking for.
+                      Found {normalizedNewsData.length} articles, but none match your current filters.
                     </p>
                     <button
                       onClick={() => {

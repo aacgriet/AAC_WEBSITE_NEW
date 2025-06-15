@@ -1,4 +1,5 @@
-// src/components/News/NewsCard.jsx - Always show gradient, keep image support for future
+// src/components/News/NewsCard.jsx - Update the NewsCard component
+
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -37,8 +38,14 @@ const NewsCard = ({ news, index }) => {
     return "Latest news from Advanced Academic Center";
   };
 
+  // Get the news ID - handle both id and _id
+  const getNewsId = (news) => {
+    return news.id || news._id;
+  };
+
   const publishDate = getFormattedDate(news.publishedAt);
   const description = getDescription(news);
+  const newsId = getNewsId(news);
   
   // Animation variants for each card
   const item = {
@@ -132,7 +139,7 @@ const NewsCard = ({ news, index }) => {
       
       {/* Card Content */}
       <div className="p-6 flex-grow flex flex-col bg-[#1a2535]">
-        <Link href={`/News/${news._id}`}>
+        <Link href={`/News/${newsId}`}>
           <h3 className="text-xl font-bold mb-3 line-clamp-2 hover:text-blue-400 transition-colors cursor-pointer text-white">
             {news.title}
           </h3>
@@ -144,7 +151,7 @@ const NewsCard = ({ news, index }) => {
         
         <div className="mt-auto pt-4 border-t border-gray-600">
           <Link 
-            href={`/News/${news._id}`}
+            href={`/News/${newsId}`}
             className="inline-flex items-center text-blue-400 hover:text-blue-300 font-medium transition-colors"
           >
             Read More

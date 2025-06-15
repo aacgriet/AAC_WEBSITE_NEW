@@ -138,15 +138,82 @@ export class StorageManager {
     }
   }
 
+  // src/lib/storage.js - Update the getById method to handle both id and _id
+  // ... other methods remain the same ...
+
   static getById(key, id) {
     console.log(`StorageManager.getById: Getting item ${id} from key ${key}`);
     
     const items = this.get(key);
-    const item = items.find(item => item.id === id) || null;
+    // Check both id and _id fields to handle different data formats
+    const item = items.find(item => item.id === id || item._id === id) || null;
     
     console.log(`StorageManager.getById: Found item:`, item);
     return item;
   }
+
+  static update(key, id, updates) {
+    console.log(`StorageManager.update: Updating item ${id} in key ${key}:`, updates);
+    
+    const items = this.get(key);
+    // Find item by either id or _id
+    const index = items.findIndex(item => item.id === id || item._id === id);
+    
+    if (index === -1) {
+      console.error(`StorageManager.update: Item with id ${id} not found in ${key}`);
+      return null;
+    }
+    
+    const updatedItem = {
+      ...items[index],
+      ...updates,
+      id: items[index].id || items[index]._id, // Ensure we have an id field
+      _id: items[index]._id || items[index].id, // Keep _id if it exists
+      createdAt: items[index].createdAt || items[index]._createdAt, // Preserve creation date
+      updatedAt: new Date().toISOString()
+    };
+    
+    console.log(`StorageManager.update: Updated item:`, updatedItem);
+    
+    const updatedItems = [...items];
+    updatedItems[index] = updatedItem;
+    
+    const success = this.set(key, updatedItems);
+    
+    if (success) {
+      console.log(`StorageManager.update: Successfully updated item ${id} in ${key}`);
+      return updatedItem;
+    } else {
+      console.error(`StorageManager.update: Failed to update item ${id} in ${key}`);
+      return null;
+    }
+  }
+
+  static delete(key, id) {
+    console.log(`StorageManager.delete: Deleting item ${id} from key ${key}`);
+    
+    const items = this.get(key);
+    const initialLength = items.length;
+    // Filter by both id and _id
+    const filteredItems = items.filter(item => item.id !== id && item._id !== id);
+    
+    if (filteredItems.length === initialLength) {
+      console.error(`StorageManager.delete: Item with id ${id} not found in ${key}`);
+      return false;
+    }
+    
+    const success = this.set(key, filteredItems);
+    
+    if (success) {
+      console.log(`StorageManager.delete: Successfully deleted item ${id} from ${key}`);
+      return true;
+    } else {
+      console.error(`StorageManager.delete: Failed to delete item ${id} from ${key}`);
+      return false;
+    }
+  }
+
+
 
   static generateId() {
     const timestamp = Date.now().toString(36);
