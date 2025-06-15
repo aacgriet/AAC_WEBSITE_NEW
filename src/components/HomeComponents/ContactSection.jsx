@@ -1,4 +1,4 @@
-// src/components/HomeComponents/ContactSection.jsx
+// src/components/HomeComponents/ContactSection.jsx - Updated with email integration
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
@@ -11,6 +11,7 @@ const ContactSection = () => {
   });
   
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,25 +21,39 @@ const ContactSection = () => {
     }));
   };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real application, you'd send the form data to your backend
-    console.log('Form submitted:', formState);
+    setIsSubmitting(true);
     
-    // Show success message
-    setIsSubmitted(true);
-    
-    // Reset form
-    setFormState({
-      name: '',
-      email: '',
-      message: '',
-    });
-    
-    // Reset submission status after 5 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-    }, 5000);
+    try {
+      // Create mailto link with form data
+      const subject = `Contact Form Submission from ${formState.name}`;
+      const body = `Name: ${formState.name}\nEmail: ${formState.email}\n\nMessage:\n${formState.message}`;
+      const mailtoLink = `mailto:aacgriet.org@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      
+      // Open mailto link
+      window.location.href = mailtoLink;
+      
+      // Show success message
+      setIsSubmitted(true);
+      
+      // Reset form
+      setFormState({
+        name: '',
+        email: '',
+        message: '',
+      });
+      
+      // Reset submission status after 5 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+      }, 5000);
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      alert('There was an error sending your message. Please try again or contact us directly at aacgriet.org@gmail.com');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   // Animation variants
@@ -71,12 +86,6 @@ const ContactSection = () => {
       info: 'GRIET, Hyderabad, India',
       link: 'https://maps.google.com/?q=Gokaraju+Rangaraju+Institute+of+Engineering+and+Technology,+Hyderabad',
     },
-    // {
-    //   icon: <FaPhone />,
-    //   title: 'Phone',
-    //   info: '+91 XXXXXXXXXX',
-    //   link: 'tel:+91XXXXXXXXXX',
-    // },
   ];
   
   return (
@@ -133,8 +142,11 @@ const ContactSection = () => {
               animate={{ opacity: 1, scale: 1 }}
               className="bg-green-600 bg-opacity-20 backdrop-blur-sm border border-green-500 border-opacity-30 rounded-lg p-4 text-center"
             >
-              <p className="text-green-100 text-lg font-medium">
-                Thank you! Your message has been sent successfully.
+              <p className="text-green-100 text-lg font-medium mb-2">
+                Thank you! Your email client should open shortly.
+              </p>
+              <p className="text-green-200 text-sm">
+                If it doesn't open automatically, please email us directly at aacgriet.org@gmail.com
               </p>
             </motion.div>
           ) : (
@@ -192,10 +204,18 @@ const ContactSection = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 type="submit"
-                className="w-full py-3 px-6 bg-white text-blue-900 font-medium rounded-lg hover:shadow-lg transition-all duration-300"
+                disabled={isSubmitting}
+                className="w-full py-3 px-6 bg-white text-blue-900 font-medium rounded-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send Message
+                {isSubmitting ? 'Opening Email Client...' : 'Send Message'}
               </motion.button>
+              
+              <motion.p
+                variants={itemVariants}
+                className="text-blue-200 text-sm mt-3 text-center"
+              >
+                This will open your email client to send the message to aacgriet.org@gmail.com
+              </motion.p>
             </form>
           )}
         </motion.div>
@@ -234,18 +254,25 @@ const ContactSection = () => {
           >
             <h4 className="text-lg font-medium text-white mb-4">Connect With Us</h4>
             <p className="text-blue-100 mb-4">
-              Follow us on social media for the latest updates on projects, events, and opportunities.
+              Follow us on social media for the latest updates on events, research, and opportunities.
             </p>
-            <div className="flex space-x-4">
-              {['LinkedIn', 'YouTube', 'Instagram', 'GitHub'].map((platform, index) => (
+            <div className="flex flex-wrap gap-3">
+              {[
+                { name: 'LinkedIn', url: 'https://www.linkedin.com/school/aac-griet/' },
+                { name: 'YouTube', url: 'https://www.youtube.com/channel/UCqpWtDtDLxBLy8yJZO_-eBw' },
+                { name: 'Instagram', url: 'https://instagram.com/aac_grietofficial?igshid=YmMyMTA2M2Y=' },
+                { name: 'GitHub', url: 'https://github.com/aacgriet' }
+              ].map((platform, index) => (
                 <motion.a
                   key={index}
                   whileHover={{ y: -5 }}
                   whileTap={{ scale: 0.95 }}
-                  href="#"
+                  href={platform.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="px-4 py-2 bg-white bg-opacity-20 rounded-lg text-white text-sm hover:bg-opacity-30 transition-all duration-300"
                 >
-                  {platform}
+                  {platform.name}
                 </motion.a>
               ))}
             </div>

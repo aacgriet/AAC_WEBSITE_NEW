@@ -1,10 +1,10 @@
-// src/components/HomeComponents/ProjectsShowcase.jsx
+// src/components/HomeComponents/EventsShowcase.jsx - Replaces ProjectsShowcase
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
-const ProjectCard = ({ title, category, image, link, index }) => {
+const EventCard = ({ title, category, image, link, index }) => {
   const [isHovered, setIsHovered] = useState(false);
   
   return (
@@ -66,36 +66,36 @@ const ProjectCard = ({ title, category, image, link, index }) => {
   );
 };
 
-const ProjectsShowcase = () => {
-  // Sample project data - in a real app, this would come from an API or props
-  const projects = [
+const EventsShowcase = () => {
+  // Featured events data - using the same UI as projects but with events
+  const events = [
     {
       id: 1,
-      title: "Intelligent Drone Vision System",
-      category: "Robotics",
-      image: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100162/AAC-web/news_events/Juniorshackathon2_opwpyj.jpg",
-      link: "/projects/drone-vision"
+      title: "Opulence 2024",
+      category: "Annual Symposium",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/v1730825381/AAC-web/news_events/opulence2023/zdcnmfzelmh4u20wyr1x.jpg",
+      link: "/Events/Opulence2024"
     },
     {
       id: 2,
-      title: "Advanced Data Analytics Platform",
-      category: "AI & Machine Learning",
-      image: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100167/AAC-web/news_events/nrsc5_e8it62.jpg",
-      link: "/projects/data-analytics"
+      title: "AAC Expo 2023",
+      category: "Technology Exhibition",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/v1730825380/AAC-web/news_events/opulence2023/gor2ysygdbqylqjgqybv.jpg",
+      link: "/Events/Expo2023"
     },
     {
       id: 3,
-      title: "Smart Healthcare Monitoring",
-      category: "IoT",
-      image: "https://res.cloudinary.com/aacgriet/image/upload/v1730825381/AAC-web/news_events/opulence2023/zdcnmfzelmh4u20wyr1x.jpg",
-      link: "/projects/healthcare-monitoring"
+      title: "Cyber Security Seminar",
+      category: "Educational Workshop",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100184/AAC-web/news_events/vishwakarma_zzzwlh.jpg",
+      link: "/Events/CyberSecuritySeminar"
     },
     {
       id: 4,
-      title: "Renewable Energy Optimization",
-      category: "Sustainability",
-      image: "https://res.cloudinary.com/aacgriet/image/upload/v1730825380/AAC-web/news_events/opulence2023/gor2ysygdbqylqjgqybv.jpg",
-      link: "/projects/energy-optimization"
+      title: "AAC Lab Inauguration",
+      category: "Milestone Event",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_400,w_500/v1664100167/AAC-web/news_events/nrsc5_e8it62.jpg",
+      link: "/Events/Labstart"
     }
   ];
   
@@ -109,36 +109,36 @@ const ProjectsShowcase = () => {
           transition={{ duration: 0.8 }}
           className="inline-block px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full mb-4"
         >
-          Our Work
+          Our Events
         </motion.span>
         <motion.h2 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-4xl md:text-5xl text-white  font-bold mb-6"
+          className="text-4xl md:text-5xl text-white font-bold mb-6"
         >
-          Featured Projects
+          Featured Events
         </motion.h2>
         <motion.p 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1, duration: 0.8 }}
-          className="text-xl text-white  max-w-3xl mx-auto mb-10"
+          className="text-xl text-white max-w-3xl mx-auto mb-10"
         >
-          Explore our innovative research and development projects creating real-world impact.
+          Discover our workshops, seminars, competitions, and exhibitions that inspire innovation and learning.
         </motion.p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {projects.map((project, index) => (
-          <ProjectCard
-            key={project.id}
-            title={project.title}
-            category={project.category}
-            image={project.image}
-            link={project.link}
+        {events.map((event, index) => (
+          <EventCard
+            key={event.id}
+            title={event.title}
+            category={event.category}
+            image={event.image}
+            link={event.link}
             index={index}
           />
         ))}
@@ -152,14 +152,14 @@ const ProjectsShowcase = () => {
         className="flex justify-center mt-12"
       >
         <Link 
-          href="/projects" 
+          href="/Events" 
           className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full hover:shadow-lg transition-shadow"
         >
-          View All Projects
+          View All Events
         </Link>
       </motion.div>
     </div>
   );
 };
 
-export default ProjectsShowcase;
+export default EventsShowcase;

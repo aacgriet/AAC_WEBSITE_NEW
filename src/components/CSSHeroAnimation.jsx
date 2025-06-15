@@ -1,4 +1,4 @@
-// src/components/CSSHeroAnimation.jsx
+// src/components/CSSHeroAnimation.jsx - Fixed to fit exactly full screen with seamless button animation
 import React from 'react';
 import { motion } from 'framer-motion';
 
@@ -22,10 +22,12 @@ const CSSHeroAnimation = () => {
 
   return (
     <div 
-      className="relative w-full h-screen overflow-hidden hero-section" 
+      className="relative w-full overflow-hidden hero-section" 
       style={{ 
         backgroundColor: themeColors.darkBg,
-        marginTop: '-16px', // Slight negative margin to eliminate any gap
+        height: '100vh', // Exactly full viewport height
+        minHeight: '100vh', // Ensure minimum full height
+        maxHeight: '100vh', // Prevent exceeding viewport
       }}
     >
       {/* Particles Background - Pure CSS */}
@@ -72,27 +74,14 @@ const CSSHeroAnimation = () => {
             animation: 'moveGradient 30s ease-in-out infinite alternate-reverse'
           }}
         />
-        
-        {/* Bottom gradient for section flow */}
-        <div
-          className="absolute opacity-30"
-          style={{
-            background: `linear-gradient(to bottom, transparent 80%, ${themeColors.darkBg})`,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '20vh',
-            zIndex: 2
-          }}
-        />
       </div>
       
-      {/* Content Overlay */}
+      {/* Content Overlay - Centered vertically */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 text-center">
         <motion.h1
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="text-5xl md:text-7xl font-normal mb-6 text-gradient"
           style={{ 
             fontFamily: '"Work Sans Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
@@ -105,7 +94,7 @@ const CSSHeroAnimation = () => {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="text-xl md:text-2xl text-center max-w-2xl mx-auto mb-12 text-gray-100"
           style={{ 
             fontFamily: '"Work Sans Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
@@ -115,12 +104,28 @@ const CSSHeroAnimation = () => {
           Innovation • Research • Excellence
         </motion.p>
 
+        {/* Seamless Button Animation */}
         <motion.button
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          initial={{ opacity: 0, y: 30, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ 
+            duration: 1.2, 
+            delay: 0.6,
+            ease: [0.25, 0.46, 0.45, 0.94], // Smooth cubic-bezier easing
+            scale: {
+              type: "spring",
+              stiffness: 200,
+              damping: 20
+            }
+          }}
+          whileHover={{ 
+            scale: 1.05,
+            transition: { duration: 0.2, ease: "easeOut" }
+          }}
+          whileTap={{ 
+            scale: 0.98,
+            transition: { duration: 0.1 }
+          }}
           className="px-8 py-3 bg-white bg-opacity-20 backdrop-blur-md rounded-full text-white font-normal transition-all hover:bg-opacity-30"
           style={{ 
             fontFamily: '"Work Sans Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
@@ -134,13 +139,13 @@ const CSSHeroAnimation = () => {
         </motion.button>
       </div>
       
-      {/* Down indicator that hints at scrolling for section continuity */}
+      {/* Down indicator - Positioned absolutely at bottom */}
       <div 
-        className="absolute bottom-3 left-0 right-0 flex justify-center z-10 animate-bounce cursor-pointer"
+        className="absolute bottom-8 left-0 right-0 flex justify-center z-10 animate-bounce cursor-pointer"
         onClick={scrollToNextSection}
       >
         <svg 
-          className="w-10 h-10 text-white opacity-80" 
+          className="w-8 h-8 text-white opacity-80 hover:opacity-100 transition-opacity" 
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24" 
@@ -179,6 +184,22 @@ const CSSHeroAnimation = () => {
           100% {
             transform: translate(20vw, 20vh);
           }
+        }
+
+        /* Ensure the hero section takes exactly full viewport */
+        .hero-section {
+          position: relative;
+          width: 100%;
+          height: 100vh;
+          overflow: hidden;
+        }
+
+        /* Gradient text effect */
+        .text-gradient {
+          background: linear-gradient(135deg, #ffffff 0%, #57e1ff 50%, #3b82f6 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
       `}</style>
     </div>
