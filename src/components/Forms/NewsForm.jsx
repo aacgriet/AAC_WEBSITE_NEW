@@ -1,4 +1,4 @@
-// src/components/Forms/NewsForm.jsx
+// src/components/Forms/NewsForm.jsx - Enhanced version following the JSON structure
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField } from './BaseForm';
 import ImageUpload from './ImageUpload';
@@ -7,11 +7,12 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { STORAGE_KEYS } from '@/lib/storage';
 
 const NEWS_CATEGORIES = [
-  'NOTICE',
-  'ACHIEVEMENT', 
-  'EVENT',
-  'RESEARCH',
-  'UPDATE'
+  'news',
+  'Event', 
+  'Talks',
+  'Book',
+  'Achievement',
+  'Notice'
 ];
 
 const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
@@ -20,16 +21,28 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
   const [errors, setErrors] = useState({});
   
   const [formData, setFormData] = useState({
+    _id: '',
     title: '',
-    slug: '',
-    content: '',
-    publishedAt: new Date().toISOString().split('T')[0],
-    categories: '',
-    mainImage: {
-      url: '',
-      altText: ''
+    slug: {
+      current: ''
     },
-    status: 'draft'
+    body: [],
+    _rawBody: '',
+    publishedAt: new Date().toISOString(),
+    categories: 'news',
+    mainImage: {
+      _type: 'image',
+      asset: {
+        _ref: '',
+        _type: 'reference',
+        url: '',
+        altText: ''
+      }
+    },
+    _type: 'News',
+    _createdAt: '',
+    _updatedAt: '',
+    _rev: ''
   });
 
   useEffect(() => {
@@ -39,8 +52,8 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
         setFormData({
           ...existingNews,
           publishedAt: existingNews.publishedAt ? 
-            new Date(existingNews.publishedAt).toISOString().split('T')[0] : 
-            new Date().toISOString().split('T')[0]
+            new Date(existingNews.publishedAt).toISOString() : 
+            new Date().toISOString()
         });
       }
     }
@@ -48,22 +61,66 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
     
+    if (name === 'slug') {
+      setFormData(prev => ({
+        ...prev,
+        slug: {
+          ...prev.slug,
+          current: value
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+    
+    // Auto-generate slug from title if creating new news
     if (name === 'title' && !newsId) {
-      const slug = value.toLowerCase()
+      const slugValue = value.toLowerCase()
         .replace(/[^a-z0-9 -]/g, '')
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
         .trim();
+      
       setFormData(prev => ({
         ...prev,
-        slug
+        slug: {
+          ...prev.slug,
+          current: slugValue
+        }
       }));
     }
+  };
+
+  const handleBodyChange = (e) => {
+    const { value } = e.target;
+    
+    // Convert the raw body text into the structured format
+    const bodyBlocks = value.split('\n\n').map((paragraph, index) => {
+      if (!paragraph.trim()) return null;
+      
+      return {
+        _key: `block-${Date.now()}-${index}`,
+        _type: 'block',
+        children: [{
+          _key: `span-${Date.now()}-${index}`,
+          _type: 'span',
+          marks: [],
+          text: paragraph.trim()
+        }],
+        markDefs: [],
+        style: 'normal'
+      };
+    }).filter(Boolean);
+    
+    setFormData(prev => ({
+      ...prev,
+      body: bodyBlocks,
+      _rawBody: value
+    }));
   };
 
   const handleImageChange = (url) => {
@@ -71,7 +128,11 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
       ...prev,
       mainImage: {
         ...prev.mainImage,
-        url
+        asset: {
+          ...prev.mainImage.asset,
+          url: url,
+          _ref: url ? `image-${Date.now()}` : ''
+        }
       }
     }));
   };
@@ -81,7 +142,10 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
       ...prev,
       mainImage: {
         ...prev.mainImage,
-        altText: e.target.value
+        asset: {
+          ...prev.mainImage.asset,
+          altText: e.target.value
+        }
       }
     }));
   };
@@ -93,12 +157,12 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
       newErrors.title = 'Title is required';
     }
     
-    if (!formData.slug.trim()) {
+    if (!formData.slug.current.trim()) {
       newErrors.slug = 'Slug is required';
     }
     
-    if (!formData.content.trim()) {
-      newErrors.content = 'Content is required';
+    if (!formData._rawBody.trim()) {
+      newErrors._rawBody = 'Content is required';
     }
     
     if (!formData.categories) {
@@ -111,7 +175,7 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
 
     if (!newsId) {
       const slugExists = newsData.some(item => 
-        item.slug === formData.slug && item.id !== newsId
+        item.slug?.current === formData.slug.current && item._id !== newsId
       );
       if (slugExists) {
         newErrors.slug = 'Slug already exists';
@@ -132,10 +196,16 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
     setIsSubmitting(true);
     
     try {
+      const currentTime = new Date().toISOString();
       const newsItem = {
         ...formData,
+        _id: newsId || `news-${Date.now()}`,
+        _createdAt: newsId ? formData._createdAt : currentTime,
+        _updatedAt: currentTime,
+        _rev: `rev-${Date.now()}`,
         publishedAt: new Date(formData.publishedAt).toISOString(),
-        mainImage: formData.mainImage.url ? formData.mainImage : null
+        // Clean up mainImage if no URL provided
+        mainImage: formData.mainImage.asset.url ? formData.mainImage : null
       };
       
       let result;
@@ -178,7 +248,7 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
         <FormField
           label="Slug"
           name="slug"
-          value={formData.slug}
+          value={formData.slug.current}
           onChange={handleInputChange}
           placeholder="url-friendly-title"
           required
@@ -198,63 +268,63 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
         />
         
         <FormField
-          label="Published Date"
+          label="Published Date & Time"
           name="publishedAt"
-          type="date"
-          value={formData.publishedAt}
-          onChange={handleInputChange}
+          type="datetime-local"
+          value={formData.publishedAt.slice(0, 16)}
+          onChange={(e) => setFormData(prev => ({ 
+            ...prev, 
+            publishedAt: new Date(e.target.value).toISOString() 
+          }))}
           required
           error={errors.publishedAt}
         />
       </div>
 
-      <TextAreaField
-        label="Summary/Excerpt"
-        name="slug"
-        value={formData.slug}
-        onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-        placeholder="Brief summary of the news article"
-        rows={3}
-        error={errors.slug}
-      />
-
-      <RichTextEditor
-        label="Content"
-        value={formData.content}
-        onChange={handleInputChange}
-        placeholder="Write your news article content here..."
-        required
-        error={errors.content}
-      />
+      <div className="space-y-4">
+        <label className="block text-sm font-medium text-gray-300">
+          Content (Body) <span className="text-red-400">*</span>
+        </label>
+        <textarea
+          value={formData._rawBody}
+          onChange={handleBodyChange}
+          placeholder="Write your news article content here. Use double line breaks to separate paragraphs."
+          rows={12}
+          required
+          className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-vertical"
+        />
+        {errors._rawBody && <p className="text-red-400 text-sm">{errors._rawBody}</p>}
+        <p className="text-gray-400 text-xs">
+          Tip: Use double line breaks (press Enter twice) to create separate paragraphs.
+        </p>
+      </div>
 
       <ImageUpload
         label="Featured Image"
-        value={formData.mainImage.url}
+        value={formData.mainImage?.asset?.url || ''}
         onChange={handleImageChange}
         error={errors.mainImage}
       />
 
-      {formData.mainImage.url && (
+      {formData.mainImage?.asset?.url && (
         <FormField
           label="Image Alt Text"
           name="imageAlt"
-          value={formData.mainImage.altText}
+          value={formData.mainImage?.asset?.altText || ''}
           onChange={handleImageAltChange}
           placeholder="Describe the image for accessibility"
         />
       )}
 
-      <SelectField
-        label="Status"
-        name="status"
-        value={formData.status}
-        onChange={handleInputChange}
-        options={[
-          { value: 'draft', label: 'Draft' },
-          { value: 'published', label: 'Published' }
-        ]}
-        required
-      />
+      {/* Debug Information (only in development) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="bg-gray-800 p-4 rounded-lg">
+          <h4 className="text-white font-medium mb-2">Debug - Structured Body Preview:</h4>
+          <pre className="text-xs text-gray-300 overflow-auto max-h-32">
+            {JSON.stringify(formData.body, null, 2)}
+          </pre>
+        </div>
+      )}
 
       {errors.submit && (
         <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg">

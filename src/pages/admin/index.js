@@ -11,6 +11,7 @@ import BooksForm from "@/components/Forms/BooksForm";
 import AlumniForm from "@/components/Forms/AlumniForm";
 import StartupsForm from "@/components/Forms/StartupsForm";
 import NewsForm from "@/components/Forms/NewsForm";
+
 import EventsForm from "@/components/Forms/EventsForm";
 import ProjectsForm from "@/components/Forms/ProjectsForm";
 
@@ -59,194 +60,6 @@ const ADMIN_SECTIONS = [
     storageKey: STORAGE_KEYS.ALUMNI,
   },
 ];
-
-// News Form Component
-const SimpleNewsForm = ({ newsId = null, onSuccess, onCancel }) => {
-  const {
-    data: newsData,
-    addItem,
-    updateItem,
-    getItemById,
-    refresh,
-  } = useLocalStorage(STORAGE_KEYS.NEWS);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
-
-  const [formData, setFormData] = useState({
-    title: "",
-    slug: "",
-    content: "",
-    publishedAt: new Date().toISOString().split("T")[0],
-    categories: "NOTICE",
-    status: "published",
-  });
-
-  useEffect(() => {
-    if (newsId) {
-      const existingNews = getItemById(newsId);
-      if (existingNews) {
-        setFormData({
-          ...existingNews,
-          publishedAt: existingNews.publishedAt
-            ? new Date(existingNews.publishedAt).toISOString().split("T")[0]
-            : new Date().toISOString().split("T")[0],
-        });
-      }
-    }
-  }, [newsId, getItemById]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!formData.title.trim() || !formData.content.trim()) {
-      setErrors({ submit: "Title and content are required" });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const newsItem = {
-        ...formData,
-        publishedAt: new Date(formData.publishedAt).toISOString(),
-        createdAt: newsId ? undefined : new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      let result;
-      if (newsId) {
-        result = updateItem(newsId, newsItem);
-      } else {
-        result = addItem(newsItem);
-      }
-
-      if (result) {
-        refresh();
-        onSuccess?.(result);
-      }
-    } catch (error) {
-      console.error("Error saving news:", error);
-      setErrors({ submit: "Error saving news: " + error.message });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="bg-[#1a2535] rounded-xl shadow-lg p-8 border border-gray-700">
-      <h2 className="text-2xl font-bold mb-6 text-white">
-        {newsId ? "Edit News" : "Add News"}
-      </h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Title *
-          </label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            placeholder="Enter news title"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Summary/Slug
-          </label>
-          <textarea
-            name="slug"
-            value={formData.slug}
-            onChange={handleInputChange}
-            rows={2}
-            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-vertical"
-            placeholder="Brief summary of the news"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Content *
-          </label>
-          <textarea
-            name="content"
-            value={formData.content}
-            onChange={handleInputChange}
-            rows={8}
-            required
-            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-vertical"
-            placeholder="Enter the full news content here..."
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Category
-            </label>
-            <select
-              name="categories"
-              value={formData.categories}
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            >
-              <option value="NOTICE">NOTICE</option>
-              <option value="ACHIEVEMENT">ACHIEVEMENT</option>
-              <option value="EVENT">EVENT</option>
-              <option value="RESEARCH">RESEARCH</option>
-              <option value="UPDATE">UPDATE</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Published Date
-            </label>
-            <input
-              type="date"
-              name="publishedAt"
-              value={formData.publishedAt}
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            />
-          </div>
-        </div>
-
-        {errors.submit && (
-          <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg">
-            {errors.submit}
-          </div>
-        )}
-
-        <div className="flex justify-end space-x-4 pt-6 border-t border-gray-700">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={isSubmitting}
-            className="px-6 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="px-6 py-2 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors disabled:opacity-50 border border-blue-700"
-          >
-            {isSubmitting ? "Saving..." : newsId ? "Update" : "Create"}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-};
 
 // Simple Migration Component
 const SimpleMigrationComponent = () => {
@@ -563,12 +376,12 @@ const AdminDashboard = () => {
     switch (activeSection) {
       case "news":
         return (
-          <SimpleNewsForm
-            newsId={editingId}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        );
+        <NewsForm
+          newsId={editingId}
+          onSuccess={handleFormSuccess}
+          onCancel={handleFormCancel}
+        />
+      );
       case "patents":
         return (
           <PatentsForm
