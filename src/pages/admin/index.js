@@ -298,126 +298,159 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleImport = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const importData = JSON.parse(e.target.result);
-          console.log('Raw import data:', importData);
+  // Replace the handleImport function in src/pages/admin/index.js with this ASYNC version
+
+const handleImport = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = async (e) => { // Make this async
+      try {
+        const importData = JSON.parse(e.target.result);
+        console.log('Raw import data:', importData);
+        
+        // Handle different JSON formats
+        let processedData = {};
+        
+        if (Array.isArray(importData)) {
+          // If it's an array, we need to process it based on the content
+          console.log('Detected array format');
           
-          // Handle different JSON formats
-          let processedData = {};
-          
-          if (Array.isArray(importData)) {
-            // If it's an array, we need to process it based on the content
-            console.log('Detected array format');
+          // Check if it looks like books data (has id, title, authors, etc.)
+          if (importData.length > 0 && importData[0].id && importData[0].title && importData[0].authors) {
+            console.log('Detected books data format');
+            processedData[STORAGE_KEYS.BOOKS] = importData;
+          }
+          // Check if it looks like news data (has _id, title, etc.)
+          else if (importData.length > 0 && importData[0]._id && importData[0].title) {
+            console.log('Detected news data format');
             
-            // Check if it looks like news data (has _id, title, etc.)
-            if (importData.length > 0 && importData[0]._id && importData[0].title) {
-              console.log('Detected news data format');
-              
-              // Transform the data to match our storage format
-              const transformedNews = importData.map(item => ({
-                id: item._id, // Map _id to id
-                _id: item._id, // Keep _id for compatibility
-                title: item.title,
-                slug: typeof item.slug === 'object' ? item.slug.current : item.slug, // Handle slug object
-                publishedAt: item.publishedAt,
-                categories: item.categories,
-                _rawBody: item._rawBody,
-                mainImage: item.mainImage,
-                links: item.links || [],
-                _type: item._type,
-                _createdAt: item._createdAt,
-                _updatedAt: item._updatedAt,
-                _rev: item._rev,
-                createdAt: item._createdAt || new Date().toISOString(),
-                updatedAt: item._updatedAt || new Date().toISOString()
-              }));
-              
-              processedData[STORAGE_KEYS.NEWS] = transformedNews;
-            } else {
-              // Assume it's for the current active section
-              processedData[currentSection?.storageKey] = importData;
-            }
-          } else if (typeof importData === 'object') {
-            // If it's an object, check if it has storage keys or alternative keys
-            if (Object.keys(importData).some(key => Object.values(STORAGE_KEYS).includes(key))) {
-              // Direct storage format
-              processedData = importData;
-            } else {
-              // Check for alternative keys and map them
-              const keyMappings = {
-                'aac_books': STORAGE_KEYS.BOOKS,
-                'aac_alumni': STORAGE_KEYS.ALUMNI,
-                'aac_startups': STORAGE_KEYS.STARTUPS,
-                'aac_news': STORAGE_KEYS.NEWS,
-                'aac_patents': STORAGE_KEYS.PATENTS,
-                'aac_publications': STORAGE_KEYS.PUBLICATIONS,
-                'aac_projects': STORAGE_KEYS.PROJECTS,
-                'aac_events': STORAGE_KEYS.EVENTS
-              };
-              
-              Object.entries(importData).forEach(([key, value]) => {
-                const mappedKey = keyMappings[key];
-                if (mappedKey) {
-                  processedData[mappedKey] = value;
-                }
-              });
-              
-              // If no mappings found, try to detect what type of data it is
-              if (Object.keys(processedData).length === 0) {
-                const firstKey = Object.keys(importData)[0];
-                const firstValue = importData[firstKey];
-                
-                if (Array.isArray(firstValue)) {
-                  // It's probably a data export format with unknown keys
-                  processedData = importData;
-                } else if (importData.hasOwnProperty('title') || importData.hasOwnProperty('name') || importData.hasOwnProperty('Name')) {
-                  // It's a single item object, add to current section
-                  processedData[currentSection?.storageKey] = [importData];
-                }
+            // Transform the data to match our storage format
+            const transformedNews = importData.map(item => ({
+              id: item._id,
+              _id: item._id,
+              title: item.title,
+              slug: typeof item.slug === 'object' ? item.slug.current : item.slug,
+              publishedAt: item.publishedAt,
+              categories: item.categories,
+              _rawBody: item._rawBody,
+              mainImage: item.mainImage,
+              links: item.links || [],
+              _type: item._type,
+              _createdAt: item._createdAt,
+              _updatedAt: item._updatedAt,
+              _rev: item._rev,
+              createdAt: item._createdAt || new Date().toISOString(),
+              updatedAt: item._updatedAt || new Date().toISOString()
+            }));
+            
+            processedData[STORAGE_KEYS.NEWS] = transformedNews;
+          } else {
+            // Assume it's for the current active section
+            processedData[currentSection?.storageKey] = importData;
+          }
+        } else if (typeof importData === 'object') {
+          // If it's an object, check if it has storage keys or alternative keys
+          if (Object.keys(importData).some(key => Object.values(STORAGE_KEYS).includes(key))) {
+            // Direct storage format
+            processedData = importData;
+          } else {
+            // Check for alternative keys and map them
+            const keyMappings = {
+              'aac_books': STORAGE_KEYS.BOOKS,
+              'aac_alumni': STORAGE_KEYS.ALUMNI,
+              'aac_startups': STORAGE_KEYS.STARTUPS,
+              'aac_news': STORAGE_KEYS.NEWS,
+              'aac_patents': STORAGE_KEYS.PATENTS,
+              'aac_publications': STORAGE_KEYS.PUBLICATIONS,
+              'aac_projects': STORAGE_KEYS.PROJECTS,
+              'aac_events': STORAGE_KEYS.EVENTS,
+              'aac_core_committee': STORAGE_KEYS.CORE_COMMITTEE
+            };
+            
+            Object.entries(importData).forEach(([key, value]) => {
+              const mappedKey = keyMappings[key] || key;
+              if (Object.values(STORAGE_KEYS).includes(mappedKey)) {
+                processedData[mappedKey] = value;
               }
-            }
+            });
           }
-          
-          console.log('Processed data:', processedData);
-          
-          if (Object.keys(processedData).length === 0) {
-            throw new Error('No valid data found in the JSON file');
-          }
-          
-          // Import the processed data
-          Object.entries(processedData).forEach(([key, data]) => {
-            const existing = StorageManager.get(key);
-            let combined;
-            
-            if (key === STORAGE_KEYS.NEWS && Array.isArray(data)) {
-              // Special handling for news data to avoid duplicates
-              const existingIds = new Set(existing.map(item => item.id || item._id));
-              const newItems = data.filter(item => !existingIds.has(item.id || item._id));
-              combined = [...existing, ...newItems];
-            } else {
-              combined = [...existing, ...(Array.isArray(data) ? data : [data])];
-            }
-            
-            StorageManager.set(key, combined);
-          });
-          
-          refresh();
-          alert(`Data imported successfully! Imported ${Object.values(processedData).flat().length} items.`);
-          window.location.reload();
-        } catch (error) {
-          console.error("Import failed:", error);
-          alert("Import failed: " + error.message);
         }
-      };
-      reader.readAsText(file);
-    }
-    event.target.value = "";
-  };
+        
+        console.log('Processed data:', processedData);
+        
+        // Import the processed data - NOW WITH ASYNC/AWAIT
+        let totalImported = 0;
+        for (const [key, value] of Object.entries(processedData)) {
+          if (Array.isArray(value)) {
+            try {
+              // Get existing data safely - NOW ASYNC
+              const existing = await StorageManager.get(key);
+              console.log(`Existing data for ${key}:`, existing);
+              
+              // Ensure existing is an array before spreading
+              const existingArray = Array.isArray(existing) ? existing : [];
+              
+              // Check if we should replace or merge
+              const shouldReplace = window.confirm(
+                `Found ${value.length} items to import for ${key.replace('aac_', '').toUpperCase()}. ` +
+                `You currently have ${existingArray.length} items. ` +
+                `Click OK to REPLACE existing data, or Cancel to MERGE with existing data.`
+              );
+              
+              let finalData;
+              if (shouldReplace) {
+                finalData = value;
+              } else {
+                // Merge: Remove duplicates based on id or _id
+                const existingIds = new Set();
+                existingArray.forEach(item => {
+                  if (item.id) existingIds.add(item.id);
+                  if (item._id) existingIds.add(item._id);
+                });
+                
+                const newItems = value.filter(item => {
+                  const itemId = item.id || item._id;
+                  return itemId && !existingIds.has(itemId);
+                });
+                
+                finalData = [...existingArray, ...newItems];
+              }
+              
+              console.log(`Setting ${finalData.length} items for ${key}`);
+              // NOW ASYNC
+              const success = await StorageManager.set(key, finalData);
+              
+              if (success) {
+                totalImported += value.length;
+                console.log(`Successfully imported ${value.length} items for ${key}`);
+              } else {
+                console.error(`Failed to import data for ${key}`);
+              }
+            } catch (keyError) {
+              console.error(`Error processing ${key}:`, keyError);
+            }
+          }
+        }
+        
+        if (totalImported > 0) {
+          alert(`Successfully imported ${totalImported} items!`);
+          window.location.reload();
+        } else {
+          alert('No data was imported. Please check the file format.');
+        }
+        
+      } catch (error) {
+        console.error('Import failed:', error);
+        alert(`Import failed: ${error.message}`);
+      }
+    };
+    reader.readAsText(file);
+  }
+  
+  // Reset file input
+  event.target.value = '';
+};
 
   const renderForm = () => {
     switch (activeSection) {

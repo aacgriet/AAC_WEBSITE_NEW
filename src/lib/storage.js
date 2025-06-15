@@ -1,4 +1,5 @@
-// src/lib/storage.js - Updated to use database instead of localStorage
+// Update src/lib/storage.js - Replace the entire file with this:
+
 import { DatabaseService } from './database';
 
 export const STORAGE_KEYS = {
@@ -16,18 +17,91 @@ export const STORAGE_KEYS = {
 // Feature flag to toggle between localStorage and database
 const USE_DATABASE = process.env.NEXT_PUBLIC_USE_DATABASE === 'true';
 
+// API client for database operations
+class ApiClient {
+  static async request(url, options = {}) {
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    });
+
+    const result = await response.json();
+    
+    if (!result.success) {
+      throw new Error(result.error || 'API request failed');
+    }
+    
+    return result.data;
+  }
+
+  static async get(key) {
+    return this.request(`/api/data/get/${key}`);
+  }
+
+  static async set(key, data) {
+    // For set operation, we'll clear and re-import all data
+    return this.request(`/api/data/import/${key}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  static async add(key, item) {
+    return this.request(`/api/data/add/${key}`, {
+      method: 'POST',
+      body: JSON.stringify(item),
+    });
+  }
+
+  static async update(key, id, updates) {
+    return this.request(`/api/data/update/${key}/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  }
+
+  static async delete(key, id) {
+    const result = await this.request(`/api/data/delete/${key}/${id}`, {
+      method: 'DELETE',
+    });
+    return result !== null;
+  }
+
+  static async getById(key, id) {
+    return this.request(`/api/data/get/${key}/${id}`);
+  }
+
+  static async exportData() {
+    return this.request('/api/data/export/all');
+  }
+
+  static async importData(data) {
+    return this.request('/api/data/import/all', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  static async getStorageStats() {
+    return this.request('/api/data/stats/all');
+  }
+}
+
 export class StorageManager {
   static async get(key) {
     console.log(`StorageManager.get: Getting data for key ${key}, using database: ${USE_DATABASE}`);
     
     if (USE_DATABASE) {
       try {
-        const result = await DatabaseService.get(key);
-        console.log(`StorageManager.get: Retrieved ${result.length} items from database for key ${key}`);
+        const result = await ApiClient.get(key);
+        console.log(`StorageManager.get: Retrieved ${result.length} items from API for key ${key}`);
         return result;
       } catch (error) {
-        console.error(`StorageManager.get: Database error for key ${key}:`, error);
-        // Fallback to localStorage if database fails
+        console.error(`StorageManager.get: API error for key ${key}:`, error);
+        // Fallback to localStorage if API fails
         return this.getFromLocalStorage(key);
       }
     } else {
@@ -40,15 +114,15 @@ export class StorageManager {
     
     if (USE_DATABASE) {
       try {
-        const success = await DatabaseService.set(key, data);
-        console.log(`StorageManager.set: Database operation ${success ? 'successful' : 'failed'} for key ${key}`);
+        const success = await ApiClient.set(key, data);
+        console.log(`StorageManager.set: API operation ${success ? 'successful' : 'failed'} for key ${key}`);
         
         // Also update localStorage as backup
         this.setToLocalStorage(key, data);
         
         return success;
       } catch (error) {
-        console.error(`StorageManager.set: Database error for key ${key}:`, error);
+        console.error(`StorageManager.set: API error for key ${key}:`, error);
         // Fallback to localStorage
         return this.setToLocalStorage(key, data);
       }
@@ -62,8 +136,8 @@ export class StorageManager {
     
     if (USE_DATABASE) {
       try {
-        const result = await DatabaseService.add(key, item);
-        console.log(`StorageManager.add: Database add ${result ? 'successful' : 'failed'} for key ${key}`);
+        const result = await ApiClient.add(key, item);
+        console.log(`StorageManager.add: API add ${result ? 'successful' : 'failed'} for key ${key}`);
         
         // Also update localStorage as backup
         if (result) {
@@ -73,7 +147,7 @@ export class StorageManager {
         
         return result;
       } catch (error) {
-        console.error(`StorageManager.add: Database error for key ${key}:`, error);
+        console.error(`StorageManager.add: API error for key ${key}:`, error);
         // Fallback to localStorage
         return this.addToLocalStorage(key, item);
       }
@@ -87,8 +161,8 @@ export class StorageManager {
     
     if (USE_DATABASE) {
       try {
-        const result = await DatabaseService.update(key, id, updates);
-        console.log(`StorageManager.update: Database update ${result ? 'successful' : 'failed'} for key ${key}`);
+        const result = await ApiClient.update(key, id, updates);
+        console.log(`StorageManager.update: API update ${result ? 'successful' : 'failed'} for key ${key}`);
         
         // Also update localStorage as backup
         if (result) {
@@ -102,7 +176,7 @@ export class StorageManager {
         
         return result;
       } catch (error) {
-        console.error(`StorageManager.update: Database error for key ${key}:`, error);
+        console.error(`StorageManager.update: API error for key ${key}:`, error);
         // Fallback to localStorage
         return this.updateInLocalStorage(key, id, updates);
       }
@@ -116,8 +190,8 @@ export class StorageManager {
     
     if (USE_DATABASE) {
       try {
-        const success = await DatabaseService.delete(key, id);
-        console.log(`StorageManager.delete: Database delete ${success ? 'successful' : 'failed'} for key ${key}`);
+        const success = await ApiClient.delete(key, id);
+        console.log(`StorageManager.delete: API delete ${success ? 'successful' : 'failed'} for key ${key}`);
         
         // Also update localStorage as backup
         if (success) {
@@ -128,7 +202,7 @@ export class StorageManager {
         
         return success;
       } catch (error) {
-        console.error(`StorageManager.delete: Database error for key ${key}:`, error);
+        console.error(`StorageManager.delete: API error for key ${key}:`, error);
         // Fallback to localStorage
         return this.deleteFromLocalStorage(key, id);
       }
@@ -142,11 +216,11 @@ export class StorageManager {
     
     if (USE_DATABASE) {
       try {
-        const result = await DatabaseService.getById(key, id);
-        console.log(`StorageManager.getById: Database getById ${result ? 'found' : 'not found'} for key ${key}`);
+        const result = await ApiClient.getById(key, id);
+        console.log(`StorageManager.getById: API getById ${result ? 'found' : 'not found'} for key ${key}`);
         return result;
       } catch (error) {
-        console.error(`StorageManager.getById: Database error for key ${key}:`, error);
+        console.error(`StorageManager.getById: API error for key ${key}:`, error);
         // Fallback to localStorage
         return this.getByIdFromLocalStorage(key, id);
       }
@@ -160,9 +234,9 @@ export class StorageManager {
     
     if (USE_DATABASE) {
       try {
-        return await DatabaseService.exportData();
+        return await ApiClient.exportData();
       } catch (error) {
-        console.error('StorageManager.exportData: Database error:', error);
+        console.error('StorageManager.exportData: API error:', error);
         // Fallback to localStorage
         return this.exportFromLocalStorage();
       }
@@ -176,9 +250,10 @@ export class StorageManager {
     
     if (USE_DATABASE) {
       try {
-        return await DatabaseService.importData(data);
+        const result = await ApiClient.importData(data);
+        return result.imported;
       } catch (error) {
-        console.error('StorageManager.importData: Database error:', error);
+        console.error('StorageManager.importData: API error:', error);
         // Fallback to localStorage
         return this.importToLocalStorage(data);
       }
@@ -192,22 +267,23 @@ export class StorageManager {
     
     if (USE_DATABASE) {
       try {
-        await DatabaseService.clearAll();
+        // We'll need to implement a clear endpoint or delete all items
+        // For now, we'll just clear localStorage
+        this.clearLocalStorage();
       } catch (error) {
-        console.error('StorageManager.clearAll: Database error:', error);
+        console.error('StorageManager.clearAll: API error:', error);
       }
+    } else {
+      this.clearLocalStorage();
     }
-    
-    // Always clear localStorage too
-    this.clearLocalStorage();
   }
 
   static async getStorageStats() {
     if (USE_DATABASE) {
       try {
-        return await DatabaseService.getStorageStats();
+        return await ApiClient.getStorageStats();
       } catch (error) {
-        console.error('StorageManager.getStorageStats: Database error:', error);
+        console.error('StorageManager.getStorageStats: API error:', error);
         return this.getLocalStorageStats();
       }
     } else {
@@ -224,7 +300,7 @@ export class StorageManager {
     return id;
   }
 
-  // LocalStorage fallback methods
+  // LocalStorage fallback methods (keep all existing localStorage methods)
   static getFromLocalStorage(key) {
     if (typeof window === 'undefined') {
       console.log(`StorageManager.getFromLocalStorage: Window is undefined for key ${key}`);
