@@ -1,19 +1,44 @@
-// src/components/News/NewsCard.jsx
+// src/components/News/NewsCard.jsx - Always show gradient, keep image support for future
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { FaCalendar, FaArrowRight } from 'react-icons/fa';
 
 const NewsCard = ({ news, index }) => {
-  // Format the date
-  const publishDate = news.publishedAt 
-    ? new Date(news.publishedAt).toLocaleDateString('en-US', {
+  // Handle different date formats and fallbacks
+  const getFormattedDate = (dateString) => {
+    if (!dateString) return 'No date';
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Invalid date';
+      }
+      
+      return date.toLocaleDateString('en-US', {
         year: 'numeric', 
         month: 'short', 
         day: 'numeric'
-      }) 
-    : '';
+      });
+    } catch (error) {
+      return 'Date error';
+    }
+  };
+
+  // Get description text from various possible sources
+  const getDescription = (news) => {
+    // For slug object structure
+    if (news.slug?.current) return news.slug.current;
+    if (news.slug && typeof news.slug === 'string') return news.slug;
+    if (news.description) return news.description;
+    if (news._rawBody) return news._rawBody.substring(0, 150) + '...';
+    if (news.body && typeof news.body === 'string') return news.body.substring(0, 150) + '...';
+    if (news.content) return news.content.substring(0, 150) + '...';
+    return "Latest news from Advanced Academic Center";
+  };
+
+  const publishDate = getFormattedDate(news.publishedAt);
+  const description = getDescription(news);
   
   // Animation variants for each card
   const item = {
@@ -33,60 +58,72 @@ const NewsCard = ({ news, index }) => {
     if (!category) return 'from-blue-600 to-indigo-600';
     
     const categoryMap = {
+      'news': 'from-blue-600 to-indigo-600',
+      'Event': 'from-purple-500 to-pink-600',
+      'Talks': 'from-green-500 to-emerald-600',
+      'Book': 'from-orange-500 to-red-600',
       'NOTICE': 'from-orange-500 to-red-600',
       'ACHIEVEMENT': 'from-green-500 to-emerald-600',
-      'EVENT': 'from-purple-500 to-pink-600',
       'RESEARCH': 'from-blue-500 to-cyan-600',
       'UPDATE': 'from-indigo-500 to-blue-600',
     };
     
-    return categoryMap[category.toUpperCase()] || 'from-blue-600 to-indigo-600';
+    return categoryMap[category] || 'from-blue-600 to-indigo-600';
+  };
+  
+  // Function to get category icon
+  const getCategoryIcon = (category) => {
+    const iconMap = {
+      'news': '📰',
+      'Event': '🎉',
+      'Talks': '🎤',
+      'Book': '📚',
+      'NOTICE': '📢',
+      'ACHIEVEMENT': '🏆',
+      'RESEARCH': '🔬',
+      'UPDATE': '🔄',
+    };
+    
+    return iconMap[category] || '📰';
   };
   
   const gradientClass = getCategoryGradient(news.categories);
+  const categoryIcon = getCategoryIcon(news.categories);
   
   return (
     <motion.div 
       variants={item}
-      className="h-full flex flex-col overflow-hidden rounded-xl shadow-lg bg-white hover:shadow-xl transition-shadow duration-300"
+      className="h-full flex flex-col overflow-hidden rounded-xl shadow-lg bg-[#1a2535] hover:shadow-xl transition-shadow duration-300 border border-gray-700"
     >
-      {/* Card Header with Image or Gradient */}
+      {/* Card Header - Always Gradient */}
       <div className="relative h-48">
-        {news.mainImage ? (
-          <Image
-            src={news.mainImage.url}
-            alt={news.title}
-            fill
-            className="object-cover transition-transform duration-500 hover:scale-110"
-          />
-        ) : (
-          <div className={`w-full h-full bg-gradient-to-br ${gradientClass}`}>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-16 h-16 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center">
-                <Image 
-                  src="/images/logo.png" 
-                  alt="AAC Logo" 
-                  width={32} 
-                  height={32}
-                  className="object-contain"
-                />
-              </div>
-            </div>
+        {/* Beautiful gradient background */}
+        <div className={`w-full h-full bg-gradient-to-br ${gradientClass} flex items-center justify-center relative overflow-hidden`}>
+          {/* Decorative pattern overlay */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-4 left-4 w-20 h-20 border border-white/20 rounded-full"></div>
+            <div className="absolute bottom-6 right-6 w-16 h-16 border border-white/15 rounded-full"></div>
+            <div className="absolute top-12 right-8 w-12 h-12 border border-white/10 rounded-full"></div>
           </div>
-        )}
+          
+          {/* Center icon */}
+          <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg z-10">
+            <span className="text-white text-3xl">{categoryIcon}</span>
+          </div>
+        </div>
         
         {/* Category Badge */}
         {news.categories && (
-          <div className="absolute top-4 right-4">
-            <span className="bg-white/80 backdrop-blur-sm text-gray-800 text-xs font-medium px-3 py-1 rounded-full">
+          <div className="absolute top-4 right-4 z-10">
+            <span className="bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full border border-white/20">
               {news.categories}
             </span>
           </div>
         )}
         
         {/* Date Badge */}
-        <div className="absolute bottom-4 left-4 flex items-center">
-          <div className="bg-white/80 backdrop-blur-sm text-gray-800 text-xs font-medium px-3 py-1 rounded-full flex items-center">
+        <div className="absolute bottom-4 left-4 flex items-center z-10">
+          <div className="bg-black/50 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full flex items-center border border-white/20">
             <FaCalendar className="mr-1" />
             <span>{publishDate}</span>
           </div>
@@ -94,21 +131,21 @@ const NewsCard = ({ news, index }) => {
       </div>
       
       {/* Card Content */}
-      <div className="p-6 flex-grow flex flex-col">
+      <div className="p-6 flex-grow flex flex-col bg-[#1a2535]">
         <Link href={`/News/${news._id}`}>
-          <h3 className="text-xl font-bold mb-3 line-clamp-2 hover:text-blue-600 transition-colors">
+          <h3 className="text-xl font-bold mb-3 line-clamp-2 hover:text-blue-400 transition-colors cursor-pointer text-white">
             {news.title}
           </h3>
         </Link>
         
-        <p className="text-gray-600 mb-4 flex-grow line-clamp-3">
-          {news.slug || "Latest news from Advanced Academic Center"}
+        <p className="text-gray-300 mb-4 flex-grow line-clamp-3">
+          {description}
         </p>
         
-        <div className="mt-auto pt-4 border-t border-gray-100">
+        <div className="mt-auto pt-4 border-t border-gray-600">
           <Link 
             href={`/News/${news._id}`}
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+            className="inline-flex items-center text-blue-400 hover:text-blue-300 font-medium transition-colors"
           >
             Read More
             <FaArrowRight className="ml-2 text-sm" />

@@ -1,8 +1,7 @@
-// src/components/Forms/NewsForm.jsx - Enhanced version following the JSON structure
+// src/components/Forms/NewsForm.jsx - Updated to match the new JSON structure
 import React, { useState, useEffect } from 'react';
-import BaseForm, { FormField, TextAreaField, SelectField } from './BaseForm';
+import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
-import RichTextEditor from './RichTextEditor';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { STORAGE_KEYS } from '@/lib/storage';
 
@@ -26,24 +25,22 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
     slug: {
       current: ''
     },
-    body: [],
     _rawBody: '',
-    publishedAt: new Date().toISOString(),
+    publishedAt: new Date().toISOString().slice(0, 16),
     categories: 'news',
     mainImage: {
       _type: 'image',
       asset: {
         _ref: '',
         _type: 'reference',
-        url: '',
-        altText: ''
+        url: ''
       }
     },
-    _type: 'News',
-    _createdAt: '',
-    _updatedAt: '',
-    _rev: ''
+    links: [],
+    _type: 'News'
   });
+
+  const [linkInputs, setLinkInputs] = useState([{ text: '', url: '' }]);
 
   useEffect(() => {
     if (newsId) {
@@ -52,9 +49,14 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
         setFormData({
           ...existingNews,
           publishedAt: existingNews.publishedAt ? 
-            new Date(existingNews.publishedAt).toISOString() : 
-            new Date().toISOString()
+            new Date(existingNews.publishedAt).toISOString().slice(0, 16) : 
+            new Date().toISOString().slice(0, 16)
         });
+        
+        // Set up links for editing
+        if (existingNews.links && existingNews.links.length > 0) {
+          setLinkInputs(existingNews.links);
+        }
       }
     }
   }, [newsId, getItemById]);
@@ -89,38 +91,10 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
         ...prev,
         slug: {
           ...prev.slug,
-          current: slugValue
+          current: value // Keep the full title as description in slug
         }
       }));
     }
-  };
-
-  const handleBodyChange = (e) => {
-    const { value } = e.target;
-    
-    // Convert the raw body text into the structured format
-    const bodyBlocks = value.split('\n\n').map((paragraph, index) => {
-      if (!paragraph.trim()) return null;
-      
-      return {
-        _key: `block-${Date.now()}-${index}`,
-        _type: 'block',
-        children: [{
-          _key: `span-${Date.now()}-${index}`,
-          _type: 'span',
-          marks: [],
-          text: paragraph.trim()
-        }],
-        markDefs: [],
-        style: 'normal'
-      };
-    }).filter(Boolean);
-    
-    setFormData(prev => ({
-      ...prev,
-      body: bodyBlocks,
-      _rawBody: value
-    }));
   };
 
   const handleImageChange = (url) => {
@@ -137,17 +111,20 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
     }));
   };
 
-  const handleImageAltChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      mainImage: {
-        ...prev.mainImage,
-        asset: {
-          ...prev.mainImage.asset,
-          altText: e.target.value
-        }
-      }
-    }));
+  // Handle links
+  const handleLinkChange = (index, field, value) => {
+    const newLinks = [...linkInputs];
+    newLinks[index][field] = value;
+    setLinkInputs(newLinks);
+  };
+
+  const addLink = () => {
+    setLinkInputs([...linkInputs, { text: '', url: '' }]);
+  };
+
+  const removeLink = (index) => {
+    const newLinks = linkInputs.filter((_, i) => i !== index);
+    setLinkInputs(newLinks);
   };
 
   const validateForm = () => {
@@ -155,10 +132,6 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
     
     if (!formData.title.trim()) {
       newErrors.title = 'Title is required';
-    }
-    
-    if (!formData.slug.current.trim()) {
-      newErrors.slug = 'Slug is required';
     }
     
     if (!formData._rawBody.trim()) {
@@ -174,11 +147,11 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
     }
 
     if (!newsId) {
-      const slugExists = newsData.some(item => 
-        item.slug?.current === formData.slug.current && item._id !== newsId
+      const titleExists = newsData.some(item => 
+        item.title.toLowerCase() === formData.title.toLowerCase() && item._id !== newsId
       );
-      if (slugExists) {
-        newErrors.slug = 'Slug already exists';
+      if (titleExists) {
+        newErrors.title = 'News title already exists';
       }
     }
     
@@ -197,6 +170,10 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
     
     try {
       const currentTime = new Date().toISOString();
+      
+      // Filter out empty links
+      const validLinks = linkInputs.filter(link => link.text.trim() && link.url.trim());
+      
       const newsItem = {
         ...formData,
         _id: newsId || `news-${Date.now()}`,
@@ -204,6 +181,7 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
         _updatedAt: currentTime,
         _rev: `rev-${Date.now()}`,
         publishedAt: new Date(formData.publishedAt).toISOString(),
+        links: validLinks,
         // Clean up mainImage if no URL provided
         mainImage: formData.mainImage.asset.url ? formData.mainImage : null
       };
@@ -234,27 +212,26 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
       submitText={newsId ? 'Update' : 'Create'}
       isSubmitting={isSubmitting}
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          label="Title"
-          name="title"
-          value={formData.title}
-          onChange={handleInputChange}
-          placeholder="Enter news title"
-          required
-          error={errors.title}
-        />
-        
-        <FormField
-          label="Slug"
-          name="slug"
-          value={formData.slug.current}
-          onChange={handleInputChange}
-          placeholder="url-friendly-title"
-          required
-          error={errors.slug}
-        />
-      </div>
+      <FormField
+        label="Title"
+        name="title"
+        value={formData.title}
+        onChange={handleInputChange}
+        placeholder="Enter news title"
+        required
+        error={errors.title}
+      />
+
+      <TextAreaField
+        label="Short Description (Slug)"
+        name="slug"
+        value={formData.slug.current}
+        onChange={handleInputChange}
+        placeholder="Brief description that appears in news cards"
+        rows={3}
+        required
+        error={errors.slug}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <SelectField
@@ -271,33 +248,23 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
           label="Published Date & Time"
           name="publishedAt"
           type="datetime-local"
-          value={formData.publishedAt.slice(0, 16)}
-          onChange={(e) => setFormData(prev => ({ 
-            ...prev, 
-            publishedAt: new Date(e.target.value).toISOString() 
-          }))}
+          value={formData.publishedAt}
+          onChange={handleInputChange}
           required
           error={errors.publishedAt}
         />
       </div>
 
-      <div className="space-y-4">
-        <label className="block text-sm font-medium text-gray-300">
-          Content (Body) <span className="text-red-400">*</span>
-        </label>
-        <textarea
-          value={formData._rawBody}
-          onChange={handleBodyChange}
-          placeholder="Write your news article content here. Use double line breaks to separate paragraphs."
-          rows={12}
-          required
-          className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white resize-vertical"
-        />
-        {errors._rawBody && <p className="text-red-400 text-sm">{errors._rawBody}</p>}
-        <p className="text-gray-400 text-xs">
-          Tip: Use double line breaks (press Enter twice) to create separate paragraphs.
-        </p>
-      </div>
+      <TextAreaField
+        label="Content (Main Article Body)"
+        name="_rawBody"
+        value={formData._rawBody}
+        onChange={handleInputChange}
+        placeholder="Write your news article content here. Use **text** for bold, __text__ for underline."
+        rows={12}
+        required
+        error={errors._rawBody}
+      />
 
       <ImageUpload
         label="Featured Image"
@@ -306,25 +273,45 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
         error={errors.mainImage}
       />
 
-      {formData.mainImage?.asset?.url && (
-        <FormField
-          label="Image Alt Text"
-          name="imageAlt"
-          value={formData.mainImage?.asset?.altText || ''}
-          onChange={handleImageAltChange}
-          placeholder="Describe the image for accessibility"
-        />
-      )}
-
-      {/* Debug Information (only in development) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <h4 className="text-white font-medium mb-2">Debug - Structured Body Preview:</h4>
-          <pre className="text-xs text-gray-300 overflow-auto max-h-32">
-            {JSON.stringify(formData.body, null, 2)}
-          </pre>
-        </div>
-      )}
+      {/* Links Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium text-white">Related Links (Optional)</h3>
+        {linkInputs.map((link, index) => (
+          <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[#0e1421] rounded-lg border border-gray-600">
+            <FormField
+              label="Link Text"
+              name={`link-text-${index}`}
+              value={link.text}
+              onChange={(e) => handleLinkChange(index, 'text', e.target.value)}
+              placeholder="e.g., Check Results, Visit Website"
+            />
+            <FormField
+              label="Link URL"
+              name={`link-url-${index}`}
+              type="url"
+              value={link.url}
+              onChange={(e) => handleLinkChange(index, 'url', e.target.value)}
+              placeholder="https://example.com"
+            />
+            <div className="md:col-span-2">
+              <button
+                type="button"
+                onClick={() => removeLink(index)}
+                className="px-3 py-2 bg-red-900 text-red-300 rounded-lg hover:bg-red-800 transition-colors border border-red-700"
+              >
+                Remove Link
+              </button>
+            </div>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addLink}
+          className="px-4 py-2 bg-green-900 text-green-300 rounded-lg hover:bg-green-800 transition-colors border border-green-700"
+        >
+          Add Link
+        </button>
+      </div>
 
       {errors.submit && (
         <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg">
