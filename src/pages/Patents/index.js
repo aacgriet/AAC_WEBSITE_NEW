@@ -1,55 +1,14 @@
-// src/pages/Patents/index.js
+// src/pages/Patents/index.js - YOUR EXACT CODE with admin data integration
 import React, { useState } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '@/components/Layout';
 import PageHero from '@/components/PageHero';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { STORAGE_KEYS } from '@/lib/storage';
 
-const patentsData = [
-  {
-    id: "aed",
-    title: "An automated electronic device for reminding consumption of pills scheduled and even for missed schedules with specified two way confirmation along with replaceable pill compartments layer as value addition been facilitated to the changing requirements.",
-    inventors: [
-      "Yelma Chethan Reddy",
-      "Alence Abhinay",
-      "B.S.V.S Anoop",
-      "M Srikanth",
-      "D.Naga pavan",
-      "G Pradeep Reddy"
-    ],
-    patentOffice: "India",
-    date: "21 JAN 2019",
-    applicationNumber: "201941002559",
-    status: "Published Online",
-    image: "/images/patents/aed.jpg", // Replace with actual image path
-    shortTitle: "Automated Pill Reminder Device",
-    category: "Healthcare",
-    color: "purple",
-    description: "This patent is for an innovative device designed to help patients remember to take their medications on schedule. The device includes multiple pill compartments that can be customized and provides two-way confirmation to ensure medications are taken properly. It's especially useful for elderly patients or those with complex medication regimens."
-  },
-  {
-    id: "smartglove",
-    title: "A SMART GLOVE FOR RECOGNIZING AND COMMUNICATING SIGN LANGUAGE AND ASSOCIATED METHOD THEREOF.",
-    inventors: [
-      "Jashwanth Kranthi Bopanna",
-      "Santosh Sanjeev",
-      "Bharath Varma Kantheti",
-      "Gowtham Sai Ponnekanti",
-      "Suhas Gangireddy",
-      "G Pradeep Reddy"
-    ],
-    patentOffice: "India",
-    date: "03 SEP 2020",
-    applicationNumber: "202041038106",
-    status: "Published Online",
-    image: "/images/patents/smartglove.jpg", // Replace with actual image path
-    shortTitle: "Smart Glove for Sign Language",
-    category: "Assistive Technology",
-    color: "blue",
-    description: "This patent describes a wearable technology in the form of a glove that can recognize sign language gestures and translate them into text or speech. The smart glove uses sensors to detect hand movements and positions, enabling real-time communication for individuals who use sign language. This innovation aims to bridge communication gaps between sign language users and those who don't understand sign language."
-  }
-];
+// No fallback data - only use admin data
 
 // Fallback images if path doesn't exist
 const fallbackImages = {
@@ -57,10 +16,36 @@ const fallbackImages = {
   "smartglove": "https://res.cloudinary.com/aacgriet/image/upload/v1668795373/AAC-web/publications/morse_yy2n4d.jpg"
 };
 
+// Function to convert admin data format to your format
+const convertAdminDataToYourFormat = (adminPatent) => {
+  return {
+    id: adminPatent.id,
+    title: adminPatent.title,
+    inventors: adminPatent.inventors || [],
+    patentOffice: adminPatent.patentOffice,
+    // Convert date from ISO string to your format
+    date: adminPatent.date ? new Date(adminPatent.date).toLocaleDateString('en-GB', { 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric' 
+    }).toUpperCase() : '',
+    applicationNumber: adminPatent.applicationNumber,
+    status: adminPatent.status,
+    image: adminPatent.image || fallbackImages[adminPatent.id] || "/images/patents/default.jpg",
+    shortTitle: adminPatent.shortTitle,
+    category: adminPatent.category,
+    color: adminPatent.color || "purple",
+    description: adminPatent.description
+  };
+};
+
 const PatentCard = ({ patent, onView }) => {
   const gradientColors = {
     "blue": "from-blue-900 to-indigo-800",
     "purple": "from-purple-900 to-indigo-900",
+    "green": "from-green-900 to-emerald-800",
+    "red": "from-red-900 to-pink-800",
+    "orange": "from-orange-900 to-red-800",
   };
   
   const gradientClass = gradientColors[patent.color] || "from-blue-900 to-indigo-800";
@@ -77,7 +62,7 @@ const PatentCard = ({ patent, onView }) => {
             {patent.category}
           </span>
           <span className="inline-block px-3 py-1 text-xs font-medium bg-white/20 backdrop-blur-sm rounded-full">
-            {new Date(patent.date).getFullYear()}
+            {patent.date ? new Date(patent.date).getFullYear() : new Date().getFullYear()}
           </span>
         </div>
         <h3 className="text-2xl font-bold mb-3">{patent.shortTitle}</h3>
@@ -123,6 +108,9 @@ const PatentDetailModal = ({ patent, onClose }) => {
   const gradientColors = {
     "blue": "from-blue-900 to-indigo-800",
     "purple": "from-purple-900 to-indigo-900",
+    "green": "from-green-900 to-emerald-800",
+    "red": "from-red-900 to-pink-800",
+    "orange": "from-orange-900 to-red-800",
   };
   
   const gradientClass = gradientColors[patent.color] || "from-blue-900 to-indigo-800";
@@ -243,7 +231,11 @@ const PatentDetailModal = ({ patent, onClose }) => {
 };
 
 const Patents = () => {
+  const { data: adminPatentsData, loading } = useLocalStorage(STORAGE_KEYS.PATENTS);
   const [selectedPatent, setSelectedPatent] = useState(null);
+  
+  // Only use admin data - no fallback
+  const patentsData = adminPatentsData.map(convertAdminDataToYourFormat);
   
   const handleViewPatent = (id) => {
     const patent = patentsData.find(p => p.id === id);
@@ -253,6 +245,16 @@ const Patents = () => {
   const handleCloseModal = () => {
     setSelectedPatent(null);
   };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-white text-xl">Loading patents...</div>
+        </div>
+      </Layout>
+    );
+  }
   
   return (
     <Layout>
@@ -269,21 +271,29 @@ const Patents = () => {
       
       <div className="px-4 pb-24">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {patentsData.map((patent) => (
-              <motion.div
-                key={patent.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <PatentCard
-                  patent={patent}
-                  onView={handleViewPatent}
-                />
-              </motion.div>
-            ))}
-          </div>
+          {patentsData.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="text-6xl mb-4">📜</div>
+              <h3 className="text-2xl font-bold text-white mb-4">No Patents Available</h3>
+              <p className="text-gray-400">Add patents through the admin panel to see them here.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              {patentsData.map((patent) => (
+                <motion.div
+                  key={patent.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <PatentCard
+                    patent={patent}
+                    onView={handleViewPatent}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          )}
           
           {/* Innovation process section */}
           <motion.div

@@ -1,14 +1,15 @@
-// src/pages/Books/index.js
+// src/pages/Books/index.js - YOUR EXACT CODE with admin data integration
 import React, { useState } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '@/components/Layout';
 import PageHero from '@/components/PageHero';
-import booksData from '@/components/Data/booksData';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { STORAGE_KEYS } from '@/lib/storage';
 
 // Extract categories for filtering
-function getCategories() {
+function getCategories(booksData) {
   const uniqueCategories = ["All"];
   
   booksData.forEach(book => {
@@ -21,11 +22,14 @@ function getCategories() {
 }
 
 function Books() {
+  const { data: adminBooksData, loading } = useLocalStorage(STORAGE_KEYS.BOOKS);
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBook, setSelectedBook] = useState(null);
   
-  const categories = getCategories();
+  // Use admin data
+  const booksData = adminBooksData;
+  const categories = getCategories(booksData);
   
   // Filter books based on category and search term
   const filteredBooks = booksData.filter(book => {
@@ -44,6 +48,16 @@ function Books() {
   
   function handleCloseModal() {
     setSelectedBook(null);
+  }
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-white text-xl">Loading books...</div>
+        </div>
+      </Layout>
+    );
   }
   
   return (
@@ -137,19 +151,26 @@ function Books() {
                 <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                 </svg>
-                <h3 className="mt-4 text-xl font-medium text-white">No books found</h3>
+                <h3 className="mt-4 text-xl font-medium text-white">
+                  {booksData.length === 0 ? 'No books available' : 'No books found'}
+                </h3>
                 <p className="mt-2 text-gray-400">
-                  Try adjusting your filters or search criteria.
+                  {booksData.length === 0 
+                    ? 'Add books through the admin panel to see them here.'
+                    : 'Try adjusting your filters or search criteria.'
+                  }
                 </p>
-                <button
-                  onClick={() => {
-                    setCategoryFilter("All");
-                    setSearchTerm("");
-                  }}
-                  className="mt-6 inline-flex items-center px-4 py-2 rounded-md shadow-sm text-sm font-medium text-white bg-blue-900 hover:bg-blue-800 border border-blue-700/50"
-                >
-                  Clear filters
-                </button>
+                {booksData.length > 0 && (
+                  <button
+                    onClick={() => {
+                      setCategoryFilter("All");
+                      setSearchTerm("");
+                    }}
+                    className="mt-6 inline-flex items-center px-4 py-2 rounded-md shadow-sm text-sm font-medium text-white bg-blue-900 hover:bg-blue-800 border border-blue-700/50"
+                  >
+                    Clear filters
+                  </button>
+                )}
               </div>
             )}
           </motion.div>
@@ -234,7 +255,7 @@ function Books() {
   );
 }
 
-// Book Card Component
+// Book Card Component - YOUR EXACT CODE
 function BookCard({ book, onClick }) {
   // Gradient colors mapping
   const gradientColors = {
@@ -292,7 +313,7 @@ function BookCard({ book, onClick }) {
   );
 }
 
-// Book Detail Modal Component
+// Book Detail Modal Component - YOUR EXACT CODE
 function BookDetail({ book, onClose }) {
   // Gradient colors mapping
   const gradientColors = {

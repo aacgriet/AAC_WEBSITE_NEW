@@ -1,4 +1,4 @@
-// src/components/Forms/BooksForm.jsx - New Form Based on Schema
+// src/components/Forms/BooksForm.jsx - Updated for your exact data structure
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
@@ -17,23 +17,16 @@ const BOOK_CATEGORIES = [
   'Software Engineering',
   'Computer Science',
   'Technology',
+  'Java Programming',
   'Other'
 ];
 
-const BOOK_TYPES = [
-  'Book',
-  'Blog',
-  'eBook',
-  'Guide',
-  'Tutorial'
-];
-
-const LANGUAGES = [
-  'English',
-  'Hindi',
-  'Telugu',
-  'Tamil',
-  'Other'
+const BOOK_COLORS = [
+  { value: 'blue', label: 'Blue' },
+  { value: 'indigo', label: 'Indigo' },
+  { value: 'purple', label: 'Purple' },
+  { value: 'green', label: 'Green' },
+  { value: 'orange', label: 'Orange' }
 ];
 
 const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
@@ -42,17 +35,14 @@ const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
   const [errors, setErrors] = useState({});
   
   const [formData, setFormData] = useState({
+    id: '',
     title: '',
     authors: [''],
-    coverImage: '',
+    cover: '',
     description: '',
     category: '',
-    publishedAt: new Date().toISOString().split('T')[0],
-    type: 'Book',
-    isbn: '',
-    downloadUrl: '',
-    pages: '',
-    language: 'English'
+    year: new Date().getFullYear(),
+    color: 'blue'
   });
 
   useEffect(() => {
@@ -61,11 +51,7 @@ const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
       if (existingBook) {
         setFormData({
           ...existingBook,
-          publishedAt: existingBook.publishedAt ? 
-            new Date(existingBook.publishedAt).toISOString().split('T')[0] : 
-            new Date().toISOString().split('T')[0],
-          authors: existingBook.authors || [''],
-          pages: existingBook.pages || ''
+          authors: Array.isArray(existingBook.authors) ? existingBook.authors : ['']
         });
       }
     }
@@ -75,8 +61,21 @@ const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === 'year' ? parseInt(value) : value
     }));
+    
+    // Auto-generate ID from title if creating new book
+    if (name === 'title' && !bookId) {
+      const id = value.toLowerCase()
+        .replace(/[^a-z0-9 -]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+      setFormData(prev => ({
+        ...prev,
+        id
+      }));
+    }
   };
 
   const handleArrayChange = (field) => (values) => {
@@ -89,7 +88,7 @@ const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
   const handleImageChange = (url) => {
     setFormData(prev => ({
       ...prev,
-      coverImage: url
+      cover: url
     }));
   };
 
@@ -113,18 +112,12 @@ const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
       newErrors.category = 'Category is required';
     }
     
-    if (!formData.publishedAt) {
-      newErrors.publishedAt = 'Publication date is required';
+    if (!formData.year || formData.year < 1900 || formData.year > new Date().getFullYear() + 10) {
+      newErrors.year = 'Please enter a valid year';
     }
 
-    // Validate URLs if provided
-    if (formData.downloadUrl && !formData.downloadUrl.startsWith('http')) {
-      newErrors.downloadUrl = 'Download URL must start with http:// or https://';
-    }
-
-    // Validate pages is a number if provided
-    if (formData.pages && isNaN(Number(formData.pages))) {
-      newErrors.pages = 'Pages must be a valid number';
+    if (!formData.cover.trim()) {
+      newErrors.cover = 'Cover image is required';
     }
 
     if (!bookId) {
@@ -152,9 +145,10 @@ const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
     try {
       const bookItem = {
         ...formData,
-        publishedAt: new Date(formData.publishedAt).toISOString(),
         authors: formData.authors.filter(author => author.trim()),
-        pages: formData.pages ? Number(formData.pages) : null
+        id: bookId || formData.id,
+        createdAt: bookId ? undefined : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       
       let result;
@@ -184,22 +178,23 @@ const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
       isSubmitting={isSubmitting}
     >
       <FormField
-        label="Title"
+        label="Book/Blog Title"
         name="title"
         value={formData.title}
         onChange={handleInputChange}
-        placeholder="Enter book/blog title"
+        placeholder="Enter book or blog title"
         required
         error={errors.title}
       />
 
-      <ArrayField
-        label="Authors (with details)"
-        values={formData.authors}
-        onChange={handleArrayChange('authors')}
-        placeholder="Author Name - Details/Bio"
+      <FormField
+        label="ID (URL Slug)"
+        name="id"
+        value={formData.id}
+        onChange={handleInputChange}
+        placeholder="Auto-generated from title"
         required
-        error={errors.authors}
+        error={errors.id}
       />
 
       <TextAreaField
@@ -213,6 +208,15 @@ const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
         error={errors.description}
       />
 
+      <ArrayField
+        label="Authors (with details)"
+        values={formData.authors}
+        onChange={handleArrayChange('authors')}
+        placeholder="Author Name: Author bio/details (e.g., John Doe: Computer Science student specializing in AI)"
+        required
+        error={errors.authors}
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <SelectField
           label="Category"
@@ -224,73 +228,34 @@ const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
           error={errors.category}
         />
         
-        <SelectField
-          label="Type"
-          name="type"
-          value={formData.type}
-          onChange={handleInputChange}
-          options={BOOK_TYPES}
-          required
-        />
-
-        <SelectField
-          label="Language"
-          name="language"
-          value={formData.language}
-          onChange={handleInputChange}
-          options={LANGUAGES}
-          required
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
-          label="Publication Date"
-          name="publishedAt"
-          type="date"
-          value={formData.publishedAt}
-          onChange={handleInputChange}
-          required
-          error={errors.publishedAt}
-        />
-
-        <FormField
-          label="Number of Pages"
-          name="pages"
+          label="Publication Year"
+          name="year"
           type="number"
-          value={formData.pages}
+          value={formData.year}
           onChange={handleInputChange}
-          placeholder="Enter page count"
-          min="1"
-          error={errors.pages}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          label="ISBN (Optional)"
-          name="isbn"
-          value={formData.isbn}
-          onChange={handleInputChange}
-          placeholder="978-0-123456-78-9"
+          min="1900"
+          max={new Date().getFullYear() + 10}
+          required
+          error={errors.year}
         />
 
-        <FormField
-          label="Download URL (Optional)"
-          name="downloadUrl"
-          type="url"
-          value={formData.downloadUrl}
+        <SelectField
+          label="Color Theme"
+          name="color"
+          value={formData.color}
           onChange={handleInputChange}
-          placeholder="https://..."
-          error={errors.downloadUrl}
+          options={BOOK_COLORS}
+          required
         />
       </div>
 
       <ImageUpload
         label="Cover Image"
-        value={formData.coverImage}
+        value={formData.cover}
         onChange={handleImageChange}
-        error={errors.coverImage}
+        required
+        error={errors.cover}
       />
 
       {errors.submit && (

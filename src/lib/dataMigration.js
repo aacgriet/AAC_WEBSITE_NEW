@@ -1,7 +1,57 @@
-// src/lib/dataMigration.js - Fixed version without React dependency
+// src/lib/dataMigration.js - Updated with Patents data
 import { StorageManager, STORAGE_KEYS } from './storage';
 import booksData from '@/components/Data/booksData';
 import alumniData from '@/components/Data/Alumniaac';
+
+// Patents data - can be imported from JSON file
+const patentsData = [
+  {
+    id: "automated-pill-reminder",
+    title: "An automated electronic device for reminding consumption of pills scheduled and even for missed schedules with specified two way confirmation along with replaceable pill compartments layer as value addition been facilitated to the changing requirements.",
+    shortTitle: "Automated Pill Reminder Device",
+    inventors: [
+      "Yelma Chethan Reddy",
+      "Alence Abhinay",
+      "B.S.V.S Anoop",
+      "M Srikanth",
+      "D.Naga pavan",
+      "G Pradeep Reddy"
+    ],
+    patentOffice: "India",
+    date: "2019-01-21T00:00:00.000Z",
+    applicationNumber: "201941002559",
+    status: "Published Online",
+    description: "This patent is for an innovative device designed to help patients remember to take their medications on schedule. The device includes multiple pill compartments that can be customized and provides two-way confirmation to ensure medications are taken properly. It's especially useful for elderly patients or those with complex medication regimens.",
+    category: "Healthcare",
+    color: "purple",
+    image: "",
+    createdAt: "2024-01-15T10:00:00.000Z",
+    updatedAt: "2024-01-15T10:00:00.000Z"
+  },
+  {
+    id: "smart-glove-sign-language",
+    title: "A SMART GLOVE FOR RECOGNIZING AND COMMUNICATING SIGN LANGUAGE AND ASSOCIATED METHOD THEREOF.",
+    shortTitle: "Smart Glove for Sign Language",
+    inventors: [
+      "Jashwanth Kranthi Bopanna",
+      "Santosh Sanjeev",
+      "Bharath Varma Kantheti",
+      "Gowtham Sai Ponnekanti",
+      "Suhas Gangireddy",
+      "G Pradeep Reddy"
+    ],
+    patentOffice: "India",
+    date: "2020-09-03T00:00:00.000Z",
+    applicationNumber: "202041038106",
+    status: "Published Online",
+    description: "This patent describes a wearable technology in the form of a glove that can recognize sign language gestures and translate them into text or speech. The smart glove uses sensors to detect hand movements and positions, enabling real-time communication for individuals who use sign language. This innovation aims to bridge communication gaps between sign language users and those who don't understand sign language.",
+    category: "Assistive Technology",
+    color: "blue",
+    image: "",
+    createdAt: "2024-01-15T10:00:00.000Z",
+    updatedAt: "2024-01-15T10:00:00.000Z"
+  }
+];
 
 export class DataMigrationManager {
   static migrateAllData() {
@@ -12,7 +62,7 @@ export class DataMigrationManager {
       this.migrateAlumniData();
       this.migrateCoreCommitteeData();
       this.migratePublicationsData();
-      this.migratePatentsData();
+      this.migratePatentsData(); // New method
       this.createSampleNewsData();
       this.createSampleProjectsData();
       this.createSampleEventsData();
@@ -127,24 +177,10 @@ export class DataMigrationManager {
     console.log(`Migrated ${migratedPublications.length} publications`);
   }
 
+  // NEW: Patents migration method
   static migratePatentsData() {
     console.log('Migrating patents data...');
     
-    const patentsData = [
-      {
-        id: "aed",
-        title: "Automated Pill Reminder Device",
-        shortTitle: "Smart Pill Reminder",
-        description: "An innovative device designed to help patients remember to take their medications on schedule.",
-        inventors: ["Yelma Chethan Reddy", "Alence Abhinay", "B.S.V.S Anoop"],
-        patentOffice: "India",
-        date: "2019-01-21",
-        applicationNumber: "201941002559",
-        status: "Published Online",
-        category: "Healthcare"
-      }
-    ];
-
     const migratedPatents = patentsData.map(patent => ({
       ...patent,
       createdAt: new Date().toISOString(),
@@ -285,5 +321,29 @@ export class DataMigrationManager {
       };
     });
     return stats;
+  }
+
+  // NEW: Import patents from JSON file
+  static importPatentsFromJSON(jsonData) {
+    console.log('Importing patents from JSON...');
+    try {
+      const patentsToImport = Array.isArray(jsonData) ? jsonData : [jsonData];
+      const existingPatents = StorageManager.get(STORAGE_KEYS.PATENTS);
+      
+      const newPatents = patentsToImport.map(patent => ({
+        ...patent,
+        createdAt: patent.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }));
+
+      const combinedPatents = [...existingPatents, ...newPatents];
+      StorageManager.set(STORAGE_KEYS.PATENTS, combinedPatents);
+      
+      console.log(`Imported ${newPatents.length} patents successfully`);
+      return newPatents.length;
+    } catch (error) {
+      console.error('Error importing patents:', error);
+      throw error;
+    }
   }
 }
