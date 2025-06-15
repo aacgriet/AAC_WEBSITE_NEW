@@ -1,4 +1,4 @@
-// src/pages/admin/index.js - Complete Updated Admin Dashboard
+// src/pages/admin/index.js - UPDATED HEADER SECTION
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,9 +11,10 @@ import BooksForm from "@/components/Forms/BooksForm";
 import AlumniForm from "@/components/Forms/AlumniForm";
 import StartupsForm from "@/components/Forms/StartupsForm";
 import NewsForm from "@/components/Forms/NewsForm";
-
 import EventsForm from "@/components/Forms/EventsForm";
 import ProjectsForm from "@/components/Forms/ProjectsForm";
+
+// ... (keep all the existing ADMIN_SECTIONS and other constants)
 
 const ADMIN_SECTIONS = [
   { key: "news", label: "News", icon: "📰", storageKey: STORAGE_KEYS.NEWS },
@@ -225,6 +226,8 @@ const AdminDashboard = () => {
     currentSection?.storageKey
   );
 
+  // ... (keep all existing handler functions)
+
   const handleAdd = () => {
     console.log("Adding new item for section:", activeSection);
     setEditingId(null);
@@ -295,128 +298,126 @@ const AdminDashboard = () => {
     }
   };
 
-  // src/pages/admin/index.js - Update the handleImport function (around line 267)
-
-const handleImport = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const importData = JSON.parse(e.target.result);
-        console.log('Raw import data:', importData);
-        
-        // Handle different JSON formats
-        let processedData = {};
-        
-        if (Array.isArray(importData)) {
-          // If it's an array, we need to process it based on the content
-          console.log('Detected array format');
+  const handleImport = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const importData = JSON.parse(e.target.result);
+          console.log('Raw import data:', importData);
           
-          // Check if it looks like news data (has _id, title, etc.)
-          if (importData.length > 0 && importData[0]._id && importData[0].title) {
-            console.log('Detected news data format');
+          // Handle different JSON formats
+          let processedData = {};
+          
+          if (Array.isArray(importData)) {
+            // If it's an array, we need to process it based on the content
+            console.log('Detected array format');
             
-            // Transform the data to match our storage format
-            const transformedNews = importData.map(item => ({
-              id: item._id, // Map _id to id
-              _id: item._id, // Keep _id for compatibility
-              title: item.title,
-              slug: typeof item.slug === 'object' ? item.slug.current : item.slug, // Handle slug object
-              publishedAt: item.publishedAt,
-              categories: item.categories,
-              _rawBody: item._rawBody,
-              mainImage: item.mainImage,
-              links: item.links || [],
-              _type: item._type,
-              _createdAt: item._createdAt,
-              _updatedAt: item._updatedAt,
-              _rev: item._rev,
-              createdAt: item._createdAt || new Date().toISOString(),
-              updatedAt: item._updatedAt || new Date().toISOString()
-            }));
-            
-            processedData[STORAGE_KEYS.NEWS] = transformedNews;
-          } else {
-            // Assume it's for the current active section
-            processedData[currentSection?.storageKey] = importData;
-          }
-        } else if (typeof importData === 'object') {
-          // If it's an object, check if it has storage keys or alternative keys
-          if (Object.keys(importData).some(key => Object.values(STORAGE_KEYS).includes(key))) {
-            // Direct storage format
-            processedData = importData;
-          } else {
-            // Check for alternative keys and map them
-            const keyMappings = {
-              'aac_books': STORAGE_KEYS.BOOKS,
-              'aac_alumni': STORAGE_KEYS.ALUMNI,
-              'aac_startups': STORAGE_KEYS.STARTUPS,
-              'aac_news': STORAGE_KEYS.NEWS,
-              'aac_patents': STORAGE_KEYS.PATENTS,
-              'aac_publications': STORAGE_KEYS.PUBLICATIONS,
-              'aac_projects': STORAGE_KEYS.PROJECTS,
-              'aac_events': STORAGE_KEYS.EVENTS
-            };
-            
-            Object.entries(importData).forEach(([key, value]) => {
-              const mappedKey = keyMappings[key];
-              if (mappedKey) {
-                processedData[mappedKey] = value;
-              }
-            });
-            
-            // If no mappings found, try to detect what type of data it is
-            if (Object.keys(processedData).length === 0) {
-              const firstKey = Object.keys(importData)[0];
-              const firstValue = importData[firstKey];
+            // Check if it looks like news data (has _id, title, etc.)
+            if (importData.length > 0 && importData[0]._id && importData[0].title) {
+              console.log('Detected news data format');
               
-              if (Array.isArray(firstValue)) {
-                // It's probably a data export format with unknown keys
-                processedData = importData;
-              } else if (importData.hasOwnProperty('title') || importData.hasOwnProperty('name') || importData.hasOwnProperty('Name')) {
-                // It's a single item object, add to current section
-                processedData[currentSection?.storageKey] = [importData];
+              // Transform the data to match our storage format
+              const transformedNews = importData.map(item => ({
+                id: item._id, // Map _id to id
+                _id: item._id, // Keep _id for compatibility
+                title: item.title,
+                slug: typeof item.slug === 'object' ? item.slug.current : item.slug, // Handle slug object
+                publishedAt: item.publishedAt,
+                categories: item.categories,
+                _rawBody: item._rawBody,
+                mainImage: item.mainImage,
+                links: item.links || [],
+                _type: item._type,
+                _createdAt: item._createdAt,
+                _updatedAt: item._updatedAt,
+                _rev: item._rev,
+                createdAt: item._createdAt || new Date().toISOString(),
+                updatedAt: item._updatedAt || new Date().toISOString()
+              }));
+              
+              processedData[STORAGE_KEYS.NEWS] = transformedNews;
+            } else {
+              // Assume it's for the current active section
+              processedData[currentSection?.storageKey] = importData;
+            }
+          } else if (typeof importData === 'object') {
+            // If it's an object, check if it has storage keys or alternative keys
+            if (Object.keys(importData).some(key => Object.values(STORAGE_KEYS).includes(key))) {
+              // Direct storage format
+              processedData = importData;
+            } else {
+              // Check for alternative keys and map them
+              const keyMappings = {
+                'aac_books': STORAGE_KEYS.BOOKS,
+                'aac_alumni': STORAGE_KEYS.ALUMNI,
+                'aac_startups': STORAGE_KEYS.STARTUPS,
+                'aac_news': STORAGE_KEYS.NEWS,
+                'aac_patents': STORAGE_KEYS.PATENTS,
+                'aac_publications': STORAGE_KEYS.PUBLICATIONS,
+                'aac_projects': STORAGE_KEYS.PROJECTS,
+                'aac_events': STORAGE_KEYS.EVENTS
+              };
+              
+              Object.entries(importData).forEach(([key, value]) => {
+                const mappedKey = keyMappings[key];
+                if (mappedKey) {
+                  processedData[mappedKey] = value;
+                }
+              });
+              
+              // If no mappings found, try to detect what type of data it is
+              if (Object.keys(processedData).length === 0) {
+                const firstKey = Object.keys(importData)[0];
+                const firstValue = importData[firstKey];
+                
+                if (Array.isArray(firstValue)) {
+                  // It's probably a data export format with unknown keys
+                  processedData = importData;
+                } else if (importData.hasOwnProperty('title') || importData.hasOwnProperty('name') || importData.hasOwnProperty('Name')) {
+                  // It's a single item object, add to current section
+                  processedData[currentSection?.storageKey] = [importData];
+                }
               }
             }
           }
-        }
-        
-        console.log('Processed data:', processedData);
-        
-        if (Object.keys(processedData).length === 0) {
-          throw new Error('No valid data found in the JSON file');
-        }
-        
-        // Import the processed data
-        Object.entries(processedData).forEach(([key, data]) => {
-          const existing = StorageManager.get(key);
-          let combined;
           
-          if (key === STORAGE_KEYS.NEWS && Array.isArray(data)) {
-            // Special handling for news data to avoid duplicates
-            const existingIds = new Set(existing.map(item => item.id || item._id));
-            const newItems = data.filter(item => !existingIds.has(item.id || item._id));
-            combined = [...existing, ...newItems];
-          } else {
-            combined = [...existing, ...(Array.isArray(data) ? data : [data])];
+          console.log('Processed data:', processedData);
+          
+          if (Object.keys(processedData).length === 0) {
+            throw new Error('No valid data found in the JSON file');
           }
           
-          StorageManager.set(key, combined);
-        });
-        
-        refresh();
-        alert(`Data imported successfully! Imported ${Object.values(processedData).flat().length} items.`);
-        window.location.reload();
-      } catch (error) {
-        console.error("Import failed:", error);
-        alert("Import failed: " + error.message);
-      }
-    };
-    reader.readAsText(file);
-  }
-  event.target.value = "";
-};
+          // Import the processed data
+          Object.entries(processedData).forEach(([key, data]) => {
+            const existing = StorageManager.get(key);
+            let combined;
+            
+            if (key === STORAGE_KEYS.NEWS && Array.isArray(data)) {
+              // Special handling for news data to avoid duplicates
+              const existingIds = new Set(existing.map(item => item.id || item._id));
+              const newItems = data.filter(item => !existingIds.has(item.id || item._id));
+              combined = [...existing, ...newItems];
+            } else {
+              combined = [...existing, ...(Array.isArray(data) ? data : [data])];
+            }
+            
+            StorageManager.set(key, combined);
+          });
+          
+          refresh();
+          alert(`Data imported successfully! Imported ${Object.values(processedData).flat().length} items.`);
+          window.location.reload();
+        } catch (error) {
+          console.error("Import failed:", error);
+          alert("Import failed: " + error.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+    event.target.value = "";
+  };
 
   const renderForm = () => {
     switch (activeSection) {
@@ -703,7 +704,8 @@ const handleImport = (event) => {
         <meta name="robots" content="noindex, nofollow" />
       </Head>
 
-      <div className="min-h-screen bg-[#0e1421] py-8">
+      {/* FIXED: Added padding-top to account for navbar */}
+      <div className="min-h-screen bg-[#0e1421] pt-24 pb-8">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="mb-8">
             {/* Header with Fixed Button Layout */}
@@ -855,4 +857,4 @@ const handleImport = (event) => {
   );
 };
 
-export default AdminDashboard
+export default AdminDashboard;

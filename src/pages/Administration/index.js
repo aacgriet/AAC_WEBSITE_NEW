@@ -1,10 +1,9 @@
-// src/pages/Administration/index.js
+// src/pages/Administration/index.js - Fixed Administration Page
 import React, { useState } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Layout from '@/components/Layout';
-import PageHero from '@/components/PageHero';
 
 const AdministrationPage = () => {
   // State to track the active category
@@ -190,100 +189,133 @@ const AdministrationPage = () => {
         </div>
       </div>
       <div className="p-4">
-        <h3 className="text-xl font-bold text-white">{data.Name}</h3>
-        <p className="text-blue-400">{data.Designation}</p>
+        <h3 className="font-bold text-lg text-white text-center">{data.Name}</h3>
+        <p className="text-blue-400 text-center text-sm">{data.Designation}</p>
       </div>
     </motion.div>
   );
-  
-  // Get the active data based on category
-  const getActiveData = () => {
-    switch (activeCategory) {
-      case 'instigators':
-        return instigatorData;
-      case 'advisors':
-        return advisorData;
-      case 'committee':
-        return coreCommitteeData;
-      default:
-        return instigatorData;
-    }
-  };
-  
-  // Render category content
-  const renderCategoryContent = () => {
-    const activeData = getActiveData();
-    
-    if (activeCategory === 'committee') {
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {activeData.map((item) => (
-            <CommitteeMemberCard key={item.Id} data={item} />
-          ))}
-        </div>
-      );
-    }
-    
-    return (
-      <div className="space-y-8">
-        {activeData.map((item) => {
-          if (activeCategory === 'instigators') {
-            return <InstigatorCard key={item.id} data={item} />;
-          }
-          return <AdvisorCard key={item.id} data={item} />;
-        })}
-      </div>
-    );
-  };
   
   return (
     <Layout>
       <Head>
         <title>Administration | AAC - Advanced Academic Center</title>
-        <meta name="description" content="Meet the administration team at Advanced Academic Center, GRIET" />
+        <meta name="description" content="Meet the leadership, advisors, and core committee members who guide the Advanced Academic Center towards excellence." />
       </Head>
       
-      <PageHero 
-        title="The People Behind AAC" 
-        subtitle="Dedicated faculty and students working together to advance research and innovation at GRIET"
-        tag="Our Team"
-      />
-      
-      <div className="py-12 px-4">
-        <div className="container mx-auto max-w-6xl">
-          {/* Category tabs */}
-          <div className="flex flex-wrap items-center justify-center space-x-2 md:space-x-4 mb-12">
-            {[
-              { id: 'instigators', label: 'Instigators' },
-              { id: 'advisors', label: 'Advisors' },
-              { id: 'committee', label: 'Core Committee' },
-            ].map((category) => (
-              <motion.button
-                key={category.id}
-                whileHover={{ y: -3 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setActiveCategory(category.id)}
-                className={`px-6 py-3 rounded-full text-sm md:text-base font-medium transition-all duration-300 ${
-                  activeCategory === category.id
-                    ? 'bg-blue-800 text-white shadow-lg border border-blue-700'
-                    : 'bg-[#0e1421] text-gray-300 hover:bg-[#172E7C]/30 border border-gray-700'
-                }`}
-              >
-                {category.label}
-              </motion.button>
-            ))}
-          </div>
-          
-          {/* Content area */}
+      {/* FIXED: Hero Section - No Gap, Covers from Top */}
+      <div className="relative bg-gradient-to-b from-blue-900 to-indigo-900 pt-24 pb-20 mb-12">
+        {/* Background pattern */}
+        <div className="absolute inset-0 overflow-hidden opacity-10">
+          <div className="absolute -top-[10%] -left-[10%] w-[70%] h-[50%] bg-white rounded-full blur-3xl"></div>
+          <div className="absolute top-[20%] -right-[5%] w-[40%] h-[40%] bg-blue-400 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <motion.div
-            key={activeCategory}
-            variants={pageVariants}
-            initial="hidden"
-            animate="visible"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
           >
-            {renderCategoryContent()}
+            <span className="inline-block px-3 py-1 text-sm font-medium bg-white/20 backdrop-blur-sm text-white rounded-full mb-4">
+              Advanced Academic Center
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+              Leadership <span className="text-blue-300">@AAC</span>
+            </h1>
+            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+              Meet the visionary leaders, dedicated advisors, and dynamic team members who drive our mission of academic excellence and innovation.
+            </p>
           </motion.div>
         </div>
+      </div>
+      
+      {/* Navigation Tabs */}
+      <div className="container mx-auto px-4 mb-12">
+        <div className="flex justify-center">
+          <div className="bg-[#1a2535] rounded-full p-2 border border-gray-700">
+            <div className="flex space-x-2">
+              {[
+                { key: 'instigators', label: 'Instigators' },
+                { key: 'advisors', label: 'Advisors' },
+                { key: 'committee', label: 'Core Committee' }
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveCategory(tab.key)}
+                  className={`px-6 py-3 rounded-full transition-all duration-300 ${
+                    activeCategory === tab.key
+                      ? 'bg-blue-900 text-blue-300 shadow-lg border border-blue-700'
+                      : 'text-gray-300 hover:text-white hover:bg-[#243447]'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Content Section */}
+      <div className="container mx-auto px-4 pb-16">
+        <motion.div
+          key={activeCategory}
+          variants={pageVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-8"
+        >
+          {activeCategory === 'instigators' && (
+            <>
+              <motion.div variants={itemVariants} className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">The Instigators</h2>
+                <p className="text-gray-400 max-w-3xl mx-auto">
+                  The visionary minds who conceived and established the Advanced Academic Center, 
+                  laying the foundation for academic excellence and research innovation.
+                </p>
+              </motion.div>
+              {instigatorData.map((item) => (
+                <InstigatorCard key={item.id} data={item} />
+              ))}
+            </>
+          )}
+          
+          {activeCategory === 'advisors' && (
+            <>
+              <motion.div variants={itemVariants} className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Advisory Board</h2>
+                <p className="text-gray-400 max-w-3xl mx-auto">
+                  Distinguished leaders and academics who provide strategic guidance and mentorship 
+                  to shape the future of AAC.
+                </p>
+              </motion.div>
+              {advisorData.map((item) => (
+                <AdvisorCard key={item.id} data={item} />
+              ))}
+            </>
+          )}
+          
+          {activeCategory === 'committee' && (
+            <>
+              <motion.div variants={itemVariants} className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Core Committee</h2>
+                <p className="text-gray-400 max-w-3xl mx-auto">
+                  The dynamic student leadership team driving initiatives, events, and the day-to-day 
+                  operations of the Advanced Academic Center.
+                </p>
+              </motion.div>
+              <motion.div 
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                variants={pageVariants}
+              >
+                {coreCommitteeData.map((item) => (
+                  <CommitteeMemberCard key={item.Id} data={item} />
+                ))}
+              </motion.div>
+            </>
+          )}
+        </motion.div>
       </div>
     </Layout>
   );

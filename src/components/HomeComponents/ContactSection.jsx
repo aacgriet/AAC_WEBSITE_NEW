@@ -71,12 +71,12 @@ const ContactSection = () => {
       info: 'GRIET, Hyderabad, India',
       link: 'https://maps.google.com/?q=Gokaraju+Rangaraju+Institute+of+Engineering+and+Technology,+Hyderabad',
     },
-    {
-      icon: <FaPhone />,
-      title: 'Phone',
-      info: '+91 XXXXXXXXXX',
-      link: 'tel:+91XXXXXXXXXX',
-    },
+    // {
+    //   icon: <FaPhone />,
+    //   title: 'Phone',
+    //   info: '+91 XXXXXXXXXX',
+    //   link: 'tel:+91XXXXXXXXXX',
+    // },
   ];
   
   return (

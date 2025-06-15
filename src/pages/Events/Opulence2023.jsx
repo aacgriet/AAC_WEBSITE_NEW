@@ -41,7 +41,7 @@ With its diverse array of activities, Opulence aims to empower participants to t
         date="June 2024"
         location="GRIET Campus, Hyderabad"
         organizer="Advanced Academic Center"
-        cta={{ text: "Register for Next Event", link: "/Contact" }}
+        // cta={{ text: "Register for Next Event", link: "/Contact" }}
       />
     </Layout>
   );

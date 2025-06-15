@@ -91,8 +91,8 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { number: "50+", label: "Research Projects", color: "bg-gradient-to-br from-blue-500 to-purple-600" },
-              { number: "200+", label: "Students Involved", color: "bg-gradient-to-br from-pink-500 to-orange-400" },
-              { number: "30+", label: "Published Papers", color: "bg-gradient-to-br from-green-400 to-cyan-500" },
+              { number: "100+", label: "Students Involved", color: "bg-gradient-to-br from-pink-500 to-orange-400" },
+              { number: "10+", label: "Published Papers", color: "bg-gradient-to-br from-green-400 to-cyan-500" },
             ].map((stat, index) => (
               <motion.div
                 key={index}

@@ -354,7 +354,7 @@ const Patents = () => {
           </motion.div>
           
           {/* CTA section */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -370,7 +370,7 @@ const Patents = () => {
                 Submit Your Idea
               </button>
             </div>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
       

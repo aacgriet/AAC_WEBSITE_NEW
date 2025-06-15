@@ -4,14 +4,14 @@ import { motion } from 'framer-motion';
 
 const PageHero = ({ title, subtitle, tag, highlightTitle = false }) => {
   return (
-    <div className="relative bg-gradient-to-b from-blue-900 to-indigo-900 py-20 mb-12">
+    <div className="relative bg-gradient-to-b from-blue-900 to-indigo-900 pt-24 pb-20 mb-12">
       {/* Background pattern */}
       <div className="absolute inset-0 overflow-hidden opacity-10">
         <div className="absolute -top-[10%] -left-[10%] w-[70%] h-[50%] bg-white rounded-full blur-3xl"></div>
         <div className="absolute top-[20%] -right-[5%] w-[40%] h-[40%] bg-blue-400 rounded-full blur-3xl"></div>
       </div>
       
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto mt-7 px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

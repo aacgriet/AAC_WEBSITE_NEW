@@ -220,7 +220,7 @@ const EventsPage = () => {
           </motion.div>
           
           {/* Call to Action */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -234,7 +234,7 @@ const EventsPage = () => {
                 Subscribe to Updates
               </button>
             </div>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
     </Layout>

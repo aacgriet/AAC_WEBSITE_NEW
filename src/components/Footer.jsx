@@ -79,16 +79,18 @@ const Footer = () => {
       {/* Background with gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#0A1540] to-[#172E7C] z-0"></div>
       
-      {/* Back to top button */}
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-3 shadow-lg cursor-pointer z-10"
-        onClick={scrollToTop}
-        aria-label="Back to top"
-      >
-        <FaArrowUp className="text-[#172E7C]" />
-      </motion.button>
+      {/* Back to top button - FIXED POSITIONING */}
+      <div className="absolute -top-6 left-0 right-0 flex justify-center z-10">
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="bg-white rounded-full p-3 shadow-lg cursor-pointer"
+          onClick={scrollToTop}
+          aria-label="Back to top"
+        >
+          <FaArrowUp className="text-[#172E7C]" />
+        </motion.button>
+      </div>
       
       <motion.div 
         variants={containerVariants}

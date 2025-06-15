@@ -79,7 +79,7 @@ const DynamicEventPage = () => {
         date={event.date}
         location={event.location}
         organizer={event.organizer}
-        cta={event.cta}
+        // cta={event.cta}
       />
     </Layout>
   );
