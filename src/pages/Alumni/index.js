@@ -1,14 +1,12 @@
-// src/pages/Alumni/index.js
+// src/pages/Alumni/index.js - Fixed to use admin data
 import React from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Layout from '@/components/Layout';
 import PageHero from '@/components/PageHero';
-
-// Import alumni data - assuming it's in the path below
-// You'll need to adjust the import path to match your actual data file location
-import Data from '@/components/Data/Alumniaac';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { STORAGE_KEYS } from '@/lib/storage';
 
 const AlumniCard = ({ alumni }) => {
   return (
@@ -59,6 +57,29 @@ const AlumniGrid = ({ alumni }) => {
 };
 
 const Alumni = () => {
+  // Use admin data instead of hardcoded data
+  const { data: alumniData, loading, error } = useLocalStorage(STORAGE_KEYS.ALUMNI);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-white text-xl">Loading alumni...</div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-red-400 text-xl">Error loading alumni: {error.message}</div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <Head>
@@ -92,7 +113,7 @@ const Alumni = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
-                  { number: "200+", label: "Alumni Network" },
+                  { number: `${alumniData.length}+`, label: "Alumni Network" },
                   { number: "45+", label: "Industry Mentors" },
                   { number: "25+", label: "Countries Worldwide" }
                 ].map((stat, index) => (
@@ -113,7 +134,19 @@ const Alumni = () => {
           </motion.div>
           
           {/* Alumni Grid */}
-          <AlumniGrid alumni={Data} />
+          {alumniData.length > 0 ? (
+            <AlumniGrid alumni={alumniData} />
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🎓</div>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                No Alumni Added Yet
+              </h3>
+              <p className="text-gray-400 mb-6">
+                Alumni profiles will appear here once they are added through the admin panel.
+              </p>
+            </div>
+          )}
           
           {/* Call to Action */}
           <motion.div

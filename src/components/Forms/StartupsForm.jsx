@@ -1,12 +1,15 @@
-// src/components/Forms/StartupsForm.jsx - New Form Based on Schema
+// src/components/Forms/StartupsForm.jsx - Updated to match UI data structure
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
-import { MultiImageUpload } from './ImageUpload';
+import ImageUpload from './ImageUpload';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { STORAGE_KEYS } from '@/lib/storage';
 
 const STARTUP_CATEGORIES = [
-  'Tech Services',
+  'Event Planning',
+  'Education & Art',
+  'Technology',
+  'Food & Sustainability',
   'E-commerce',
   'FinTech',
   'HealthTech',
@@ -18,6 +21,15 @@ const STARTUP_CATEGORIES = [
   'Web Development',
   'Consulting',
   'Other'
+];
+
+const STARTUP_COLORS = [
+  { value: 'blue', label: 'Blue' },
+  { value: 'purple', label: 'Purple' },
+  { value: 'orange', label: 'Orange' },
+  { value: 'green', label: 'Green' },
+  { value: 'indigo', label: 'Indigo' },
+  { value: 'red', label: 'Red' }
 ];
 
 const STARTUP_STATUSES = [
@@ -34,16 +46,19 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
   const [errors, setErrors] = useState({});
   
   const [formData, setFormData] = useState({
+    id: '',
     name: '',
     logo: '',
-    founders: [''],
     description: '',
-    reason: '',
+    mission: '',
+    image: '',
     category: '',
+    color: 'blue',
+    status: 'Active',
+    founders: [''],
     establishedDate: new Date().toISOString().split('T')[0],
     website: '',
-    appScreenshots: [''],
-    status: 'Active'
+    appScreenshots: ['']
   });
 
   useEffect(() => {
@@ -68,6 +83,19 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
       ...prev,
       [name]: value
     }));
+    
+    // Auto-generate ID from name if creating new startup
+    if (name === 'name' && !startupId) {
+      const id = value.toLowerCase()
+        .replace(/[^a-z0-9 -]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+      setFormData(prev => ({
+        ...prev,
+        id: id
+      }));
+    }
   };
 
   const handleArrayChange = (field) => (values) => {
@@ -77,10 +105,10 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
     }));
   };
 
-  const handleLogoChange = (url) => {
+  const handleImageChange = (field) => (url) => {
     setFormData(prev => ({
       ...prev,
-      logo: url
+      [field]: url
     }));
   };
 
@@ -91,17 +119,20 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
       newErrors.name = 'Startup name is required';
     }
     
-    const validFounders = formData.founders.filter(founder => founder.trim());
-    if (validFounders.length === 0) {
-      newErrors.founders = 'At least one founder is required';
+    if (!formData.logo.trim()) {
+      newErrors.logo = 'Logo is required';
     }
     
     if (!formData.description.trim()) {
       newErrors.description = 'Description is required';
     }
     
-    if (!formData.reason.trim()) {
-      newErrors.reason = 'Reason/inspiration is required';
+    if (!formData.mission.trim()) {
+      newErrors.mission = 'Mission/Vision statement is required';
+    }
+    
+    if (!formData.image.trim()) {
+      newErrors.image = 'Product/App image is required';
     }
     
     if (!formData.category) {
@@ -110,6 +141,11 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
     
     if (!formData.establishedDate) {
       newErrors.establishedDate = 'Establishment date is required';
+    }
+
+    const validFounders = formData.founders.filter(founder => founder.trim());
+    if (validFounders.length === 0) {
+      newErrors.founders = 'At least one founder is required';
     }
 
     // Validate website URL if provided
@@ -144,7 +180,10 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
         ...formData,
         establishedDate: new Date(formData.establishedDate).toISOString(),
         founders: formData.founders.filter(founder => founder.trim()),
-        appScreenshots: formData.appScreenshots.filter(screenshot => screenshot.trim())
+        appScreenshots: formData.appScreenshots.filter(screenshot => screenshot.trim()),
+        id: startupId || formData.id,
+        createdAt: startupId ? undefined : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       
       let result;
@@ -184,25 +223,16 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
           error={errors.name}
         />
         
-        <SelectField
-          label="Category"
-          name="category"
-          value={formData.category}
+        <FormField
+          label="ID (URL Slug)"
+          name="id"
+          value={formData.id}
           onChange={handleInputChange}
-          options={STARTUP_CATEGORIES}
+          placeholder="Auto-generated from name"
           required
-          error={errors.category}
+          error={errors.id}
         />
       </div>
-
-      <ArrayField
-        label="Founders"
-        values={formData.founders}
-        onChange={handleArrayChange('founders')}
-        placeholder="Enter founder name"
-        required
-        error={errors.founders}
-      />
 
       <TextAreaField
         label="Description"
@@ -216,25 +246,43 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
       />
 
       <TextAreaField
-        label="Reason/Inspiration"
-        name="reason"
-        value={formData.reason}
+        label="Mission/Vision Statement"
+        name="mission"
+        value={formData.mission}
         onChange={handleInputChange}
-        placeholder="What inspired you to start this company? What problem are you solving?"
-        rows={4}
+        placeholder="What inspired you to start this company? What problem are you solving? What's your vision for the future?"
+        rows={6}
         required
-        error={errors.reason}
+        error={errors.mission}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          label="Establishment Date"
-          name="establishedDate"
-          type="date"
-          value={formData.establishedDate}
+      <ArrayField
+        label="Founders"
+        values={formData.founders}
+        onChange={handleArrayChange('founders')}
+        placeholder="Enter founder name"
+        required
+        error={errors.founders}
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <SelectField
+          label="Category"
+          name="category"
+          value={formData.category}
           onChange={handleInputChange}
+          options={STARTUP_CATEGORIES}
           required
-          error={errors.establishedDate}
+          error={errors.category}
+        />
+        
+        <SelectField
+          label="Card Color Theme"
+          name="color"
+          value={formData.color}
+          onChange={handleInputChange}
+          options={STARTUP_COLORS}
+          required
         />
 
         <SelectField
@@ -247,80 +295,83 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
         />
       </div>
 
-      <FormField
-        label="Website URL"
-        name="website"
-        type="url"
-        value={formData.website}
-        onChange={handleInputChange}
-        placeholder="https://yourcompany.com"
-        error={errors.website}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField
+          label="Establishment Date"
+          name="establishedDate"
+          type="date"
+          value={formData.establishedDate}
+          onChange={handleInputChange}
+          required
+          error={errors.establishedDate}
+        />
+
+        <FormField
+          label="Website URL"
+          name="website"
+          type="url"
+          value={formData.website}
+          onChange={handleInputChange}
+          placeholder="https://yourcompany.com"
+          error={errors.website}
+        />
+      </div>
+
+      <ImageUpload
+        label="Company Logo"
+        value={formData.logo}
+        onChange={handleImageChange('logo')}
+        required
+        error={errors.logo}
       />
 
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Company Logo
-          </label>
-          <input
-            type="url"
-            value={formData.logo}
-            onChange={(e) => handleLogoChange(e.target.value)}
-            placeholder="Enter logo URL"
-            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-          />
-          {formData.logo && (
-            <div className="mt-2">
-              <img 
-                src={formData.logo} 
-                alt="Logo preview" 
-                className="w-16 h-16 object-contain bg-gray-100 rounded-lg p-2"
-                onError={() => console.log('Logo failed to load')}
-              />
-            </div>
-          )}
-        </div>
+      <ImageUpload
+        label="Product/App Screenshot (Main Image)"
+        value={formData.image}
+        onChange={handleImageChange('image')}
+        required
+        error={errors.image}
+      />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            App Screenshots/Product Images
-          </label>
-          <div className="space-y-2">
-            {formData.appScreenshots.map((screenshot, index) => (
-              <div key={index} className="flex space-x-2">
-                <input
-                  type="url"
-                  value={screenshot}
-                  onChange={(e) => {
-                    const newScreenshots = [...formData.appScreenshots];
-                    newScreenshots[index] = e.target.value;
-                    setFormData(prev => ({ ...prev, appScreenshots: newScreenshots }));
-                  }}
-                  placeholder={`Screenshot ${index + 1} URL`}
-                  className="flex-1 px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newScreenshots = formData.appScreenshots.filter((_, i) => i !== index);
-                    setFormData(prev => ({ ...prev, appScreenshots: newScreenshots }));
-                  }}
-                  className="px-3 py-2 bg-red-900 text-red-300 rounded-lg hover:bg-red-800 transition-colors border border-red-700"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={() => {
-                setFormData(prev => ({ ...prev, appScreenshots: [...prev.appScreenshots, ''] }));
-              }}
-              className="px-4 py-2 bg-green-900 text-green-300 rounded-lg hover:bg-green-800 transition-colors border border-green-700"
-            >
-              Add Screenshot
-            </button>
-          </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-300 mb-2">
+          Additional App Screenshots (Optional)
+        </label>
+        <div className="space-y-2">
+          {formData.appScreenshots.map((screenshot, index) => (
+            <div key={index} className="flex space-x-2">
+              <input
+                type="url"
+                value={screenshot}
+                onChange={(e) => {
+                  const newScreenshots = [...formData.appScreenshots];
+                  newScreenshots[index] = e.target.value;
+                  setFormData(prev => ({ ...prev, appScreenshots: newScreenshots }));
+                }}
+                placeholder={`Screenshot ${index + 1} URL`}
+                className="flex-1 px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const newScreenshots = formData.appScreenshots.filter((_, i) => i !== index);
+                  setFormData(prev => ({ ...prev, appScreenshots: newScreenshots }));
+                }}
+                className="px-3 py-2 bg-red-900 text-red-300 rounded-lg hover:bg-red-800 transition-colors border border-red-700"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => {
+              setFormData(prev => ({ ...prev, appScreenshots: [...prev.appScreenshots, ''] }));
+            }}
+            className="px-4 py-2 bg-green-900 text-green-300 rounded-lg hover:bg-green-800 transition-colors border border-green-700"
+          >
+            Add Screenshot
+          </button>
         </div>
       </div>
 

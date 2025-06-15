@@ -1,4 +1,4 @@
-// src/pages/admin/index.js - Updated to include PatentsForm import
+// src/pages/admin/index.js - Complete Updated Admin Dashboard
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import { motion, AnimatePresence } from "framer-motion";
@@ -6,8 +6,13 @@ import Layout from "@/components/Layout";
 import { STORAGE_KEYS, StorageManager } from "@/lib/storage";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import PublicationsForm from "@/components/Forms/PublicationsForm";
-import PatentsForm from "@/components/Forms/PatentsForm"; // Import the new PatentsForm
+import PatentsForm from "@/components/Forms/PatentsForm";
 import BooksForm from "@/components/Forms/BooksForm";
+import AlumniForm from "@/components/Forms/AlumniForm";
+import StartupsForm from "@/components/Forms/StartupsForm";
+import NewsForm from "@/components/Forms/NewsForm";
+import EventsForm from "@/components/Forms/EventsForm";
+import ProjectsForm from "@/components/Forms/ProjectsForm";
 
 const ADMIN_SECTIONS = [
   { key: "news", label: "News", icon: "📰", storageKey: STORAGE_KEYS.NEWS },
@@ -55,8 +60,8 @@ const ADMIN_SECTIONS = [
   },
 ];
 
-// News Form Component (keeping existing)
-const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
+// News Form Component
+const SimpleNewsForm = ({ newsId = null, onSuccess, onCancel }) => {
   const {
     data: newsData,
     addItem,
@@ -290,28 +295,6 @@ const SimpleMigrationComponent = () => {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           },
-          {
-            id: "smart-glove-sign-language",
-            title:
-              "A SMART GLOVE FOR RECOGNIZING AND COMMUNICATING SIGN LANGUAGE AND ASSOCIATED METHOD THEREOF.",
-            shortTitle: "Smart Glove for Sign Language",
-            inventors: [
-              "Jashwanth Kranthi Bopanna",
-              "Santosh Sanjeev",
-              "Bharath Varma Kantheti",
-            ],
-            patentOffice: "India",
-            applicationNumber: "202041038106",
-            date: new Date("2020-09-03").toISOString(),
-            status: "Published Online",
-            description:
-              "This patent describes a wearable technology in the form of a glove that can recognize sign language gestures...",
-            category: "Assistive Technology",
-            color: "blue",
-            image: "",
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
         ],
         [STORAGE_KEYS.PUBLICATIONS]: [
           {
@@ -418,7 +401,7 @@ const SimpleMigrationComponent = () => {
 
 // Main Admin Dashboard Component
 const AdminDashboard = () => {
-  const [activeSection, setActiveSection] = useState("patents"); // Changed default to patents
+  const [activeSection, setActiveSection] = useState("alumni");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [showImportExport, setShowImportExport] = useState(false);
@@ -506,13 +489,69 @@ const AdminDashboard = () => {
       reader.onload = (e) => {
         try {
           const importData = JSON.parse(e.target.result);
-          StorageManager.importData(importData);
+          console.log('Raw import data:', importData);
+          
+          // Handle different JSON formats
+          let processedData = {};
+          
+          if (Array.isArray(importData)) {
+            // If it's an array, assume it's for the current active section
+            console.log('Detected array format, treating as current section data');
+            processedData[currentSection?.storageKey] = importData;
+          } else if (typeof importData === 'object') {
+            // If it's an object, check if it has storage keys or alternative keys
+            if (Object.keys(importData).some(key => Object.values(STORAGE_KEYS).includes(key))) {
+              // Direct storage format
+              processedData = importData;
+            } else {
+              // Check for alternative keys and map them
+              const keyMappings = {
+                'aac_books': STORAGE_KEYS.BOOKS,
+                'aac_alumni': STORAGE_KEYS.ALUMNI,
+                'aac_startups': STORAGE_KEYS.STARTUPS,
+                'aac_news': STORAGE_KEYS.NEWS,
+                'aac_patents': STORAGE_KEYS.PATENTS,
+                'aac_publications': STORAGE_KEYS.PUBLICATIONS,
+                'aac_projects': STORAGE_KEYS.PROJECTS,
+                'aac_events': STORAGE_KEYS.EVENTS
+              };
+              
+              Object.entries(importData).forEach(([key, value]) => {
+                const mappedKey = keyMappings[key];
+                if (mappedKey) {
+                  processedData[mappedKey] = value;
+                }
+              });
+              
+              // If no mappings found, try to detect what type of data it is
+              if (Object.keys(processedData).length === 0) {
+                const firstKey = Object.keys(importData)[0];
+                const firstValue = importData[firstKey];
+                
+                if (Array.isArray(firstValue)) {
+                  // It's probably a data export format with unknown keys
+                  processedData = importData;
+                } else if (importData.hasOwnProperty('title') || importData.hasOwnProperty('name') || importData.hasOwnProperty('Name')) {
+                  // It's a single item object, add to current section
+                  processedData[currentSection?.storageKey] = [importData];
+                }
+              }
+            }
+          }
+          
+          console.log('Processed data:', processedData);
+          
+          if (Object.keys(processedData).length === 0) {
+            throw new Error('No valid data found in the JSON file');
+          }
+          
+          StorageManager.importData(processedData);
           refresh();
           alert("Data imported successfully!");
           window.location.reload();
         } catch (error) {
           console.error("Import failed:", error);
-          alert("Invalid file format");
+          alert("Import failed: " + error.message);
         }
       };
       reader.readAsText(file);
@@ -524,7 +563,7 @@ const AdminDashboard = () => {
     switch (activeSection) {
       case "news":
         return (
-          <NewsForm
+          <SimpleNewsForm
             newsId={editingId}
             onSuccess={handleFormSuccess}
             onCancel={handleFormCancel}
@@ -550,6 +589,38 @@ const AdminDashboard = () => {
         return (
           <BooksForm
             bookId={editingId}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
+        );
+      case "alumni":
+        return (
+          <AlumniForm
+            alumnusId={editingId}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
+        );
+      case "startups":
+        return (
+          <StartupsForm
+            startupId={editingId}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
+        );
+      case "events":
+        return (
+          <EventsForm
+            eventId={editingId}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
+        );
+      case "projects":
+        return (
+          <ProjectsForm
+            projectId={editingId}
             onSuccess={handleFormSuccess}
             onCancel={handleFormCancel}
           />
@@ -600,7 +671,7 @@ const AdminDashboard = () => {
       <div className="space-y-4">
         {data.map((item) => (
           <motion.div
-            key={item.id}
+            key={item.id || item.Id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-[#1a2535] rounded-lg p-6 border border-gray-700"
@@ -608,7 +679,7 @@ const AdminDashboard = () => {
             <div className="flex justify-between items-start">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white mb-2">
-                  {item.title || item.shortTitle || item.name}
+                  {item.title || item.shortTitle || item.name || item.Name}
                 </h3>
                 <div className="flex flex-wrap gap-2 mb-3">
                   {item.categories && (
@@ -621,6 +692,24 @@ const AdminDashboard = () => {
                       {item.category}
                     </span>
                   )}
+                  
+                  {/* Alumni specific badges */}
+                  {item.Designation && (
+                    <span className="px-2 py-1 bg-green-900/50 text-green-300 text-xs rounded border border-green-700/50">
+                      {item.Designation}
+                    </span>
+                  )}
+                  {item.Company && (
+                    <span className="px-2 py-1 bg-purple-900/50 text-purple-300 text-xs rounded border border-purple-700/50">
+                      {item.Company}
+                    </span>
+                  )}
+                  {item.graduationYear && (
+                    <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded">
+                      Class of {item.graduationYear}
+                    </span>
+                  )}
+                  
                   {item.color && (
                     <span
                       className={`px-2 py-1 text-xs rounded border ${
@@ -641,7 +730,8 @@ const AdminDashboard = () => {
                       className={`px-2 py-1 text-xs rounded border ${
                         item.status === "published" ||
                         item.status === "Published Online" ||
-                        item.status === "Granted"
+                        item.status === "Granted" ||
+                        item.status === "Active"
                           ? "bg-green-900/50 text-green-300 border-green-700/50"
                           : "bg-yellow-900/50 text-yellow-300 border-yellow-700/50"
                       }`}
@@ -649,10 +739,10 @@ const AdminDashboard = () => {
                       {item.status}
                     </span>
                   )}
-                  {(item.publishedAt || item.date) && (
+                  {(item.publishedAt || item.date || item.establishedDate) && (
                     <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded">
                       {new Date(
-                        item.publishedAt || item.date
+                        item.publishedAt || item.date || item.establishedDate
                       ).toLocaleDateString()}
                     </span>
                   )}
@@ -667,6 +757,16 @@ const AdminDashboard = () => {
                 {item.description && (
                   <p className="text-gray-400 text-sm line-clamp-2 mb-2">
                     {item.description}
+                  </p>
+                )}
+                {item.mission && (
+                  <p className="text-gray-400 text-sm line-clamp-2 mb-2">
+                    <strong>Mission:</strong> {item.mission}
+                  </p>
+                )}
+                {item.bio && (
+                  <p className="text-gray-400 text-sm line-clamp-2 mb-2">
+                    {item.bio}
                   </p>
                 )}
                 {item.slug && typeof item.slug === "string" && (
@@ -690,6 +790,11 @@ const AdminDashboard = () => {
                     Authors: {item.authors.join(", ")}
                   </p>
                 )}
+                {item.founders && Array.isArray(item.founders) && (
+                  <p className="text-gray-400 text-sm">
+                    Founders: {item.founders.join(", ")}
+                  </p>
+                )}
                 {item.applicationNumber && (
                   <p className="text-gray-400 text-sm">
                     App No: {item.applicationNumber}
@@ -705,16 +810,21 @@ const AdminDashboard = () => {
                     Publication: {item.publication}
                   </p>
                 )}
+                {item.department && (
+                  <p className="text-gray-400 text-sm">
+                    Department: {item.department}
+                  </p>
+                )}
               </div>
               <div className="flex space-x-2 ml-4">
                 <button
-                  onClick={() => handleEdit(item.id)}
+                  onClick={() => handleEdit(item.id || item.Id)}
                   className="px-3 py-1 bg-blue-900/50 text-blue-300 rounded hover:bg-blue-800/50 transition-colors border border-blue-700/50"
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() => handleDelete(item.id || item.Id)}
                   className="px-3 py-1 bg-red-900/50 text-red-300 rounded hover:bg-red-800/50 transition-colors border border-red-700/50"
                 >
                   Delete
@@ -886,4 +996,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default AdminDashboard

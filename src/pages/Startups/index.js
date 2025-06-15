@@ -1,4 +1,4 @@
-// src/pages/Startups/index.js
+// src/pages/Startups/index.js - Fixed to use admin data
 import React, { useState } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -6,57 +6,17 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '@/components/Layout';
 import PageHero from '@/components/PageHero';
-
-// Using the correct startup data
-const startupsData = [
-  {
-    id: "siya",
-    name: "SIYA EVENT PLANNERS",
-    logo: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_800,w_800/v1664100122/AAC-web/startups/siyalogo_drp799.jpg",
-    description: "Siya event planners make your birthdays, anniversaries and all other special occasions much more unique and memorable. Our services are now available at Warangal, Hyderabad, and Karimnagar. We are passionate and take each one of the events personally and find creative ways to deliver our best to the clients",
-    mission: "There is this stigma in the society that event planning belongs only to the rich communities but we, Siya event planners are here to break that stigma and we provide quite affordable services. Our services include decor, catering, photography, live music, cake delivery, midnight surprises, etc and all our packages can be customized. We make the whole flow of planning an event easier and burden less to our customer!",
-    image: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,w_1800/v1666169002/AAC-web/startups/iPhone_8_-_21_sg4j6q.png",
-    category: "Event Planning",
-    color: "purple"
-  },
-  {
-    id: "skillbattle",
-    name: "SKILL BATTLE",
-    logo: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_800,w_800/v1664100122/AAC-web/startups/skillbattle_apwld9.jpg",
-    description: "Skill Battle is a platform that connects art enthusiasts and professionals across the globe. The main aim of Skill Battle is the transformation of a person's hobby into a career. They have a large number of specialized art educators in distinct art forms, where they can exchange their ideas and experience. In SkillBattle, one can participate in different competitions and connect with artists from various communities. It is known for the attractive opportunities that it offers at affordable prices.",
-    mission: "My inspiration for Skillbattle is to create a skill based tomorrow, by equipping people to learn and work with freedom. We wanted to provide art education, art career mentorship and finally equip people to learn and work on what they love to do. Our motto involves creating skill based jobs for our coming generation.",
-    image: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,w_1800/v1666169019/AAC-web/startups/iPhone_8_-_31_eus2w6.png",
-    category: "Education & Art",
-    color: "orange"
-  },
-  {
-    id: "rivach",
-    name: "RIVACH",
-    logo: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_800,w_800/v1664100122/AAC-web/startups/rivachlogo_x4isor.jpg",
-    description: "Rivach is a B2B product services startup helping founders and entrepreneurs to make their product ideas into digital realities. Rivach has been started by student freelancers to increase the scope of being freelance developers of building a profitable product agency as a team. Solving real time problems as a team has much more impact on the product than solving as solo freelancers. Rivach now is a 8 member team of highly skilled developers and designers experimenting & building all phases of tech products.",
-    mission: "I have always wanted to try different things and having my startup was one among them and because I had a keen interest in programming and have always wanted to put everything I have learned into some real-world application rather than just some theoretical problems. That's when we have decided to start Rivach which provides technical solutions to other startups to scale their business. We aim to provide digital support to as many startups and businesses as possible.-Vamshi Solving real-time tech market problems by working on product strategy, design and development are like playing multiplayer games for me. Doing that as a team has driven me to start Rivach from being a Freelancer working individually.-Rishwanth",
-    image: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,w_2800/v1666168980/AAC-web/startups/iPhone_8_-_11_vwkmac.png",
-    category: "Technology",
-    color: "blue"
-  },
-  {
-    id: "matka",
-    name: "MR. MATKA",
-    logo: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_800,w_800/v1664100121/AAC-web/startups/matkalogo_x4aejm.jpg",
-    description: "Mr. Matka is a curated food brand, that aims towards the reduction of environmental pollution and preparing delicious food at the same time. The brand believes in providing the food that is of unique taste. The food at Mr. Matka is prepared with utmost care using natural earthen cutlery. It essentially aims towards a healthy environment practice with a touch of tradition which enhances the taste and quality of the food.",
-    mission: "The mother earth is divine & it's our responsibility to conserve it. Keeping the same in mind, I started to create something innovative and also promote clean & green environment. It's the taste in every bit, you get to feel our tradition and the love we serve. Contributing to a fortunate future generation in our own way is our uniqueness which intensified my passion to build this.",
-    image: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,w_1800/v1666169059/AAC-web/startups/iPhone_8_-_41_jr2wcl.png",
-    category: "Food & Sustainability",
-    color: "green"
-  }
-];
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { STORAGE_KEYS } from '@/lib/storage';
 
 // Extract all unique categories for filtering
-const getAllCategories = () => {
+const getAllCategories = (startupsData) => {
   const allCategories = new Set(["All"]);
   
   startupsData.forEach(startup => {
-    allCategories.add(startup.category);
+    if (startup.category) {
+      allCategories.add(startup.category);
+    }
   });
   
   return Array.from(allCategories);
@@ -120,6 +80,8 @@ const StartupCard = ({ startup, onClick }) => {
 };
 
 const StartupModal = ({ startup, onClose }) => {
+  if (!startup) return null;
+
   // Get the appropriate gradient colors based on startup color
   const getGradientClass = (color) => {
     const colorMap = {
@@ -220,16 +182,38 @@ const StartupModal = ({ startup, onClose }) => {
 };
 
 const Startups = () => {
+  // Use admin data instead of hardcoded data
+  const { data: startupsData, loading, error } = useLocalStorage(STORAGE_KEYS.STARTUPS);
   const [selectedStartup, setSelectedStartup] = useState(null);
   const [filterCategory, setFilterCategory] = useState('All');
   
   // Get all unique categories from startups
-  const allCategories = getAllCategories();
+  const allCategories = getAllCategories(startupsData || []);
   
   // Filter startups based on selected category
   const filteredStartups = filterCategory === 'All' 
     ? startupsData 
     : startupsData.filter(startup => startup.category === filterCategory);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-white text-xl">Loading startups...</div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-red-400 text-xl">Error loading startups: {error.message}</div>
+        </div>
+      </Layout>
+    );
+  }
   
   return (
     <Layout>
@@ -246,33 +230,57 @@ const Startups = () => {
       
       <div className="px-4 pb-24">
         <div className="container mx-auto max-w-6xl">
-          {/* Category filters */}
-          <div className="flex flex-wrap justify-center mb-12 gap-3">
-            {allCategories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setFilterCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm md:text-base transition-colors ${
-                  filterCategory === category
-                    ? 'bg-blue-900 text-blue-300 border border-blue-700'
-                    : 'bg-[#1a2535] text-gray-300 hover:bg-blue-900/30 border border-gray-700'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+          {/* Category filters - only show if there are startups */}
+          {startupsData.length > 0 && (
+            <div className="flex flex-wrap justify-center mb-12 gap-3">
+              {allCategories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setFilterCategory(category)}
+                  className={`px-4 py-2 rounded-full text-sm md:text-base transition-colors ${
+                    filterCategory === category
+                      ? 'bg-blue-900 text-blue-300 border border-blue-700'
+                      : 'bg-[#1a2535] text-gray-300 hover:bg-blue-900/30 border border-gray-700'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          )}
           
           {/* Startup grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-            {filteredStartups.map((startup) => (
-              <StartupCard 
-                key={startup.id} 
-                startup={startup} 
-                onClick={setSelectedStartup}
-              />
-            ))}
-          </div>
+          {filteredStartups.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+              {filteredStartups.map((startup) => (
+                <StartupCard 
+                  key={startup.id} 
+                  startup={startup} 
+                  onClick={setSelectedStartup}
+                />
+              ))}
+            </div>
+          ) : startupsData.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🏢</div>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                No Startups Added Yet
+              </h3>
+              <p className="text-gray-400 mb-6">
+                Startup profiles will appear here once they are added through the admin panel.
+              </p>
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">🔍</div>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                No Startups Found
+              </h3>
+              <p className="text-gray-400 mb-6">
+                No startups match the selected category. Try selecting a different category.
+              </p>
+            </div>
+          )}
           
           {/* Incubation CTA */}
           <motion.div
