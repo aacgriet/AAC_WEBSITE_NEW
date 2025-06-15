@@ -1,4 +1,4 @@
-// src/pages/Events/index.js
+// src/pages/Events/index.js - Updated to use localStorage data
 import React, { useState, useRef } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -6,65 +6,8 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '@/components/Layout';
 import PageHero from '@/components/PageHero';
-
-const eventsData = [
-  {
-    id: "opulence2023",
-    event: "Opulence 2024",
-    description: "A celebration of innovation and knowledge featuring workshops, seminars, and competitions.",
-    path: "/Events/Opulence2023",
-    date: "JUNE 2024",
-    img: "https://res.cloudinary.com/aacgriet/image/upload/v1730825402/AAC-web/news_events/opulence2023/r8lt4zd7x5bmvmcvytqh.jpg"
-  },
-  {
-    id: "expo2023",
-    event: "AAC Expo 2023",
-    description: "An exhibition showcasing student projects, research work, and technological innovations.",
-    path: "/Events/Expo2023",
-    date: "DEC 2023",
-    img: "https://res.cloudinary.com/aacgriet/image/upload/v1730826047/AAC-web/news_events/expo2023/mskbwi5ieigki5qactl0.jpg"
-  },
-  {
-    id: "expo2022",
-    event: "AAC Expo 2022",
-    description: "A platform for students to present their innovative ideas and projects to industry professionals.",
-    path: "/Events/Expo2022",
-    date: "OCT 2022",
-    img: "https://res.cloudinary.com/aacgriet/image/upload/v1730826433/AAC-web/news_events/expo2022/wgrd6p6gnst2pqropeht.jpg"
-  },
-  {
-    id: "labstart",
-    event: "AAC Lab Inauguration",
-    description: "The official opening of the state-of-the-art Advanced Academic Center laboratory.",
-    path: "/Events/Labstart",
-    date: "JUNE 2020",
-    img: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_350,w_350/v1664100159/AAC-web/news_events/inauguration_xwgkz3.jpg"
-  },
-  {
-    id: "conclave",
-    event: "Conclave Data Analytics",
-    description: "A specialized workshop on data analytics and its applications in various domains.",
-    path: "/Events/Conclave",
-    date: "APR 2020",
-    img: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_350,w_350/v1664100157/AAC-web/news_events/dataconclave_ienjzt.jpg"
-  },
-  {
-    id: "cybersecurity",
-    event: "Cyber Security Seminar",
-    description: "An informative seminar on cybersecurity threats, challenges, and protective measures.",
-    path: "/Events/CyberSecuritySeminar",
-    date: "MAY 2020",
-    img: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_350,w_350/v1664100161/AAC-web/news_events/inauguration8_okhjsl.jpg"
-  },
-  {
-    id: "awards",
-    event: "Award Function",
-    description: "A celebration recognizing outstanding achievements of students and faculty members.",
-    path: "/Events/Awards",
-    date: "JAN 2020",
-    img: "https://res.cloudinary.com/aacgriet/image/upload/c_scale,h_350,w_350/v1664100188/AAC-web/news_events/Virtual_Award_Ceremony_bxj2xj.png"
-  }
-];
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { STORAGE_KEYS } from '@/lib/storage';
 
 const EventCard = ({ event, isActive, onClick }) => {
   return (
@@ -106,7 +49,7 @@ const EventCard = ({ event, isActive, onClick }) => {
             >
               <p className="text-gray-200 mb-4">{event.description}</p>
               <Link 
-                href={event.path}
+                href={`/Events/${event.id}`}
                 className="inline-block px-4 py-2 bg-blue-900/50 backdrop-blur-sm border border-blue-700/50 text-white rounded-full hover:bg-blue-800/50 transition-colors"
               >
                 View Event
@@ -121,6 +64,7 @@ const EventCard = ({ event, isActive, onClick }) => {
 
 const EventsPage = () => {
   const [activeEventId, setActiveEventId] = useState(null);
+  const { data: eventsData, loading, error } = useLocalStorage(STORAGE_KEYS.EVENTS);
   const containerRef = useRef(null);
   
   const handleClick = (id) => {
@@ -130,6 +74,94 @@ const EventsPage = () => {
       setActiveEventId(id);
     }
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <Layout>
+        <Head>
+          <title>Events | AAC - Advanced Academic Center</title>
+          <meta name="description" content="Explore events organized by Advanced Academic Center at GRIET" />
+        </Head>
+        
+        <PageHero 
+          title="Events & Activities" 
+          subtitle="Discover workshops, seminars, competitions, and exhibitions organized by AAC"
+          tag="Happenings"
+        />
+        
+        <div className="flex items-center justify-center py-24">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-white text-lg">Loading events...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <Layout>
+        <Head>
+          <title>Events | AAC - Advanced Academic Center</title>
+        </Head>
+        
+        <PageHero 
+          title="Events & Activities" 
+          subtitle="Discover workshops, seminars, competitions, and exhibitions organized by AAC"
+          tag="Happenings"
+        />
+        
+        <div className="flex items-center justify-center py-24">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-white mb-4">Unable to Load Events</h2>
+            <p className="text-gray-400 mb-8">There was an error loading the events. Please try again later.</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors border border-blue-700"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // No events state
+  if (eventsData.length === 0) {
+    return (
+      <Layout>
+        <Head>
+          <title>Events | AAC - Advanced Academic Center</title>
+        </Head>
+        
+        <PageHero 
+          title="Events & Activities" 
+          subtitle="Discover workshops, seminars, competitions, and exhibitions organized by AAC"
+          tag="Happenings"
+        />
+        
+        <div className="flex items-center justify-center py-24">
+          <div className="text-center">
+            <div className="text-6xl mb-4">📅</div>
+            <h2 className="text-2xl font-bold text-white mb-4">No Events Yet</h2>
+            <p className="text-gray-400 mb-8">Events will be displayed here once they are added.</p>
+            
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Sort events by date (newest first)
+  const sortedEvents = eventsData.sort((a, b) => {
+    const dateA = new Date(a.createdAt || 0);
+    const dateB = new Date(b.createdAt || 0);
+    return dateB - dateA;
+  });
   
   return (
     <Layout>
@@ -150,7 +182,7 @@ const EventsPage = () => {
           <div className="mb-12">
             <div className="relative flex overflow-x-auto pb-4">
               <div className="absolute h-0.5 bg-gray-700 bottom-4 left-0 right-0"></div>
-              {eventsData.map((event, index) => (
+              {sortedEvents.map((event, index) => (
                 <motion.div 
                   key={event.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -161,7 +193,7 @@ const EventsPage = () => {
                 >
                   <span className="text-sm text-gray-400">{event.date}</span>
                   <div className={`w-4 h-4 rounded-full mt-1 mb-1 ${activeEventId === event.id ? 'bg-blue-600 scale-125' : 'bg-gray-600'} transition-all duration-300`}></div>
-                  <span className={`text-sm font-medium ${activeEventId === event.id ? 'text-blue-400' : 'text-gray-300'} transition-colors duration-300`}>
+                  <span className={`text-sm font-medium ${activeEventId === event.id ? 'text-blue-400' : 'text-gray-300'} transition-colors duration-300 text-center max-w-24`}>
                     {event.event}
                   </span>
                 </motion.div>
@@ -176,7 +208,7 @@ const EventsPage = () => {
             className="grid grid-cols-1 md:grid-cols-3 gap-6"
           >
             <AnimatePresence>
-              {eventsData.map((event) => (
+              {sortedEvents.map((event) => (
                 <EventCard 
                   key={event.id}
                   event={event}

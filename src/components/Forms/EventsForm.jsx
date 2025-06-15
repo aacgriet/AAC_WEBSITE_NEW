@@ -1,4 +1,4 @@
-// src/components/Forms/EventsForm.jsx
+// src/components/Forms/EventsForm.jsx - Updated for your event structure
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField } from './BaseForm';
 import { MultiImageUpload } from './ImageUpload';
@@ -19,22 +19,21 @@ const EventsForm = ({ eventId = null, onSuccess, onCancel }) => {
   const [errors, setErrors] = useState({});
   
   const [formData, setFormData] = useState({
-    title: '',
-    slug: '',
+    id: '',
+    event: '', // This matches your 'event' field name
     description: '',
-    content: '',
-    date: '',
-    endDate: '',
-    location: '',
+    path: '', // URL path for the event
+    date: '', // This is the display date (e.g., "JUNE 2024")
+    img: '', // Main image URL
+    images: [], // Array of all images for the event detail page
+    detailedDescription: '', // The full content description with HTML
+    location: 'GRIET Campus, Hyderabad',
     organizer: 'Advanced Academic Center',
-    images: [],
-    status: 'upcoming',
-    registrationRequired: false,
-    registrationUrl: '',
-    maxParticipants: '',
-    contactEmail: '',
-    venue: '',
-    tags: ['']
+    status: 'completed',
+    cta: {
+      text: '',
+      link: ''
+    }
   });
 
   useEffect(() => {
@@ -43,87 +42,95 @@ const EventsForm = ({ eventId = null, onSuccess, onCancel }) => {
       if (existingEvent) {
         setFormData({
           ...existingEvent,
-          date: existingEvent.date ? 
-            new Date(existingEvent.date).toISOString().split('T')[0] : '',
-          endDate: existingEvent.endDate ? 
-            new Date(existingEvent.endDate).toISOString().split('T')[0] : '',
-          tags: existingEvent.tags || ['']
+          cta: existingEvent.cta || { text: '', link: '' }
         });
       }
     }
   }, [eventId, getItemById]);
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value
     }));
     
-    if (name === 'title' && !eventId) {
-      const slug = value.toLowerCase()
+    // Auto-generate ID and path from event name
+    if (name === 'event' && !eventId) {
+      const id = value.toLowerCase()
         .replace(/[^a-z0-9 -]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
+        .replace(/\s+/g, '')
+        .replace(/-+/g, '')
         .trim();
+      const path = `/Events/${id.charAt(0).toUpperCase() + id.slice(1)}`;
+      
       setFormData(prev => ({
         ...prev,
-        slug
+        id: id,
+        path: path
       }));
     }
   };
 
-  const handleArrayChange = (field) => (values) => {
+  const handleCtaChange = (field) => (e) => {
     setFormData(prev => ({
       ...prev,
-      [field]: values
+      cta: {
+        ...prev.cta,
+        [field]: e.target.value
+      }
     }));
   };
 
   const handleImagesChange = (images) => {
-    setFormData(prev => ({
-      ...prev,
-      images
-    }));
+    setFormData(prev => {
+      const updatedFormData = {
+        ...prev,
+        images
+      };
+      
+      // Set the first image as the main image if not already set
+      if (images.length > 0 && !prev.img) {
+        updatedFormData.img = images[0];
+      }
+      
+      return updatedFormData;
+    });
   };
 
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
-    }
-    
-    if (!formData.slug.trim()) {
-      newErrors.slug = 'Slug is required';
+    if (!formData.event.trim()) {
+      newErrors.event = 'Event name is required';
     }
     
     if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
+      newErrors.description = 'Short description is required';
     }
     
-    if (!formData.date) {
+    if (!formData.detailedDescription.trim()) {
+      newErrors.detailedDescription = 'Detailed description is required';
+    }
+    
+    if (!formData.date.trim()) {
       newErrors.date = 'Event date is required';
     }
     
-    if (!formData.location.trim()) {
-      newErrors.location = 'Location is required';
+    if (!formData.img.trim()) {
+      newErrors.img = 'Main image is required';
     }
-
-    if (formData.endDate && formData.date && new Date(formData.endDate) < new Date(formData.date)) {
-      newErrors.endDate = 'End date must be after start date';
-    }
-
-    if (formData.registrationRequired && !formData.registrationUrl.trim()) {
-      newErrors.registrationUrl = 'Registration URL is required when registration is required';
+    
+    if (formData.images.length === 0) {
+      newErrors.images = 'At least one event image is required';
     }
 
     if (!eventId) {
-      const slugExists = eventsData.some(item => 
-        item.slug === formData.slug && item.id !== eventId
+      const idExists = eventsData.some(item => 
+        item.id === formData.id && item.id !== eventId
       );
-      if (slugExists) {
-        newErrors.slug = 'Slug already exists';
+      if (idExists) {
+        newErrors.id = 'Event ID already exists';
       }
     }
     
@@ -143,10 +150,10 @@ const EventsForm = ({ eventId = null, onSuccess, onCancel }) => {
     try {
       const eventItem = {
         ...formData,
-        date: new Date(formData.date).toISOString(),
-        endDate: formData.endDate ? new Date(formData.endDate).toISOString() : null,
-        tags: formData.tags.filter(tag => tag.trim()),
-        images: formData.images.filter(img => img.trim())
+        // Make sure we have the main image set
+        img: formData.img || formData.images[0] || '',
+        createdAt: eventId ? undefined : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       
       let result;
@@ -177,59 +184,58 @@ const EventsForm = ({ eventId = null, onSuccess, onCancel }) => {
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
-          label="Event Title"
-          name="title"
-          value={formData.title}
+          label="Event Name"
+          name="event"
+          value={formData.event}
           onChange={handleInputChange}
-          placeholder="Enter event title"
+          placeholder="e.g., Opulence 2024, AAC Expo 2023"
           required
-          error={errors.title}
+          error={errors.event}
         />
         
         <FormField
-          label="Slug"
-          name="slug"
-          value={formData.slug}
+          label="Event ID (Auto-generated)"
+          name="id"
+          value={formData.id}
           onChange={handleInputChange}
-          placeholder="url-friendly-title"
+          placeholder="Auto-generated from event name"
           required
-          error={errors.slug}
+          error={errors.id}
         />
       </div>
 
+      <FormField
+        label="URL Path (Auto-generated)"
+        name="path"
+        value={formData.path}
+        onChange={handleInputChange}
+        placeholder="/Events/EventName"
+        required
+        error={errors.path}
+      />
+
       <TextAreaField
-        label="Short Description"
+        label="Short Description (for cards)"
         name="description"
         value={formData.description}
         onChange={handleInputChange}
-        placeholder="Brief description of the event"
+        placeholder="Brief description shown on event cards"
         rows={3}
         required
         error={errors.description}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <FormField
-          label="Start Date"
+          label="Display Date"
           name="date"
-          type="date"
           value={formData.date}
           onChange={handleInputChange}
+          placeholder="e.g., JUNE 2024, DEC 2023"
           required
           error={errors.date}
         />
 
-        <FormField
-          label="End Date"
-          name="endDate"
-          type="date"
-          value={formData.endDate}
-          onChange={handleInputChange}
-          error={errors.endDate}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           label="Location"
           name="location"
@@ -237,25 +243,6 @@ const EventsForm = ({ eventId = null, onSuccess, onCancel }) => {
           onChange={handleInputChange}
           placeholder="Event location"
           required
-          error={errors.location}
-        />
-
-        <FormField
-          label="Venue"
-          name="venue"
-          value={formData.venue}
-          onChange={handleInputChange}
-          placeholder="Specific venue details"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          label="Organizer"
-          name="organizer"
-          value={formData.organizer}
-          onChange={handleInputChange}
-          placeholder="Event organizer"
         />
 
         <SelectField
@@ -268,67 +255,66 @@ const EventsForm = ({ eventId = null, onSuccess, onCancel }) => {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          label="Contact Email"
-          name="contactEmail"
-          type="email"
-          value={formData.contactEmail}
-          onChange={handleInputChange}
-          placeholder="contact@example.com"
-        />
-
-        <FormField
-          label="Max Participants"
-          name="maxParticipants"
-          type="number"
-          value={formData.maxParticipants}
-          onChange={handleInputChange}
-          placeholder="Leave empty for unlimited"
-        />
-      </div>
-
-      <div className="space-y-4">
-        <div className="flex items-center space-x-3">
-          <input
-            type="checkbox"
-            id="registrationRequired"
-            name="registrationRequired"
-            checked={formData.registrationRequired}
-            onChange={handleInputChange}
-            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-          />
-          <label htmlFor="registrationRequired" className="text-sm font-medium text-gray-300">
-            Registration Required
-          </label>
-        </div>
-
-        {formData.registrationRequired && (
-          <FormField
-            label="Registration URL"
-            name="registrationUrl"
-            type="url"
-            value={formData.registrationUrl}
-            onChange={handleInputChange}
-            placeholder="https://..."
-            error={errors.registrationUrl}
-          />
-        )}
-      </div>
-
-      <RichTextEditor
-        label="Detailed Content"
-        value={formData.content}
+      <FormField
+        label="Organizer"
+        name="organizer"
+        value={formData.organizer}
         onChange={handleInputChange}
-        placeholder="Write detailed event information, agenda, speakers, etc..."
+        placeholder="Event organizer"
+        required
+      />
+
+      <FormField
+        label="Main Image URL"
+        name="img"
+        type="url"
+        value={formData.img}
+        onChange={handleInputChange}
+        placeholder="URL for the main event card image"
+        required
+        error={errors.img}
       />
 
       <MultiImageUpload
-        label="Event Images"
+        label="Event Detail Images (Gallery)"
         values={formData.images}
         onChange={handleImagesChange}
         maxImages={10}
+        required
+        error={errors.images}
       />
+
+      <TextAreaField
+        label="Detailed Description (Full Event Content)"
+        name="detailedDescription"
+        value={formData.detailedDescription}
+        onChange={handleInputChange}
+        placeholder="Write the full event description that will appear on the event detail page. You can use HTML tags like &lt;br /&gt;&lt;br /&gt; for line breaks."
+        rows={8}
+        required
+        error={errors.detailedDescription}
+      />
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium text-white">Call to Action (Optional)</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            label="CTA Button Text"
+            name="cta-text"
+            value={formData.cta.text}
+            onChange={handleCtaChange('text')}
+            placeholder="e.g., Explore Projects, Register Now"
+          />
+          
+          <FormField
+            label="CTA Button Link"
+            name="cta-link"
+            value={formData.cta.link}
+            onChange={handleCtaChange('link')}
+            placeholder="e.g., /projects, /contact"
+          />
+        </div>
+      </div>
 
       {errors.submit && (
         <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg">
