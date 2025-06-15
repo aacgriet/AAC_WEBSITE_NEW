@@ -1,10 +1,15 @@
-// src/lib/database.js - Database service to replace localStorage
+// src/lib/database.js - Fixed Database service with proper error handling
 import { PrismaClient } from '@prisma/client';
 
 // Global prisma instance to prevent connection issues in development
 const globalForPrisma = globalThis;
 
-export const prisma = globalForPrisma.prisma || new PrismaClient();
+// Initialize Prisma with proper configuration for Vercel
+const prismaConfig = {
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+};
+
+export const prisma = globalForPrisma.prisma || new PrismaClient(prismaConfig);
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
@@ -23,185 +28,214 @@ export class DatabaseService {
     'aac_core_committee': 'coreCommittee'
   };
 
-  // Get model instance
+  // Get model instance with error handling
   static getModel(key) {
     const modelName = this.MODEL_MAP[key];
     if (!modelName) {
       throw new Error(`Unknown storage key: ${key}`);
     }
+    
+    if (!prisma[modelName]) {
+      throw new Error(`Model ${modelName} not found in Prisma client`);
+    }
+    
     return prisma[modelName];
   }
 
-  // Transform data for database storage
+  // Transform data for database storage with proper type handling
   static transformForDB(key, data) {
     const modelName = this.MODEL_MAP[key];
+    
+    // Common fields for all models
+    const baseTransform = {
+      createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+      updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date()
+    };
     
     switch (modelName) {
       case 'news':
         return {
-          id: data.id || data._id,
-          title: data.title,
-          slug: typeof data.slug === 'object' ? data.slug.current : data.slug,
-          content: data.content,
-          rawBody: data._rawBody,
+          ...baseTransform,
+          id: data.id || data._id || this.generateId(),
+          title: data.title || '',
+          slug: typeof data.slug === 'object' ? data.slug?.current : data.slug,
+          content: data.content || null,
+          rawBody: data._rawBody || data.rawBody || null,
           publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),
-          categories: data.categories,
+          categories: data.categories || null,
           status: data.status || 'published',
-          sanityId: data._id,
-          sanityRev: data._rev,
-          sanityType: data._type,
-          mainImageUrl: data.mainImage?.asset?.url,
-          mainImageAltText: data.mainImage?.asset?.altText,
+          sanityId: data._id || null,
+          sanityRev: data._rev || null,
+          sanityType: data._type || 'News',
+          mainImageUrl: data.mainImage?.asset?.url || data.mainImageUrl || null,
+          mainImageAltText: data.mainImage?.asset?.altText || data.mainImageAltText || null,
           links: data.links || []
         };
 
       case 'project':
         return {
-          id: data.id,
-          title: data.title,
-          slug: data.slug,
-          description: data.description,
-          content: data.body,
-          rawBody: data._rawBody,
+          ...baseTransform,
+          id: data.id || this.generateId(),
+          title: data.title || '',
+          slug: data.slug || this.slugify(data.title),
+          description: data.description || null,
+          content: data.body || data.content || null,
+          rawBody: data._rawBody || data.rawBody || null,
           publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),
-          author: data.author,
-          categories: data.categories,
+          author: data.author || null,
+          categories: data.categories || null,
           status: data.status || 'published',
-          names: data.names || [],
-          mainImageUrl: data.mainImage?.asset?.url || data.mainImage?.url,
-          mainImageAltText: data.mainImage?.asset?.altText || data.mainImage?.altText
+          names: Array.isArray(data.names) ? data.names : [],
+          mainImageUrl: data.mainImage?.asset?.url || data.mainImage?.url || null,
+          mainImageAltText: data.mainImage?.asset?.altText || data.mainImage?.altText || null
         };
 
       case 'event':
         return {
-          id: data.id,
-          title: data.event || data.title,
-          slug: data.slug,
-          description: data.description,
-          detailedDescription: data.detailedDescription,
-          date: data.date,
+          ...baseTransform,
+          id: data.id || this.generateId(),
+          title: data.event || data.title || '',
+          slug: data.slug || null,
+          description: data.description || null,
+          detailedDescription: data.detailedDescription || null,
+          date: data.date || null,
           actualDate: data.actualDate ? new Date(data.actualDate) : null,
-          location: data.location,
-          organizer: data.organizer,
+          location: data.location || 'GRIET Campus, Hyderabad',
+          organizer: data.organizer || 'Advanced Academic Center',
           status: data.status || 'completed',
-          mainImageUrl: data.img,
-          images: data.images || [],
-          ctaText: data.cta?.text,
-          ctaLink: data.cta?.link,
-          path: data.path
+          mainImageUrl: data.img || data.mainImageUrl || null,
+          images: Array.isArray(data.images) ? data.images : [],
+          ctaText: data.cta?.text || data.ctaText || null,
+          ctaLink: data.cta?.link || data.ctaLink || null,
+          path: data.path || null
         };
 
       case 'publication':
         return {
-          id: data.id,
-          title: data.title,
-          abstract: data.abstract,
-          publication: data.publication,
-          category: data.category,
-          year: data.year,
+          ...baseTransform,
+          id: data.id || this.generateId(),
+          title: data.title || '',
+          abstract: data.abstract || '',
+          publication: data.publication || '',
+          category: data.category || 'Other',
+          year: parseInt(data.year) || new Date().getFullYear(),
           publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),
-          authors: data.authors || [],
-          image: data.image,
-          downloadUrl: data.downloadUrl,
-          keywords: data.keywords || [],
-          type: data.type
+          authors: Array.isArray(data.authors) ? data.authors : [],
+          image: data.image || null,
+          downloadUrl: data.downloadUrl || null,
+          keywords: Array.isArray(data.keywords) ? data.keywords : [],
+          type: data.type || 'Journal Paper'
         };
 
       case 'patent':
         return {
-          id: data.id,
-          title: data.title,
-          shortTitle: data.shortTitle,
-          description: data.description,
-          applicationNumber: data.applicationNumber,
-          patentOffice: data.patentOffice,
-          date: new Date(data.date),
-          status: data.status,
-          category: data.category,
-          color: data.color,
-          inventors: data.inventors || [],
-          image: data.image
+          ...baseTransform,
+          id: data.id || this.generateId(),
+          title: data.title || '',
+          shortTitle: data.shortTitle || '',
+          description: data.description || '',
+          applicationNumber: data.applicationNumber || '',
+          patentOffice: data.patentOffice || 'India',
+          date: new Date(data.date || new Date()),
+          status: data.status || 'Published Online',
+          category: data.category || 'Other',
+          color: data.color || 'purple',
+          inventors: Array.isArray(data.inventors) ? data.inventors : [],
+          image: data.image || null
         };
 
       case 'book':
         return {
-          id: data.id,
-          title: data.title,
-          description: data.description,
-          category: data.category,
-          year: data.year,
-          cover: data.cover,
-          color: data.color,
+          ...baseTransform,
+          id: data.id || this.generateId(),
+          title: data.title || '',
+          description: data.description || '',
+          category: data.category || 'Other',
+          year: parseInt(data.year) || new Date().getFullYear(),
+          cover: data.cover || null,
+          color: data.color || 'blue',
           status: data.status || 'published',
-          authors: data.authors || []
+          authors: Array.isArray(data.authors) ? data.authors : []
         };
 
       case 'alumni':
         return {
-          id: data.id,
-          name: data.Name || data.name,
-          designation: data.Designation || data.designation,
-          company: data.Company || data.company,
-          image: data.Image || data.image,
-          graduationYear: data.graduationYear,
-          department: data.department,
+          ...baseTransform,
+          id: data.id || data.Id || this.generateId(),
+          name: data.Name || data.name || '',
+          designation: data.Designation || data.designation || null,
+          company: data.Company || data.company || null,
+          image: data.Image || data.image || null,
+          graduationYear: parseInt(data.graduationYear) || null,
+          department: data.department || null,
           status: data.status || 'active',
-          email: data.email,
-          linkedin: data.linkedin,
-          currentLocation: data.currentLocation,
-          achievements: data.achievements,
-          bio: data.bio,
-          legacyId: data.Id
+          email: data.email || null,
+          linkedin: data.linkedin || null,
+          currentLocation: data.currentLocation || null,
+          achievements: data.achievements || null,
+          bio: data.bio || null,
+          legacyId: data.Id || data.legacyId || null
         };
 
       case 'startup':
         return {
-          id: data.id,
-          name: data.name,
-          description: data.description,
-          mission: data.mission,
-          category: data.category,
-          color: data.color,
-          status: data.status,
-          establishedDate: new Date(data.establishedDate),
-          website: data.website,
-          logo: data.logo,
-          image: data.image,
-          founders: data.founders || [],
-          appScreenshots: data.appScreenshots || []
+          ...baseTransform,
+          id: data.id || this.generateId(),
+          name: data.name || '',
+          description: data.description || '',
+          mission: data.mission || '',
+          category: data.category || 'Technology',
+          color: data.color || 'blue',
+          status: data.status || 'Active',
+          establishedDate: new Date(data.establishedDate || new Date()),
+          website: data.website || null,
+          logo: data.logo || null,
+          image: data.image || null,
+          founders: Array.isArray(data.founders) ? data.founders : [],
+          appScreenshots: Array.isArray(data.appScreenshots) ? data.appScreenshots : []
         };
 
       case 'coreCommittee':
         return {
-          id: data.id,
-          name: data.Name || data.name,
-          designation: data.Designation || data.designation,
-          image: data.Image || data.image,
-          year: data.year || 2024,
-          department: data.department,
+          ...baseTransform,
+          id: data.id || data.Id || this.generateId(),
+          name: data.Name || data.name || '',
+          designation: data.Designation || data.designation || '',
+          image: data.Image || data.image || null,
+          year: parseInt(data.year) || 2024,
+          department: data.department || null,
           status: data.status || 'active',
-          legacyId: data.Id
+          legacyId: data.Id || data.legacyId || null
         };
 
       default:
-        return data;
+        return { ...data, ...baseTransform };
     }
   }
 
-  // Transform data from database for frontend
+  // Transform data from database for frontend with proper null handling
   static transformFromDB(key, data) {
+    if (!data) return null;
+    
     const modelName = this.MODEL_MAP[key];
+    
+    // Common fields
+    const baseTransform = {
+      createdAt: data.createdAt?.toISOString(),
+      updatedAt: data.updatedAt?.toISOString()
+    };
     
     switch (modelName) {
       case 'news':
         return {
+          ...baseTransform,
           id: data.id,
           _id: data.sanityId || data.id,
           title: data.title,
           slug: { current: data.slug },
           content: data.content,
           _rawBody: data.rawBody,
-          publishedAt: data.publishedAt.toISOString(),
+          publishedAt: data.publishedAt?.toISOString(),
           categories: data.categories,
           status: data.status,
           _rev: data.sanityRev,
@@ -212,20 +246,19 @@ export class DatabaseService {
               altText: data.mainImageAltText
             }
           } : null,
-          links: data.links || [],
-          createdAt: data.createdAt.toISOString(),
-          updatedAt: data.updatedAt.toISOString()
+          links: data.links || []
         };
 
       case 'project':
         return {
+          ...baseTransform,
           id: data.id,
           title: data.title,
           slug: data.slug,
           description: data.description,
           body: data.content,
           _rawBody: data.rawBody,
-          publishedAt: data.publishedAt.toISOString(),
+          publishedAt: data.publishedAt?.toISOString(),
           author: data.author,
           categories: data.categories,
           status: data.status,
@@ -235,13 +268,12 @@ export class DatabaseService {
               url: data.mainImageUrl,
               altText: data.mainImageAltText
             }
-          } : null,
-          createdAt: data.createdAt.toISOString(),
-          updatedAt: data.updatedAt.toISOString()
+          } : null
         };
 
       case 'event':
         return {
+          ...baseTransform,
           id: data.id,
           event: data.title,
           title: data.title,
@@ -259,49 +291,46 @@ export class DatabaseService {
             text: data.ctaText,
             link: data.ctaLink
           },
-          path: data.path,
-          createdAt: data.createdAt.toISOString(),
-          updatedAt: data.updatedAt.toISOString()
+          path: data.path
         };
 
       case 'publication':
         return {
+          ...baseTransform,
           id: data.id,
           title: data.title,
           abstract: data.abstract,
           publication: data.publication,
           category: data.category,
           year: data.year,
-          publishedAt: data.publishedAt.toISOString(),
+          publishedAt: data.publishedAt?.toISOString(),
           authors: data.authors || [],
           image: data.image,
           downloadUrl: data.downloadUrl,
           keywords: data.keywords || [],
-          type: data.type,
-          createdAt: data.createdAt.toISOString(),
-          updatedAt: data.updatedAt.toISOString()
+          type: data.type
         };
 
       case 'patent':
         return {
+          ...baseTransform,
           id: data.id,
           title: data.title,
           shortTitle: data.shortTitle,
           description: data.description,
           applicationNumber: data.applicationNumber,
           patentOffice: data.patentOffice,
-          date: data.date.toISOString(),
+          date: data.date?.toISOString(),
           status: data.status,
           category: data.category,
           color: data.color,
           inventors: data.inventors || [],
-          image: data.image,
-          createdAt: data.createdAt.toISOString(),
-          updatedAt: data.updatedAt.toISOString()
+          image: data.image
         };
 
       case 'book':
         return {
+          ...baseTransform,
           id: data.id,
           title: data.title,
           description: data.description,
@@ -310,13 +339,12 @@ export class DatabaseService {
           cover: data.cover,
           color: data.color,
           status: data.status,
-          authors: data.authors || [],
-          createdAt: data.createdAt.toISOString(),
-          updatedAt: data.updatedAt.toISOString()
+          authors: data.authors || []
         };
 
       case 'alumni':
         return {
+          ...baseTransform,
           id: data.id,
           Id: data.legacyId,
           Name: data.name,
@@ -334,13 +362,12 @@ export class DatabaseService {
           linkedin: data.linkedin,
           currentLocation: data.currentLocation,
           achievements: data.achievements,
-          bio: data.bio,
-          createdAt: data.createdAt.toISOString(),
-          updatedAt: data.updatedAt.toISOString()
+          bio: data.bio
         };
 
       case 'startup':
         return {
+          ...baseTransform,
           id: data.id,
           name: data.name,
           description: data.description,
@@ -348,18 +375,17 @@ export class DatabaseService {
           category: data.category,
           color: data.color,
           status: data.status,
-          establishedDate: data.establishedDate.toISOString(),
+          establishedDate: data.establishedDate?.toISOString(),
           website: data.website,
           logo: data.logo,
           image: data.image,
           founders: data.founders || [],
-          appScreenshots: data.appScreenshots || [],
-          createdAt: data.createdAt.toISOString(),
-          updatedAt: data.updatedAt.toISOString()
+          appScreenshots: data.appScreenshots || []
         };
 
       case 'coreCommittee':
         return {
+          ...baseTransform,
           id: data.id,
           Id: data.legacyId,
           Name: data.name,
@@ -370,21 +396,18 @@ export class DatabaseService {
           image: data.image,
           year: data.year,
           department: data.department,
-          status: data.status,
-          createdAt: data.createdAt.toISOString(),
-          updatedAt: data.updatedAt.toISOString()
+          status: data.status
         };
 
       default:
         return {
           ...data,
-          createdAt: data.createdAt?.toISOString(),
-          updatedAt: data.updatedAt?.toISOString()
+          ...baseTransform
         };
     }
   }
 
-  // Get all items
+  // Get all items with error handling
   static async get(key) {
     try {
       const model = this.getModel(key);
@@ -404,18 +427,23 @@ export class DatabaseService {
     try {
       const model = this.getModel(key);
       
-      // Delete all existing records
-      await model.deleteMany();
-      
-      // Insert new records
-      const transformedData = data.map(item => this.transformForDB(key, item));
-      
-      if (transformedData.length > 0) {
-        await model.createMany({
-          data: transformedData,
-          skipDuplicates: true
-        });
-      }
+      // Delete all existing records in a transaction
+      await prisma.$transaction(async (tx) => {
+        await tx[this.MODEL_MAP[key]].deleteMany();
+        
+        if (Array.isArray(data) && data.length > 0) {
+          const transformedData = data.map(item => this.transformForDB(key, item));
+          
+          // Insert records one by one to handle unique constraint issues
+          for (const item of transformedData) {
+            try {
+              await tx[this.MODEL_MAP[key]].create({ data: item });
+            } catch (itemError) {
+              console.warn(`Failed to insert item ${item.id}:`, itemError.message);
+            }
+          }
+        }
+      });
       
       return true;
     } catch (error) {
@@ -430,9 +458,7 @@ export class DatabaseService {
       const model = this.getModel(key);
       const transformedItem = this.transformForDB(key, {
         ...item,
-        id: item.id || this.generateId(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        id: item.id || this.generateId()
       });
 
       const created = await model.create({
@@ -452,7 +478,7 @@ export class DatabaseService {
       const model = this.getModel(key);
       const transformedUpdates = this.transformForDB(key, {
         ...updates,
-        updatedAt: new Date().toISOString()
+        id: id // Preserve the ID
       });
 
       const updated = await model.update({
@@ -503,6 +529,20 @@ export class DatabaseService {
     return `${timestamp}_${randomStr}`;
   }
 
+  // Generate slug from title
+  static slugify(text) {
+    if (!text) return '';
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w\-]+/g, '')
+      .replace(/\-\-+/g, '-')
+      .replace(/^-+/, '')
+      .replace(/-+$/, '');
+  }
+
   // Export all data
   static async exportData() {
     const data = {};
@@ -524,7 +564,7 @@ export class DatabaseService {
     let totalImported = 0;
     
     for (const [key, value] of Object.entries(data)) {
-      if (this.MODEL_MAP[key]) {
+      if (this.MODEL_MAP[key] && Array.isArray(value)) {
         try {
           await this.set(key, value);
           totalImported += value.length;
@@ -582,5 +622,16 @@ export class DatabaseService {
     }
 
     return stats;
+  }
+
+  // Health check
+  static async healthCheck() {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      return { status: 'healthy', database: 'connected' };
+    } catch (error) {
+      console.error('Database health check failed:', error);
+      return { status: 'unhealthy', error: error.message };
+    }
   }
 }

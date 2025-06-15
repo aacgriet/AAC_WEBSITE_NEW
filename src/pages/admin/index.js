@@ -1,4 +1,4 @@
-// src/pages/admin/index.js - UPDATED HEADER SECTION
+// src/pages/admin/index.js - COMPLETE FIXED IMPLEMENTATION
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,8 +13,6 @@ import StartupsForm from "@/components/Forms/StartupsForm";
 import NewsForm from "@/components/Forms/NewsForm";
 import EventsForm from "@/components/Forms/EventsForm";
 import ProjectsForm from "@/components/Forms/ProjectsForm";
-
-// ... (keep all the existing ADMIN_SECTIONS and other constants)
 
 const ADMIN_SECTIONS = [
   { key: "news", label: "News", icon: "📰", storageKey: STORAGE_KEYS.NEWS },
@@ -62,13 +60,16 @@ const ADMIN_SECTIONS = [
   },
 ];
 
-// Simple Migration Component
+// Simple Migration Component with proper error handling
 const SimpleMigrationComponent = () => {
   const [stats, setStats] = useState(null);
   const [migrating, setMigrating] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleMigration = async () => {
     setMigrating(true);
+    setError(null);
+    
     try {
       // Add sample data for testing based on schema
       const sampleData = {
@@ -77,8 +78,7 @@ const SimpleMigrationComponent = () => {
             id: "sample-news-1",
             title: "AAC Students Win National Hackathon",
             slug: "AAC team secures first place at the prestigious coding competition.",
-            content:
-              "The Advanced Academic Center team has achieved remarkable success at the National Hackathon 2024...",
+            content: "The Advanced Academic Center team has achieved remarkable success at the National Hackathon 2024...",
             publishedAt: new Date().toISOString(),
             categories: "ACHIEVEMENT",
             status: "published",
@@ -89,20 +89,14 @@ const SimpleMigrationComponent = () => {
         [STORAGE_KEYS.PATENTS]: [
           {
             id: "automated-pill-reminder",
-            title:
-              "An automated electronic device for reminding consumption of pills scheduled and even for missed schedules with specified two way confirmation along with replaceable pill compartments layer as value addition been facilitated to the changing requirements.",
+            title: "An automated electronic device for reminding consumption of pills scheduled and even for missed schedules with specified two way confirmation along with replaceable pill compartments layer as value addition been facilitated to the changing requirements.",
             shortTitle: "Automated Pill Reminder Device",
-            inventors: [
-              "Yelma Chethan Reddy",
-              "Alence Abhinay",
-              "B.S.V.S Anoop",
-            ],
+            inventors: ["Yelma Chethan Reddy", "Alence Abhinay", "B.S.V.S Anoop"],
             patentOffice: "India",
             applicationNumber: "201941002559",
             date: new Date("2019-01-21").toISOString(),
             status: "Published Online",
-            description:
-              "This patent is for an innovative device designed to help patients remember to take their medications on schedule...",
+            description: "This patent is for an innovative device designed to help patients remember to take their medications on schedule...",
             category: "Healthcare",
             color: "purple",
             image: "",
@@ -113,70 +107,135 @@ const SimpleMigrationComponent = () => {
         [STORAGE_KEYS.PUBLICATIONS]: [
           {
             id: "sample-publication-1",
-            title:
-              "Ensemble–Based Wine Quality Detection using Hybrid Machine Learning Models",
-            abstract:
-              "This paper proposes a novel ensemble learning method for accurately predicting wine quality...",
-            authors: [
-              "Dodda Abhiram",
-              "Siddharth Mahesh Balijepally",
-              "Ekantha Sai Sundar",
-            ],
-            publication:
-              "International Journal of Engineering Research and Technology(IJERT), ISSN: 2278-0181, Vol. 13 Issue 01, August 2024",
+            title: "Ensemble–Based Wine Quality Detection using Hybrid Machine Learning Models",
+            abstract: "This paper proposes a novel ensemble learning method for accurately predicting wine quality...",
+            authors: ["Dodda Abhiram", "Siddharth Mahesh Balijepally", "Ekantha Sai Sundar"],
+            publication: "International Journal of Engineering Research and Technology(IJERT), ISSN: 2278-0181, Vol. 13 Issue 01, August 2024",
             category: "Machine Learning",
+            year: 2024,
             publishedAt: new Date("2024-08-01").toISOString(),
             image: "",
-            downloadUrl: "",
+            downloadUrl: "", 
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        ],
+        [STORAGE_KEYS.BOOKS]: [
+          {
+            id: "sample-book-1",
+            title: "FUNDAMENTALS OF PYTHON IN A NUTSHELL",
+            description: "This book, 'Fundamentals of PYTHON In a Nutshell,' appears to be an introductory guide to the Python programming language.",
+            authors: ["Harshavardhini Kyatam", "Jatin Menghwani"],
+            category: "Programming",
+            year: 2022,
+            cover: "https://res.cloudinary.com/aacgriet/image/upload/v1730629103/AAC-web/books/chadjmxbuhgfqx3ox91r.png",
+            color: "blue",
+            status: "published",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        ],
+        [STORAGE_KEYS.ALUMNI]: [
+          {
+            id: "sample-alumni-1",
+            name: "John Doe",
+            designation: "Software Engineer",
+            company: "Google",
+            image: "https://via.placeholder.com/300x300",
+            graduationYear: 2020,
+            department: "Computer Science Engineering",
+            status: "active",
+            email: "john@example.com",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        ],
+        [STORAGE_KEYS.STARTUPS]: [
+          {
+            id: "sample-startup-1",
+            name: "TechVenture",
+            description: "Innovative technology solutions for modern problems",
+            mission: "To revolutionize the tech industry with cutting-edge solutions",
+            category: "Technology",
+            color: "blue",
+            status: "Active",
+            establishedDate: new Date("2023-01-01").toISOString(),
+            website: "https://techventure.com",
+            logo: "https://via.placeholder.com/200x200",
+            image: "https://via.placeholder.com/400x300",
+            founders: ["Jane Smith", "Bob Johnson"],
+            appScreenshots: [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           },
         ],
       };
 
-      Object.entries(sampleData).forEach(([key, data]) => {
-        const existing = StorageManager.get(key);
-        const combined = [...existing, ...data];
-        StorageManager.set(key, combined);
-      });
+      // Add sample data to storage
+      for (const [key, data] of Object.entries(sampleData)) {
+        try {
+          const existing = await StorageManager.get(key);
+          // Only add if no data exists
+          if (existing.length === 0) {
+            await StorageManager.set(key, data);
+          }
+        } catch (err) {
+          console.error(`Error adding sample data for ${key}:`, err);
+        }
+      }
 
       setStats({ migrated: true, timestamp: new Date().toISOString() });
       alert("Sample data added successfully!");
       window.location.reload();
     } catch (error) {
       console.error("Migration error:", error);
+      setError(error.message);
       alert("Migration failed. Check console for details.");
     } finally {
       setMigrating(false);
     }
   };
 
-  const handleClearData = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to clear all data? This action cannot be undone."
-      )
-    ) {
-      StorageManager.clearAll();
-      alert("All data cleared successfully!");
-      window.location.reload();
+  const handleClearData = async () => {
+    if (window.confirm("Are you sure you want to clear all data? This action cannot be undone.")) {
+      try {
+        await StorageManager.clearAll();
+        alert("All data cleared successfully!");
+        window.location.reload();
+      } catch (error) {
+        console.error("Clear data error:", error);
+        setError(error.message);
+      }
     }
   };
 
   useEffect(() => {
-    const currentStats = {};
-    Object.values(STORAGE_KEYS).forEach((key) => {
-      const data = StorageManager.get(key);
-      currentStats[key] = data.length;
-    });
-    setStats(currentStats);
+    const loadStats = async () => {
+      try {
+        const currentStats = {};
+        for (const key of Object.values(STORAGE_KEYS)) {
+          const data = await StorageManager.get(key);
+          currentStats[key] = data.length;
+        }
+        setStats(currentStats);
+      } catch (error) {
+        console.error("Error loading stats:", error);
+        setError(error.message);
+      }
+    };
+    
+    loadStats();
   }, []);
 
   return (
     <div className="bg-[#1a2535] rounded-xl p-6 border border-gray-700">
-      <h3 className="text-xl font-bold mb-4 text-white">
-        Data Migration Utility
-      </h3>
+      <h3 className="text-xl font-bold mb-4 text-white">Data Migration Utility</h3>
+
+      {error && (
+        <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg mb-4">
+          Error: {error}
+        </div>
+      )}
 
       <div className="space-y-4 mb-6">
         <button
@@ -202,7 +261,7 @@ const SimpleMigrationComponent = () => {
           <div className="grid grid-cols-2 gap-4 text-sm">
             {Object.entries(stats).map(([key, count]) => (
               <div key={key} className="text-gray-300">
-                <span className="font-medium">{key}:</span>{" "}
+                <span className="font-medium">{key.replace('aac_', '').toUpperCase()}:</span>{" "}
                 {typeof count === "number" ? `${count} items` : count}
               </div>
             ))}
@@ -222,11 +281,9 @@ const AdminDashboard = () => {
   const [showMigration, setShowMigration] = useState(false);
 
   const currentSection = ADMIN_SECTIONS.find((s) => s.key === activeSection);
-  const { data, loading, deleteItem, refresh } = useLocalStorage(
+  const { data, loading, error, deleteItem, refresh } = useLocalStorage(
     currentSection?.storageKey
   );
-
-  // ... (keep all existing handler functions)
 
   const handleAdd = () => {
     console.log("Adding new item for section:", activeSection);
@@ -243,21 +300,27 @@ const AdminDashboard = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       console.log("Deleting item:", id);
-      const success = deleteItem(id);
-      if (success) {
-        console.log("Item deleted successfully");
-        refresh();
-      } else {
-        console.error("Failed to delete item");
+      try {
+        const success = await deleteItem(id);
+        if (success) {
+          console.log("Item deleted successfully");
+          await refresh();
+        } else {
+          console.error("Failed to delete item");
+          alert("Failed to delete item");
+        }
+      } catch (error) {
+        console.error("Delete error:", error);
+        alert("Error deleting item: " + error.message);
       }
     }
   };
 
-  const handleFormSuccess = (result) => {
+  const handleFormSuccess = async (result) => {
     console.log("Form submitted successfully:", result);
     setShowForm(false);
     setEditingId(null);
-    refresh();
+    await refresh();
     alert("Item saved successfully!");
   };
 
@@ -277,9 +340,9 @@ const AdminDashboard = () => {
     setShowImportExport(false);
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     try {
-      const exportData = StorageManager.exportData();
+      const exportData = await StorageManager.exportData();
       const blob = new Blob([JSON.stringify(exportData, null, 2)], {
         type: "application/json",
       });
@@ -298,8 +361,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Replace the handleImport function in src/pages/admin/index.js with this ASYNC version
-
   const handleImport = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -309,246 +370,39 @@ const AdminDashboard = () => {
           const importData = JSON.parse(e.target.result);
           console.log("Raw import data:", importData);
 
-          // Handle different JSON formats
           let processedData = {};
 
           if (Array.isArray(importData)) {
-            // If it's an array, we need to process it based on the content
             console.log("Detected array format");
-
-            // Check if it looks like books data (has id, title, authors, etc.)
-            if (
-              importData.length > 0 &&
-              importData[0].id &&
-              importData[0].title &&
-              importData[0].authors
-            ) {
+            if (importData.length > 0 && importData[0].id && importData[0].title && importData[0].authors) {
               console.log("Detected books data format");
               processedData[STORAGE_KEYS.BOOKS] = importData;
-            }
-            // Check if it looks like news data (has _id, title, etc.)
-            else if (
-              importData.length > 0 &&
-              importData[0]._id &&
-              importData[0].title
-            ) {
-              console.log("Detected news data format");
-              processedData[STORAGE_KEYS.NEWS] = importData;
-            }
-            // Check if it looks like alumni data (has Name, Id, etc.)
-            else if (
-              importData.length > 0 &&
-              (importData[0].Name || importData[0].name) &&
-              (importData[0].Id || importData[0].id)
-            ) {
-              console.log("Detected alumni data format");
-              processedData[STORAGE_KEYS.ALUMNI] = importData;
-            }
-            // Check if it looks like patents data
-            else if (
-              importData.length > 0 &&
-              importData[0].title &&
-              importData[0].inventors
-            ) {
-              console.log("Detected patents data format");
-              processedData[STORAGE_KEYS.PATENTS] = importData;
-            }
-            // Check if it looks like publications data
-            else if (
-              importData.length > 0 &&
-              importData[0].title &&
-              importData[0].abstract
-            ) {
-              console.log("Detected publications data format");
-              processedData[STORAGE_KEYS.PUBLICATIONS] = importData;
-            }
-            // Check if it looks like events data
-            else if (
-              importData.length > 0 &&
-              importData[0].event &&
-              importData[0].description
-            ) {
-              console.log("Detected events data format");
-              processedData[STORAGE_KEYS.EVENTS] = importData;
-            }
-            // Check if it looks like projects data
-            else if (
-              importData.length > 0 &&
-              importData[0].title &&
-              importData[0].slug
-            ) {
-              console.log("Detected projects data format");
-              processedData[STORAGE_KEYS.PROJECTS] = importData;
-            }
-            // Check if it looks like startups data
-            else if (
-              importData.length > 0 &&
-              importData[0].name &&
-              importData[0].founders
-            ) {
-              console.log("Detected startups data format");
-              processedData[STORAGE_KEYS.STARTUPS] = importData;
             } else {
-              // If we can't auto-detect, ask the user
-              const dataType =
-                prompt(`Could not auto-detect data type. Please specify the type of data you're importing:
-1. books
-2. news
-3. alumni
-4. patents
-5. publications
-6. events
-7. projects
-8. startups
-
-Enter the number or name:`);
-
-              const typeMap = {
-                1: STORAGE_KEYS.BOOKS,
-                books: STORAGE_KEYS.BOOKS,
-                2: STORAGE_KEYS.NEWS,
-                news: STORAGE_KEYS.NEWS,
-                3: STORAGE_KEYS.ALUMNI,
-                alumni: STORAGE_KEYS.ALUMNI,
-                4: STORAGE_KEYS.PATENTS,
-                patents: STORAGE_KEYS.PATENTS,
-                5: STORAGE_KEYS.PUBLICATIONS,
-                publications: STORAGE_KEYS.PUBLICATIONS,
-                6: STORAGE_KEYS.EVENTS,
-                events: STORAGE_KEYS.EVENTS,
-                7: STORAGE_KEYS.PROJECTS,
-                projects: STORAGE_KEYS.PROJECTS,
-                8: STORAGE_KEYS.STARTUPS,
-                startups: STORAGE_KEYS.STARTUPS,
-              };
-
-              const selectedType = typeMap[dataType?.toLowerCase()];
-              if (selectedType) {
-                processedData[selectedType] = importData;
+              console.log("Generic array detected, asking user for type");
+              const dataType = prompt(
+                "What type of data is this? Enter one of: news, projects, events, publications, patents, books, alumni, startups"
+              );
+              const storageKey = STORAGE_KEYS[dataType?.toUpperCase()];
+              if (storageKey) {
+                processedData[storageKey] = importData;
               } else {
-                alert("Invalid data type selected. Import cancelled.");
-                return;
+                throw new Error("Invalid data type specified");
               }
             }
           } else if (typeof importData === "object") {
-            // If it's an object, check if it has our storage keys
-            console.log("Detected object format");
-
-            // Check if it's a full export with storage keys
-            const hasStorageKeys = Object.keys(importData).some((key) =>
-              Object.values(STORAGE_KEYS).includes(key)
-            );
-
-            if (hasStorageKeys) {
-              console.log("Detected full export format");
-              processedData = importData;
-            } else {
-              // Single item or unknown format
-              console.log("Unknown object format");
-              alert(
-                "Unknown JSON format. Please check your file and try again."
-              );
-              return;
-            }
+            processedData = importData;
+          } else {
+            throw new Error("Invalid JSON format");
           }
 
           console.log("Processed data:", processedData);
-
-          // Now import the processed data
-          if (Object.keys(processedData).length === 0) {
-            alert("No valid data found to import.");
-            return;
-          }
-
-          // FIXED: Show confirmation dialog with proper async handling
-          let confirmMessage = "Import Summary:\n\n";
-          let totalItems = 0;
-
-          // Get current counts asynchronously
-          const currentCounts = {};
-          for (const key of Object.keys(processedData)) {
-            try {
-              const currentData = await StorageManager.get(key);
-              currentCounts[key] = Array.isArray(currentData)
-                ? currentData.length
-                : 0;
-            } catch (error) {
-              console.error(`Error getting current count for ${key}:`, error);
-              currentCounts[key] = 0;
-            }
-          }
-
-          for (const [key, items] of Object.entries(processedData)) {
-            const sectionName =
-              ADMIN_SECTIONS.find((s) => s.storageKey === key)?.label || key;
-            const currentCount = currentCounts[key];
-            confirmMessage += `${sectionName}: ${items.length} items (currently have ${currentCount})\n`;
-            totalItems += items.length;
-          }
-
-          confirmMessage += `\nTotal: ${totalItems} items to import.\n\nThis will REPLACE existing data. Continue?`;
-
-          if (window.confirm(confirmMessage)) {
-            // Import the data
-            let importedCount = 0;
-
-            for (const [key, items] of Object.entries(processedData)) {
-              try {
-                console.log(`Importing ${items.length} items for ${key}`);
-
-                // Add timestamps to items that don't have them
-                const itemsWithTimestamps = items.map((item) => ({
-                  ...item,
-                  id:
-                    item.id ||
-                    item.Id ||
-                    item._id ||
-                    StorageManager.generateId(),
-                  createdAt: item.createdAt || new Date().toISOString(),
-                  updatedAt: new Date().toISOString(),
-                }));
-
-                // Use StorageManager to set the data
-                const success = await StorageManager.set(
-                  key,
-                  itemsWithTimestamps
-                );
-
-                if (success) {
-                  importedCount += items.length;
-                  console.log(
-                    `Successfully imported ${items.length} items for ${key}`
-                  );
-                } else {
-                  console.error(`Failed to import items for ${key}`);
-                }
-              } catch (error) {
-                console.error(`Error importing ${key}:`, error);
-              }
-            }
-
-            if (importedCount > 0) {
-              alert(`Successfully imported ${importedCount} items!`);
-
-              // Refresh the current section if it was imported
-              if (processedData[currentSection?.storageKey]) {
-                await refresh();
-              }
-
-              // Clear the file input
-              event.target.value = "";
-
-              // Force a page refresh to ensure UI updates
-              setTimeout(() => {
-                window.location.reload();
-              }, 1000);
-            } else {
-              alert("Import failed. Check console for details.");
-            }
-          }
+          const totalImported = await StorageManager.importData(processedData);
+          
+          alert(`Successfully imported ${totalImported} items!`);
+          await refresh();
         } catch (error) {
-          console.error("Import error:", error);
-          alert("Import failed. Please check that your JSON file is valid.");
+          console.error("Import failed:", error);
+          alert("Import failed: " + error.message);
         }
       };
       reader.readAsText(file);
@@ -556,408 +410,162 @@ Enter the number or name:`);
   };
 
   const renderForm = () => {
+    const formProps = {
+      onSuccess: handleFormSuccess,
+      onCancel: handleFormCancel,
+      ...(editingId && { [activeSection.slice(0, -1) + "Id"]: editingId }),
+    };
+
     switch (activeSection) {
       case "news":
-        return (
-          <NewsForm
-            newsId={editingId}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        );
-      case "patents":
-        return (
-          <PatentsForm
-            patentId={editingId}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        );
-      case "publications":
-        return (
-          <PublicationsForm
-            publicationId={editingId}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        );
-      case "books":
-        return (
-          <BooksForm
-            bookId={editingId}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        );
-      case "alumni":
-        return (
-          <AlumniForm
-            alumnusId={editingId}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        );
-      case "startups":
-        return (
-          <StartupsForm
-            startupId={editingId}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        );
-      case "events":
-        return (
-          <EventsForm
-            eventId={editingId}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        );
+        return <NewsForm {...formProps} newsId={editingId} />;
       case "projects":
-        return (
-          <ProjectsForm
-            projectId={editingId}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        );
+        return <ProjectsForm {...formProps} projectId={editingId} />;
+      case "events":
+        return <EventsForm {...formProps} eventId={editingId} />;
+      case "publications":
+        return <PublicationsForm {...formProps} publicationId={editingId} />;
+      case "patents":
+        return <PatentsForm {...formProps} patentId={editingId} />;
+      case "books":
+        return <BooksForm {...formProps} bookId={editingId} />;
+      case "alumni":
+        return <AlumniForm {...formProps} alumnusId={editingId} />;
+      case "startups":
+        return <StartupsForm {...formProps} startupId={editingId} />;
       default:
-        return (
-          <div className="bg-[#1a2535] rounded-xl p-8 border border-gray-700">
-            <p className="text-gray-300">
-              Form for {activeSection} coming soon...
-            </p>
-            <button
-              onClick={handleFormCancel}
-              className="mt-4 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-            >
-              Close
-            </button>
-          </div>
-        );
+        return <div>Form not implemented for {activeSection}</div>;
     }
   };
 
-  const renderItemList = () => {
-    if (loading) {
-      return <div className="text-center py-8 text-gray-400">Loading...</div>;
+  const getItemTitle = (item) => {
+    return item.title || item.name || item.Name || item.event || item.shortTitle || "Untitled";
+  };
+
+  const getItemId = (item) => {
+    return item.id || item._id || item.Id;
+  };
+
+  const getItemDate = (item) => {
+    const date = item.publishedAt || item.createdAt || item.date || item.updatedAt;
+    if (date) {
+      return new Date(date).toLocaleDateString();
     }
-
-    if (data.length === 0) {
-      return (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">📝</div>
-          <h3 className="text-xl font-semibold text-gray-300 mb-2">
-            No {activeSection} yet
-          </h3>
-          <p className="text-gray-400 mb-6">
-            Create your first {activeSection.slice(0, -1)} to get started.
-          </p>
-          <button
-            onClick={handleAdd}
-            className="px-6 py-3 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors border border-blue-700"
-          >
-            Add {activeSection.slice(0, -1)}
-          </button>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-4">
-        {data.map((item) => (
-          <motion.div
-            key={item.id || item.Id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-[#1a2535] rounded-lg p-6 border border-gray-700"
-          >
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-white mb-2">
-                  {item.title || item.shortTitle || item.name || item.Name}
-                </h3>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {item.categories && (
-                    <span className="px-2 py-1 bg-blue-900/50 text-blue-300 text-xs rounded border border-blue-700/50">
-                      {item.categories}
-                    </span>
-                  )}
-                  {item.category && (
-                    <span className="px-2 py-1 bg-blue-900/50 text-blue-300 text-xs rounded border border-blue-700/50">
-                      {item.category}
-                    </span>
-                  )}
-
-                  {/* Alumni specific badges */}
-                  {item.Designation && (
-                    <span className="px-2 py-1 bg-green-900/50 text-green-300 text-xs rounded border border-green-700/50">
-                      {item.Designation}
-                    </span>
-                  )}
-                  {item.Company && (
-                    <span className="px-2 py-1 bg-purple-900/50 text-purple-300 text-xs rounded border border-purple-700/50">
-                      {item.Company}
-                    </span>
-                  )}
-                  {item.graduationYear && (
-                    <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded">
-                      Class of {item.graduationYear}
-                    </span>
-                  )}
-
-                  {item.color && (
-                    <span
-                      className={`px-2 py-1 text-xs rounded border ${
-                        item.color === "purple"
-                          ? "bg-purple-900/50 text-purple-300 border-purple-700/50"
-                          : item.color === "blue"
-                          ? "bg-blue-900/50 text-blue-300 border-blue-700/50"
-                          : item.color === "green"
-                          ? "bg-green-900/50 text-green-300 border-green-700/50"
-                          : "bg-gray-900/50 text-gray-300 border-gray-700/50"
-                      }`}
-                    >
-                      {item.color}
-                    </span>
-                  )}
-                  {item.status && (
-                    <span
-                      className={`px-2 py-1 text-xs rounded border ${
-                        item.status === "published" ||
-                        item.status === "Published Online" ||
-                        item.status === "Granted" ||
-                        item.status === "Active"
-                          ? "bg-green-900/50 text-green-300 border-green-700/50"
-                          : "bg-yellow-900/50 text-yellow-300 border-yellow-700/50"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                  )}
-                  {(item.publishedAt || item.date || item.establishedDate) && (
-                    <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded">
-                      {new Date(
-                        item.publishedAt || item.date || item.establishedDate
-                      ).toLocaleDateString()}
-                    </span>
-                  )}
-                </div>
-
-                {/* Display relevant information based on section */}
-                {item.abstract && (
-                  <p className="text-gray-400 text-sm line-clamp-2 mb-2">
-                    {item.abstract}
-                  </p>
-                )}
-                {item.description && (
-                  <p className="text-gray-400 text-sm line-clamp-2 mb-2">
-                    {item.description}
-                  </p>
-                )}
-                {item.mission && (
-                  <p className="text-gray-400 text-sm line-clamp-2 mb-2">
-                    <strong>Mission:</strong> {item.mission}
-                  </p>
-                )}
-                {item.bio && (
-                  <p className="text-gray-400 text-sm line-clamp-2 mb-2">
-                    {item.bio}
-                  </p>
-                )}
-                {item.slug && typeof item.slug === "string" && (
-                  <p className="text-gray-400 text-sm line-clamp-2 mb-2">
-                    {item.slug}
-                  </p>
-                )}
-                {item.author && (
-                  <p className="text-gray-400 text-sm">Author: {item.author}</p>
-                )}
-                {item.inventors && Array.isArray(item.inventors) && (
-                  <p className="text-gray-400 text-sm">
-                    Inventors: {item.inventors.slice(0, 3).join(", ")}
-                    {item.inventors.length > 3
-                      ? ` +${item.inventors.length - 3} more`
-                      : ""}
-                  </p>
-                )}
-                {item.authors && Array.isArray(item.authors) && (
-                  <p className="text-gray-400 text-sm">
-                    Authors: {item.authors.join(", ")}
-                  </p>
-                )}
-                {item.founders && Array.isArray(item.founders) && (
-                  <p className="text-gray-400 text-sm">
-                    Founders: {item.founders.join(", ")}
-                  </p>
-                )}
-                {item.applicationNumber && (
-                  <p className="text-gray-400 text-sm">
-                    App No: {item.applicationNumber}
-                  </p>
-                )}
-                {item.patentOffice && (
-                  <p className="text-gray-400 text-sm">
-                    Patent Office: {item.patentOffice}
-                  </p>
-                )}
-                {item.publication && (
-                  <p className="text-gray-400 text-sm line-clamp-1">
-                    Publication: {item.publication}
-                  </p>
-                )}
-                {item.department && (
-                  <p className="text-gray-400 text-sm">
-                    Department: {item.department}
-                  </p>
-                )}
-              </div>
-              <div className="flex space-x-2 ml-4">
-                <button
-                  onClick={() => handleEdit(item.id || item.Id)}
-                  className="px-3 py-1 bg-blue-900/50 text-blue-300 rounded hover:bg-blue-800/50 transition-colors border border-blue-700/50"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(item.id || item.Id)}
-                  className="px-3 py-1 bg-red-900/50 text-red-300 rounded hover:bg-red-800/50 transition-colors border border-red-700/50"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    );
+    return "No date";
   };
 
   return (
     <Layout>
       <Head>
         <title>Admin Dashboard | AAC</title>
-        <meta name="robots" content="noindex, nofollow" />
+        <meta name="description" content="Admin dashboard for managing AAC website content" />
       </Head>
 
-      {/* FIXED: Added padding-top to account for navbar */}
-      <div className="min-h-screen bg-[#0e1421] pt-24 pb-8">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="mb-8">
-            {/* Header with Fixed Button Layout */}
-            <div className="bg-[#1a2535] rounded-xl p-6 mb-6 border border-gray-700">
-              <div className="flex flex-col space-y-4">
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-                  <div>
-                    <h1 className="text-3xl font-bold text-white mb-2">
-                      Content Management
-                    </h1>
-                    <p className="text-gray-400">
-                      Manage your AAC website content
-                    </p>
-                  </div>
+      <div className="min-h-screen bg-[#0e1421] py-24 px-4">
+        <div className="container mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8"
+          >
+            <h1 className="text-4xl font-bold text-white mb-2">Admin Dashboard</h1>
+            <p className="text-gray-300">Manage your website content and data</p>
+          </motion.div>
 
-                  <div className="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
+          {/* Navigation Tabs */}
+          <div className="flex flex-wrap gap-2 mb-8">
+            {ADMIN_SECTIONS.map((section) => (
+              <button
+                key={section.key}
+                onClick={() => {
+                  setActiveSection(section.key);
+                  setShowForm(false);
+                  setEditingId(null);
+                }}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                  activeSection === section.key
+                    ? "bg-blue-900 text-blue-300 border border-blue-700"
+                    : "bg-[#1a2535] text-gray-300 hover:bg-gray-700 border border-gray-600"
+                }`}
+              >
+                <span>{section.icon}</span>
+                <span>{section.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Utility Buttons */}
+          <div className="flex flex-wrap gap-4 mb-8">
+            <button
+              onClick={toggleImportExport}
+              className="px-4 py-2 bg-green-900 text-green-300 rounded-lg hover:bg-green-800 transition-colors border border-green-700"
+            >
+              Import/Export Data
+            </button>
+            <button
+              onClick={toggleMigration}
+              className="px-4 py-2 bg-purple-900 text-purple-300 rounded-lg hover:bg-purple-800 transition-colors border border-purple-700"
+            >
+              Data Migration
+            </button>
+          </div>
+
+          {/* Import/Export Section */}
+          <AnimatePresence>
+            {showImportExport && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-8"
+              >
+                <div className="bg-[#1a2535] rounded-xl p-6 border border-gray-700">
+                  <h3 className="text-xl font-bold mb-4 text-white">Import/Export Data</h3>
+                  <div className="flex flex-wrap gap-4">
                     <button
-                      onClick={toggleImportExport}
-                      className="w-full sm:w-auto px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-center font-medium"
+                      onClick={handleExport}
+                      className="px-4 py-2 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors border border-blue-700"
                     >
-                      {showImportExport
-                        ? "✖️ Close Import/Export"
-                        : "📁 Import/Export"}
+                      Export All Data
                     </button>
-                    <button
-                      onClick={toggleMigration}
-                      className="w-full sm:w-auto px-6 py-3 bg-purple-700 text-white rounded-lg hover:bg-purple-600 transition-colors text-center font-medium"
-                    >
-                      {showMigration
-                        ? "✖️ Close Migration"
-                        : "🔄 Data Migration"}
-                    </button>
+                    <label className="px-4 py-2 bg-orange-900 text-orange-300 rounded-lg hover:bg-orange-800 transition-colors cursor-pointer border border-orange-700">
+                      Import Data
+                      <input
+                        type="file"
+                        accept=".json"
+                        onChange={handleImport}
+                        className="hidden"
+                      />
+                    </label>
                   </div>
                 </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-                {/* Import/Export Section */}
-                {showImportExport && (
-                  <div className="mt-6 pt-6 border-t border-gray-600">
-                    <h3 className="text-lg font-semibold text-white mb-4">
-                      📁 Data Import/Export
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-[#0e1421] p-4 rounded-lg border border-gray-600">
-                        <h4 className="text-white font-medium mb-2">
-                          📤 Export Data
-                        </h4>
-                        <p className="text-gray-400 text-sm mb-3">
-                          Download all content as JSON
-                        </p>
-                        <button
-                          onClick={handleExport}
-                          className="w-full px-4 py-2 bg-green-900 text-green-300 rounded-lg hover:bg-green-800 transition-colors border border-green-700"
-                        >
-                          Download Backup
-                        </button>
-                      </div>
-
-                      <div className="bg-[#0e1421] p-4 rounded-lg border border-gray-600">
-                        <h4 className="text-white font-medium mb-2">
-                          📥 Import Data
-                        </h4>
-                        <p className="text-gray-400 text-sm mb-3">
-                          Upload JSON file to restore
-                        </p>
-                        <div className="relative">
-                          <input
-                            type="file"
-                            accept=".json"
-                            onChange={handleImport}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          />
-                          <button className="w-full px-4 py-2 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors border border-blue-700 relative z-0">
-                            Select JSON File
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Migration Section */}
-                {showMigration && (
-                  <div className="mt-6 pt-6 border-t border-gray-600">
-                    <SimpleMigrationComponent />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Section Navigation */}
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2">
-              {ADMIN_SECTIONS.map((section) => (
-                <button
-                  key={section.key}
-                  onClick={() => setActiveSection(section.key)}
-                  className={`p-3 rounded-lg text-center transition-colors ${
-                    activeSection === section.key
-                      ? "bg-blue-900 text-blue-300 border border-blue-700"
-                      : "bg-[#1a2535] text-gray-300 hover:bg-[#243447] border border-gray-700"
-                  }`}
-                >
-                  <div className="text-2xl mb-1">{section.icon}</div>
-                  <div className="text-xs font-medium">{section.label}</div>
-                </button>
-              ))}
-            </div>
-          </div>
+          {/* Migration Section */}
+          <AnimatePresence>
+            {showMigration && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-8"
+              >
+                <SimpleMigrationComponent />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Main Content Area */}
           <AnimatePresence mode="wait">
             {showForm ? (
               <motion.div
                 key="form"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
               >
                 {renderForm()}
@@ -965,25 +573,87 @@ Enter the number or name:`);
             ) : (
               <motion.div
                 key="list"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
+                className="bg-[#1a2535] rounded-xl shadow-xl p-8 border border-gray-700"
               >
-                <div className="bg-[#1a2535] rounded-xl shadow-xl border border-gray-700">
-                  <div className="flex justify-between items-center p-6 border-b border-gray-700">
-                    <h2 className="text-xl font-semibold text-white">
-                      {currentSection?.label} ({data.length})
-                    </h2>
-                    <button
-                      onClick={handleAdd}
-                      className="px-4 py-2 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors border border-blue-700"
-                    >
-                      Add {currentSection?.label.slice(0, -1)}
-                    </button>
-                  </div>
-                  <div className="p-6">{renderItemList()}</div>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-white">
+                    Manage {currentSection?.label}
+                  </h2>
+                  <button
+                    onClick={handleAdd}
+                    className="px-6 py-2 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors border border-blue-700"
+                  >
+                    Add New {currentSection?.label.slice(0, -1)}
+                  </button>
                 </div>
+
+                {/* Loading State */}
+                {loading && (
+                  <div className="flex justify-center items-center py-12">
+                    <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
+
+                {/* Error State */}
+                {error && (
+                  <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg mb-4">
+                    Error loading data: {error.message || error}
+                  </div>
+                )}
+
+                {/* Data List */}
+                {!loading && !error && (
+                  <div className="space-y-4">
+                    {data.length === 0 ? (
+                      <div className="text-center py-12 text-gray-400">
+                        <p className="text-xl mb-4">No {currentSection?.label.toLowerCase()} found</p>
+                        <p>Click "Add New" to create your first entry</p>
+                      </div>
+                    ) : (
+                      <div className="grid gap-4">
+                        {data.map((item) => (
+                          <div
+                            key={getItemId(item)}
+                            className="bg-[#0e1421] rounded-lg p-4 border border-gray-600 hover:border-gray-500 transition-colors"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="flex-grow">
+                                <h3 className="text-lg font-semibold text-white mb-2">
+                                  {getItemTitle(item)}
+                                </h3>
+                                <div className="flex flex-wrap gap-4 text-sm text-gray-400">
+                                  <span>ID: {getItemId(item)}</span>
+                                  <span>Date: {getItemDate(item)}</span>
+                                  {item.status && <span>Status: {item.status}</span>}
+                                  {item.categories && <span>Category: {item.categories}</span>}
+                                  {item.category && <span>Category: {item.category}</span>}
+                                </div>
+                              </div>
+                              <div className="flex gap-2 ml-4">
+                                <button
+                                  onClick={() => handleEdit(getItemId(item))}
+                                  className="px-3 py-1 bg-blue-900 text-blue-300 rounded hover:bg-blue-800 transition-colors text-sm border border-blue-700"
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(getItemId(item))}
+                                  className="px-3 py-1 bg-red-900 text-red-300 rounded hover:bg-red-800 transition-colors text-sm border border-red-700"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
