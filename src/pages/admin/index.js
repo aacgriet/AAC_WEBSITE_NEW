@@ -1,10 +1,11 @@
-// src/pages/admin/index.js - Complete Admin Dashboard with Patents Form
+// src/pages/admin/index.js - Complete Admin Dashboard with Publications Form
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { motion, AnimatePresence } from 'framer-motion';
 import Layout from '@/components/Layout';
 import { STORAGE_KEYS, StorageManager } from '@/lib/storage';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import PublicationsForm from '@/components/Forms/PublicationsForm';
 
 const ADMIN_SECTIONS = [
   { key: 'news', label: 'News', icon: '📰', storageKey: STORAGE_KEYS.NEWS },
@@ -532,9 +533,6 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
 };
 
 // Projects Form Component
-// Updated ProjectsForm component for the admin dashboard
-// Replace the existing ProjectsForm in your admin dashboard with this version
-
 const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
   const { data: projectsData, addItem, updateItem, getItemById, refresh } = useLocalStorage(STORAGE_KEYS.PROJECTS);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1000,6 +998,21 @@ const SimpleMigrationComponent = () => {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           }
+        ],
+        [STORAGE_KEYS.PUBLICATIONS]: [
+          {
+            id: 'sample-publication-1',
+            title: 'Ensemble–Based Wine Quality Detection using Hybrid Machine Learning Models',
+            abstract: 'This paper proposes a novel ensemble learning method for accurately predicting wine quality, a crucial factor influencing market value and consumer satisfaction. The study combines four base machine-learning models: Random Forest, Logistic Regression, Support Vector Machines, and Gradient Boosting Machine. The models are optimized using Grid Search and combined via a Neural Network meta-classifier.',
+            authors: ['Dodda Abhiram', 'Siddharth Mahesh Balijepally', 'Ekantha Sai Sundar'],
+            publication: 'International Journal of Engineering Research and Technology(IJERT), ISSN: 2278-0181, Vol. 13 Issue 01, August 2024',
+            category: 'Machine Learning',
+            publishedAt: new Date('2024-08-01').toISOString(),
+            image: '',
+            downloadUrl: '',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
         ]
       };
 
@@ -1077,7 +1090,7 @@ const SimpleMigrationComponent = () => {
 
 // Main Admin Dashboard Component
 const AdminDashboard = () => {
-  const [activeSection, setActiveSection] = useState('patents');
+  const [activeSection, setActiveSection] = useState('publications');
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [showImportExport, setShowImportExport] = useState(false);
@@ -1208,6 +1221,14 @@ const AdminDashboard = () => {
             onCancel={handleFormCancel}
           />
         );
+      case 'publications':
+        return (
+          <PublicationsForm
+            publicationId={editingId}
+            onSuccess={handleFormSuccess}
+            onCancel={handleFormCancel}
+          />
+        );
       default:
         return (
           <div className="bg-[#1a2535] rounded-xl p-8 border border-gray-700">
@@ -1286,6 +1307,9 @@ const AdminDashboard = () => {
                 </div>
                 
                 {/* Display relevant information based on section */}
+                {item.abstract && (
+                  <p className="text-gray-400 text-sm line-clamp-2 mb-2">{item.abstract}</p>
+                )}
                 {item.description && (
                   <p className="text-gray-400 text-sm line-clamp-2 mb-2">{item.description}</p>
                 )}
@@ -1298,11 +1322,17 @@ const AdminDashboard = () => {
                 {item.inventors && Array.isArray(item.inventors) && (
                   <p className="text-gray-400 text-sm">Inventors: {item.inventors.join(', ')}</p>
                 )}
+                {item.authors && Array.isArray(item.authors) && (
+                  <p className="text-gray-400 text-sm">Authors: {item.authors.join(', ')}</p>
+                )}
                 {item.applicationNumber && (
                   <p className="text-gray-400 text-sm">App No: {item.applicationNumber}</p>
                 )}
                 {item.patentOffice && (
                   <p className="text-gray-400 text-sm">Patent Office: {item.patentOffice}</p>
+                )}
+                {item.publication && (
+                  <p className="text-gray-400 text-sm line-clamp-1">Publication: {item.publication}</p>
                 )}
               </div>
               <div className="flex space-x-2 ml-4">
