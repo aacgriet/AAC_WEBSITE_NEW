@@ -274,7 +274,7 @@ const AdminAuth = ({ children, onAuthSuccess }) => {
           </form>
 
           {/* Development Info */}
-          {process.env.NODE_ENV === 'development' && (
+          {/* {process.env.NODE_ENV === 'development' && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -294,7 +294,7 @@ const AdminAuth = ({ children, onAuthSuccess }) => {
                 </div>
               </div>
             </motion.div>
-          )}
+          )} */}
 
           {/* Additional Features Section */}
           <div className="mt-8 pt-6 border-t border-white/10">

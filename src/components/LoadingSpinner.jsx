@@ -37,31 +37,20 @@ const LoadingSpinner = ({
 
   // Container classes
   const containerClasses = fullScreen 
-    ? "fixed inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center z-50"
-    : `flex flex-col items-center justify-center ${config.container} bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden ${className}`;
+    ? "fixed inset-0 flex items-center justify-center z-50"
+    : `flex flex-col items-center justify-center ${config.container} ${className}`;
 
   return (
     <div className={containerClasses}>
-      {/* Enhanced Global Breathing Effect */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[30%] -left-[20%] w-[60%] h-[100%] bg-gradient-to-br from-blue-400/10 to-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-[10%] -right-[20%] w-[60%] h-[80%] bg-gradient-to-br from-indigo-400/10 to-pink-600/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
-        <div className="absolute top-[40%] -left-[25%] w-[70%] h-[70%] bg-gradient-to-br from-emerald-400/10 to-teal-600/10 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
-        <div className="absolute top-[70%] -right-[15%] w-[65%] h-[65%] bg-gradient-to-br from-purple-400/10 to-rose-600/10 rounded-full blur-3xl animate-pulse animation-delay-3000"></div>
-      </div>
 
-      {/* Animated grid pattern */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-y-12 animate-pulse"></div>
-        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-white/3 to-transparent transform skew-y-6 animate-pulse animation-delay-2000"></div>
-      </div>
-
-      <div className="text-center relative z-10">
-        {/* Multi-layered spinner */}
-        <div className="relative mb-6">
-          <div className={`${config.spinner} border-white/10 border-t-blue-500 rounded-full animate-spin`}></div>
-          <div className={`absolute inset-0 ${config.spinner} border-transparent border-t-purple-500 rounded-full animate-spin animation-delay-150`}></div>
-          <div className={`absolute inset-2 ${config.spinner.replace('w-12 h-12', 'w-8 h-8').replace('w-16 h-16', 'w-12 h-12').replace('w-20 h-20', 'w-16 h-16').replace('w-6 h-6', 'w-4 h-4')} border-transparent border-t-indigo-400 rounded-full animate-spin animation-delay-300`}></div>
+      <div className="text-center">
+        {/* Multi-layered spinner - Now centered */}
+        <div className="flex justify-center mb-6">
+          <div className="relative">
+            <div className={`${config.spinner} border-white/10 border-t-blue-500 rounded-full animate-spin`}></div>
+            <div className={`absolute inset-0 ${config.spinner} border-transparent border-t-purple-500 rounded-full animate-spin animation-delay-150`}></div>
+            <div className={`absolute inset-2 ${config.spinner.replace('w-12 h-12', 'w-8 h-8').replace('w-16 h-16', 'w-12 h-12').replace('w-20 h-20', 'w-16 h-16').replace('w-6 h-6', 'w-4 h-4')} border-transparent border-t-indigo-400 rounded-full animate-spin animation-delay-300`}></div>
+          </div>
         </div>
         
         {showText && (
