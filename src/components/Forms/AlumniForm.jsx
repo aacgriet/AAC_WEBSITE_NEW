@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField } from './BaseForm';
 import ImageUpload from './ImageUpload';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { STORAGE_KEYS } from '@/lib/storage';
+// import { useLocalStorage } from '@/hooks/useLocalStorage';
+// import { STORAGE_KEYS } from '@/lib/storage';
+import { useDatabase } from '@/hooks/useDatabase';
 
 const DEPARTMENTS = [
   'Computer Science Engineering',
@@ -24,7 +25,8 @@ const ALUMNUS_STATUS = [
 ];
 
 const AlumniForm = ({ alumnusId = null, onSuccess, onCancel }) => {
-  const { data: alumniData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.ALUMNI);
+  // const { data: alumniData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.ALUMNI);
+  const { data: alumniData, addItem, updateItem, getItemById } = useDatabase('alumni');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   
@@ -141,15 +143,15 @@ const AlumniForm = ({ alumnusId = null, onSuccess, onCancel }) => {
       };
       
       let result;
-      if (alumnusId) {
-        result = updateItem(alumnusId, alumnusItem);
-      } else {
-        result = addItem(alumnusItem);
-      }
-      
-      if (result) {
-        onSuccess?.(result);
-      }
+if (alumnusId) {
+  result = await updateItem(alumnusId, alumnusItem);
+} else {
+  result = await addItem(alumnusItem);
+}
+
+if (result) {
+  onSuccess?.(result);
+}
     } catch (error) {
       console.error('Error saving alumnus:', error);
       setErrors({ submit: 'Failed to save alumnus' });

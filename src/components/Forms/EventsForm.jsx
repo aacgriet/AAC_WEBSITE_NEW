@@ -1,10 +1,8 @@
-// src/components/Forms/EventsForm.jsx - Updated for your event structure
+// src/components/Forms/EventsForm.jsx - Updated to use database instead of localStorage
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField } from './BaseForm';
 import { MultiImageUpload } from './ImageUpload';
-import RichTextEditor from './RichTextEditor';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { STORAGE_KEYS } from '@/lib/storage';
+import { useDatabase } from '@/hooks/useDatabase';
 
 const EVENT_STATUSES = [
   'upcoming',
@@ -14,7 +12,7 @@ const EVENT_STATUSES = [
 ];
 
 const EventsForm = ({ eventId = null, onSuccess, onCancel }) => {
-  const { data: eventsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.EVENTS);
+  const { data: eventsData, addItem, updateItem, getItemById } = useDatabase('events');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   
@@ -158,9 +156,9 @@ const EventsForm = ({ eventId = null, onSuccess, onCancel }) => {
       
       let result;
       if (eventId) {
-        result = updateItem(eventId, eventItem);
+        result = await updateItem(eventId, eventItem);
       } else {
-        result = addItem(eventItem);
+        result = await addItem(eventItem);
       }
       
       if (result) {
@@ -168,7 +166,7 @@ const EventsForm = ({ eventId = null, onSuccess, onCancel }) => {
       }
     } catch (error) {
       console.error('Error saving event:', error);
-      setErrors({ submit: 'Failed to save event' });
+      setErrors({ submit: 'Failed to save event: ' + error.message });
     } finally {
       setIsSubmitting(false);
     }

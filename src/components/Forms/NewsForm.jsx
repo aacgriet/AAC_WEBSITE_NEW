@@ -1,9 +1,8 @@
-// src/components/Forms/NewsForm.jsx - Updated to match the new JSON structure
+// src/components/Forms/NewsForm.jsx - Updated to use database instead of localStorage
 import React, { useState, useEffect } from 'react';
-import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
+import BaseForm, { FormField, TextAreaField, SelectField } from './BaseForm';
 import ImageUpload from './ImageUpload';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { STORAGE_KEYS } from '@/lib/storage';
+import { useDatabase } from '@/hooks/useDatabase';
 
 const NEWS_CATEGORIES = [
   'news',
@@ -15,7 +14,7 @@ const NEWS_CATEGORIES = [
 ];
 
 const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
-  const { data: newsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.NEWS);
+  const { data: newsData, addItem, updateItem, getItemById } = useDatabase('news');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   
@@ -81,12 +80,6 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
     
     // Auto-generate slug from title if creating new news
     if (name === 'title' && !newsId) {
-      const slugValue = value.toLowerCase()
-        .replace(/[^a-z0-9 -]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim();
-      
       setFormData(prev => ({
         ...prev,
         slug: {
@@ -188,9 +181,9 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
       
       let result;
       if (newsId) {
-        result = updateItem(newsId, newsItem);
+        result = await updateItem(newsId, newsItem);
       } else {
-        result = addItem(newsItem);
+        result = await addItem(newsItem);
       }
       
       if (result) {
@@ -198,7 +191,7 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
       }
     } catch (error) {
       console.error('Error saving news:', error);
-      setErrors({ submit: 'Failed to save news article' });
+      setErrors({ submit: 'Failed to save news article: ' + error.message });
     } finally {
       setIsSubmitting(false);
     }

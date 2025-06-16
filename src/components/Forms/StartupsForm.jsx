@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { STORAGE_KEYS } from '@/lib/storage';
+// import { useLocalStorage } from '@/hooks/useLocalStorage';
+// import { STORAGE_KEYS } from '@/lib/storage';
+import { useDatabase } from '@/hooks/useDatabase';
 
 const STARTUP_CATEGORIES = [
   'Event Planning',
@@ -41,7 +42,8 @@ const STARTUP_STATUSES = [
 ];
 
 const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
-  const { data: startupsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.STARTUPS);
+  // const { data: startupsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.STARTUPS);
+  const { data: startupsData, addItem, updateItem, getItemById } = useDatabase('startups');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   
@@ -187,15 +189,15 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
       };
       
       let result;
-      if (startupId) {
-        result = updateItem(startupId, startupItem);
-      } else {
-        result = addItem(startupItem);
-      }
-      
-      if (result) {
-        onSuccess?.(result);
-      }
+if (startupId) {
+  result = await updateItem(startupId, startupItem);
+} else {
+  result = await addItem(startupItem);
+}
+
+if (result) {
+  onSuccess?.(result);
+}
     } catch (error) {
       console.error('Error saving startup:', error);
       setErrors({ submit: 'Failed to save startup' });

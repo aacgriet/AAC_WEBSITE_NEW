@@ -329,9 +329,9 @@
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { STORAGE_KEYS } from '@/lib/storage';
-
+// import { useLocalStorage } from '@/hooks/useLocalStorage';
+// import { STORAGE_KEYS } from '@/lib/storage';
+import { useDatabase } from '@/hooks/useDatabase';
 const PROJECT_CATEGORIES = [
   'Machine Learning',
   'Deep Learning',
@@ -364,7 +364,8 @@ const PROJECT_STATUSES = [
 ];
 
 const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
-  const { data: projectsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.PROJECTS);
+  // const { data: projectsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.PROJECTS);
+  const { data: projectsData, addItem, updateItem, getItemById } = useDatabase('projects');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   
@@ -546,15 +547,15 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
       };
       
       let result;
-      if (projectId) {
-        result = updateItem(projectId, projectItem);
-      } else {
-        result = addItem(projectItem);
-      }
-      
-      if (result) {
-        onSuccess?.(result);
-      }
+if (projectId) {
+  result = await updateItem(projectId, projectItem);
+} else {
+  result = await addItem(projectItem);
+}
+
+if (result) {
+  onSuccess?.(result);
+}
     } catch (error) {
       console.error('Error saving project:', error);
       setErrors({ submit: 'Failed to save project' });

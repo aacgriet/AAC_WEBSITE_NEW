@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { STORAGE_KEYS } from '@/lib/storage';
+// import { useLocalStorage } from '@/hooks/useLocalStorage';
+// import { STORAGE_KEYS } from '@/lib/storage';
+import { useDatabase } from '@/hooks/useDatabase';
 
 const BOOK_CATEGORIES = [
   'Programming',
@@ -30,7 +31,8 @@ const BOOK_COLORS = [
 ];
 
 const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
-  const { data: booksData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.BOOKS);
+  // const { data: booksData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.BOOKS);
+  const { data: booksData, addItem, updateItem, getItemById } = useDatabase('books');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   
@@ -152,15 +154,15 @@ const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
       };
       
       let result;
-      if (bookId) {
-        result = updateItem(bookId, bookItem);
-      } else {
-        result = addItem(bookItem);
-      }
-      
-      if (result) {
-        onSuccess?.(result);
-      }
+if (bookId) {
+  result = await updateItem(bookId, bookItem);
+} else {
+  result = await addItem(bookItem);
+}
+
+if (result) {
+  onSuccess?.(result);
+}
     } catch (error) {
       console.error('Error saving book:', error);
       setErrors({ submit: 'Failed to save book' });

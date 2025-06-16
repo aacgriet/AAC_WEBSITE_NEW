@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { STORAGE_KEYS } from '@/lib/storage';
-
+// import { useLocalStorage } from '@/hooks/useLocalStorage';
+// import { STORAGE_KEYS } from '@/lib/storage';
+import { useDatabase } from '@/hooks/useDatabase';
 const PATENT_OFFICES = [
   'India',
   'USA',
@@ -45,7 +45,8 @@ const PATENT_COLORS = [
 ];
 
 const PatentsForm = ({ patentId = null, onSuccess, onCancel }) => {
-  const { data: patentsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.PATENTS);
+  // const { data: patentsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.PATENTS);
+  const { data: patentsData, addItem, updateItem, getItemById } = useDatabase('patents');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   
@@ -146,17 +147,17 @@ const PatentsForm = ({ patentId = null, onSuccess, onCancel }) => {
       };
       
       let result;
-      if (patentId) {
-        result = updateItem(patentId, patentItem);
-      } else {
-        result = addItem(patentItem);
-      }
-      
-      if (result) {
-        onSuccess?.(result);
-      } else {
-        setErrors({ submit: 'Failed to save patent' });
-      }
+if (patentId) {
+  result = await updateItem(patentId, patentItem);
+} else {
+  result = await addItem(patentItem);
+}
+
+if (result) {
+  onSuccess?.(result);
+} else {
+  setErrors({ submit: 'Failed to save patent' });
+}
     } catch (error) {
       console.error('Error saving patent:', error);
       setErrors({ submit: 'Error saving patent: ' + error.message });

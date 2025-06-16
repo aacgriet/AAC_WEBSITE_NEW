@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { STORAGE_KEYS } from '@/lib/storage';
+// import { useLocalStorage } from '@/hooks/useLocalStorage';
+// import { STORAGE_KEYS } from '@/lib/storage';
+import { useDatabase } from '@/hooks/useDatabase';
 
 const PUBLICATION_CATEGORIES = [
   'Machine Learning',
@@ -27,7 +28,8 @@ const PUBLICATION_CATEGORIES = [
 ];
 
 const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
-  const { data: publicationsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.PUBLICATIONS);
+  // const { data: publicationsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.PUBLICATIONS);
+  const { data: publicationsData, addItem, updateItem, getItemById } = useDatabase('publications');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   
@@ -132,15 +134,15 @@ const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
       };
       
       let result;
-      if (publicationId) {
-        result = updateItem(publicationId, publicationItem);
-      } else {
-        result = addItem(publicationItem);
-      }
-      
-      if (result) {
-        onSuccess?.(result);
-      }
+if (publicationId) {
+  result = await updateItem(publicationId, publicationItem);
+} else {
+  result = await addItem(publicationItem);
+}
+
+if (result) {
+  onSuccess?.(result);
+}
     } catch (error) {
       console.error('Error saving publication:', error);
       setErrors({ submit: 'Failed to save publication' });
