@@ -1,13 +1,104 @@
-// src/pages/News/index.js - DEBUG VERSION to see what's happening
+// src/pages/News/index.js - Updated with Modern Premium UI
 import React, { useState, useMemo } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { FaCalendar, FaTag, FaArrowRight } from 'react-icons/fa';
 import Layout from '@/components/Layout';
-import PageHero from '@/components/PageHero';
-import NewsCard from '@/components/News/NewsCard';
-import NewsFilter from '@/components/News/NewsFilter';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { STORAGE_KEYS } from '@/lib/storage';
+
+const NewsCard = ({ news, index }) => {
+  const formatDate = (dateString) => {
+    if (!dateString) return 'No date';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return 'Invalid date';
+    }
+  };
+
+  const getImageUrl = (image) => {
+    if (!image) return 'https://via.placeholder.com/400x200/1a2535/ffffff?text=News';
+    if (typeof image === 'string') return image;
+    if (image.asset?.url) return image.asset.url;
+    return 'https://via.placeholder.com/400x200/1a2535/ffffff?text=News';
+  };
+
+  const getExcerpt = (news) => {
+    if (news.slug?.current) return news.slug.current.substring(0, 120) + '...';
+    if (news._rawBody) return news._rawBody.substring(0, 120) + '...';
+    if (news.content) return news.content.substring(0, 120) + '...';
+    return 'Click to read more about this news article.';
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.6 }}
+      whileHover={{ y: -8, scale: 1.03 }}
+      className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden h-full flex flex-col border border-white/10 hover:border-white/20 transition-all duration-300"
+    >
+      {/* Gradient overlay on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+      
+      {/* News Image */}
+      <div className="relative h-48 overflow-hidden rounded-t-2xl">
+        <Image
+          src={getImageUrl(news.mainImage)}
+          alt={news.title}
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+        
+        {/* Category Badge */}
+        <div className="absolute top-4 left-4">
+          <span className="px-3 py-1.5 bg-emerald-500/20 text-emerald-300 rounded-lg text-xs font-medium border border-emerald-500/30 backdrop-blur-sm">
+            {news.categories || 'News'}
+          </span>
+        </div>
+        
+        {/* Date Badge */}
+        <div className="absolute top-4 right-4">
+          <div className="flex items-center gap-1 px-2 py-1 backdrop-blur-sm bg-black/40 text-white rounded-lg text-xs">
+            <FaCalendar />
+            <span>{formatDate(news.publishedAt)}</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Content */}
+      <div className="p-6 flex-1 flex flex-col relative z-10">
+        <h3 className="text-xl font-bold mb-3 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300 line-clamp-2">
+          {news.title}
+        </h3>
+        
+        <p className="text-gray-400 text-sm leading-relaxed mb-4 flex-1 group-hover:text-gray-300 transition-colors duration-300 line-clamp-3">
+          {getExcerpt(news)}
+        </p>
+        
+        {/* Action Button */}
+        <Link
+          href={`/News/${news._id || news.id}`}
+          className="group/btn inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 relative overflow-hidden hover:scale-105 mt-auto"
+        >
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            Read More
+            <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
+          </span>
+          <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
+        </Link>
+      </div>
+    </motion.div>
+  );
+};
 
 const NewsPage = () => {
   const { data: newsData, loading, error } = useLocalStorage(STORAGE_KEYS.NEWS);
@@ -16,74 +107,27 @@ const NewsPage = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [sortOrder, setSortOrder] = useState('newest');
 
-  // DEBUG: Log everything
-  // console.log('=== NEWS DEBUG INFO ===');
-  // console.log('Storage key being used:', STORAGE_KEYS.NEWS);
-  // console.log('Raw newsData:', newsData);
-  // console.log('newsData type:', typeof newsData);
-  // console.log('newsData length:', newsData?.length);
-  // console.log('Loading state:', loading);
-  // console.log('Error state:', error);
-  
-  // Check localStorage directly
-  if (typeof window !== 'undefined') {
-    const directData = localStorage.getItem(STORAGE_KEYS.NEWS);
-    console.log('Direct localStorage data:', directData);
-    if (directData) {
-      try {
-        const parsed = JSON.parse(directData);
-        console.log('Parsed localStorage data:', parsed);
-        console.log('Parsed data length:', parsed?.length);
-      } catch (e) {
-        console.log('Error parsing localStorage data:', e);
-      }
-    }
-  }
-
   // Normalize the news data structure
   const normalizedNewsData = useMemo(() => {
-    console.log('Normalizing data...');
-    
-    if (!newsData) {
-      console.log('No newsData available');
-      return [];
-    }
-    
-    if (!Array.isArray(newsData)) {
-      console.log('newsData is not an array:', typeof newsData);
-      return [];
-    }
+    if (!newsData || !Array.isArray(newsData)) return [];
 
-    const normalized = newsData.map((news, index) => {
-      console.log(`Processing news item ${index}:`, news);
-      
-      // Handle different data structures
-      const normalizedNews = {
-        _id: news._id || news.id || `news-${Date.now()}-${Math.random()}`,
-        title: news.title || 'Untitled News',
-        slug: news.slug || { current: news.description || '' },
-        publishedAt: news.publishedAt || news.date || news.createdAt || new Date().toISOString(),
-        categories: news.categories || news.category || 'news',
-        mainImage: news.mainImage || { asset: { url: news.image || null } },
-        body: news.body || [],
-        _rawBody: news._rawBody || news.content || '',
-        links: news.links || [],
-        status: news.status || 'published',
-        // Keep original data for fallback
-        ...news
-      };
-
-      console.log(`Normalized news item ${index}:`, normalizedNews);
-      return normalizedNews;
-    });
-    
-    console.log('Final normalized data:', normalized);
-    return normalized;
+    return newsData.map((news, index) => ({
+      _id: news._id || news.id || `news-${Date.now()}-${Math.random()}`,
+      title: news.title || 'Untitled News',
+      slug: news.slug || { current: news.description || '' },
+      publishedAt: news.publishedAt || news.date || news.createdAt || new Date().toISOString(),
+      categories: news.categories || news.category || 'news',
+      mainImage: news.mainImage || { asset: { url: news.image || null } },
+      body: news.body || [],
+      _rawBody: news._rawBody || news.content || '',
+      links: news.links || [],
+      status: news.status || 'published',
+      ...news
+    }));
   }, [newsData]);
 
   // Get unique categories
   const categories = useMemo(() => {
-    console.log('Computing categories...');
     const allCategories = ['All'];
     normalizedNewsData.forEach(news => {
       const category = news.categories;
@@ -91,13 +135,11 @@ const NewsPage = () => {
         allCategories.push(category);
       }
     });
-    console.log('Available categories:', allCategories);
     return allCategories;
   }, [normalizedNewsData]);
 
   // Filter and sort news
   const filteredAndSortedNews = useMemo(() => {
-    console.log('Filtering and sorting...');
     let filtered = normalizedNewsData.filter(news => {
       const matchesSearch = news.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            (news.slug?.current && news.slug.current.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -118,25 +160,100 @@ const NewsPage = () => {
       }
     });
 
-    console.log('Filtered and sorted news:', filtered);
     return filtered;
   }, [normalizedNewsData, searchTerm, activeCategory, sortOrder]);
 
+  // Loading state
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-white text-xl">Loading news...</div>
+        <Head>
+          <title>News & Updates | AAC - Advanced Academic Center</title>
+          <meta name="description" content="Stay updated with the latest news, achievements, and announcements from Advanced Academic Center at GRIET." />
+        </Head>
+        
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+          <div className="text-center">
+            <div className="relative mb-8">
+              <div className="w-16 h-16 border-4 border-white/10 border-t-emerald-500 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-blue-500 rounded-full animate-spin animation-delay-150"></div>
+            </div>
+            <p className="text-xl text-gray-400">Loading news articles...</p>
+          </div>
         </div>
       </Layout>
     );
   }
 
+  // Error state
   if (error) {
     return (
       <Layout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-red-400 text-xl">Error loading news: {error.message}</div>
+        <Head>
+          <title>News & Updates | AAC - Advanced Academic Center</title>
+        </Head>
+        
+        {/* Hero Section */}
+        <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 pt-24 pb-20 mb-12 overflow-hidden">
+          {/* Animated background blobs */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-red-400/20 to-orange-600/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute top-[10%] -right-[10%] w-[50%] h-[50%] bg-gradient-to-br from-red-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+          </div>
+
+          {/* Animated grid pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-y-12 animate-pulse"></div>
+          </div>
+          
+          <div className="container mx-auto mt-7 px-4 relative z-10 text-center">
+            {/* Enhanced badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white rounded-full mb-6 border border-white/20 shadow-lg">
+              <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium">Error Loading</span>
+            </div>
+            
+            {/* Title with gradient effect */}
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-white via-red-100 to-orange-200 bg-clip-text text-transparent">
+                News &
+              </span>{' '}
+              <span className="bg-gradient-to-r from-red-400 via-orange-400 to-pink-400 bg-clip-text text-transparent">
+                Updates
+              </span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-blue-100/90 max-w-4xl mx-auto leading-relaxed">
+              Unable to load news articles at this time
+            </p>
+
+            {/* Decorative dots */}
+            <div className="flex justify-center items-center gap-3 mt-8">
+              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse animation-delay-500"></div>
+              <div className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse animation-delay-1000"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="container mx-auto px-4 pb-24">
+          <div className="text-center py-20">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center mx-auto mb-8 shadow-lg">
+              <span className="text-4xl">⚠️</span>
+            </div>
+            <h3 className="text-3xl font-bold text-white mb-4">Unable to Load News</h3>
+            <p className="text-gray-400 text-lg mb-8">There was an error loading the news articles: {error.message}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="group/btn px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 relative overflow-hidden hover:scale-105"
+            >
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                Retry
+                <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
+              </span>
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
+            </button>
+          </div>
         </div>
       </Layout>
     );
@@ -149,136 +266,280 @@ const NewsPage = () => {
         <meta name="description" content="Stay updated with the latest news, achievements, and announcements from Advanced Academic Center at GRIET." />
       </Head>
       
-      <PageHero 
-        title="Latest News & Updates" 
-        subtitle="Stay informed about our latest achievements, events, and announcements"
-        tag="News Center"
-      />
-      
-      <div className="py-16 px-4">
-        <div className="container mx-auto max-w-7xl">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 pt-24 pb-20 mb-12 overflow-hidden">
+        {/* Animated background blobs */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-[10%] -right-[10%] w-[50%] h-[50%] bg-gradient-to-br from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+          <div className="absolute bottom-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-br from-emerald-400/20 to-teal-600/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
+        </div>
+
+        {/* Animated grid pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-y-12 animate-pulse"></div>
+        </div>
+        
+        <div className="container mx-auto mt-7 px-4 relative z-10 text-center">
+          {/* Enhanced badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white rounded-full mb-6 border border-white/20 shadow-lg">
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium">News Center</span>
+          </div>
           
-          {/* DEBUG INFO - Only show in development */}
-          {/* <div className="mb-8 p-4 bg-gray-800 rounded-lg text-white text-sm">
-            <h4 className="font-bold mb-2">🐛 DEBUG INFO:</h4>
-            <p><strong>Storage Key:</strong> {STORAGE_KEYS.NEWS}</p>
-            <p><strong>Raw Data Length:</strong> {newsData?.length || 0}</p>
-            <p><strong>Normalized Data Length:</strong> {normalizedNewsData.length}</p>
-            <p><strong>Filtered Data Length:</strong> {filteredAndSortedNews.length}</p>
-            <p><strong>Categories Found:</strong> {categories.join(', ')}</p>
-            <p><strong>Active Category:</strong> {activeCategory}</p>
-            <p><strong>Search Term:</strong> "{searchTerm}"</p>
-            <p><strong>Loading:</strong> {loading ? 'Yes' : 'No'}</p>
-            <p><strong>Error:</strong> {error ? error.message : 'None'}</p>
-            
-            {newsData && newsData.length > 0 && (
-              <details className="mt-4">
-                <summary className="cursor-pointer font-bold">📋 Raw Data Sample (First Item)</summary>
-                <pre className="mt-2 p-2 bg-gray-900 rounded text-xs overflow-auto max-h-40">
-                  {JSON.stringify(newsData[0], null, 2)}
-                </pre>
-              </details>
-            )}
-          </div> */}
+          {/* Title with gradient effect */}
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
+              Latest News &
+            </span>{' '}
+            <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              Updates
+            </span>
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-blue-100/90 max-w-4xl mx-auto leading-relaxed">
+            Stay informed about our latest achievements, events, and announcements
+          </p>
 
-          {/* Search and Filter Controls */}
-          <NewsFilter
-            categories={categories}
-            activeCategory={activeCategory}
-            setActiveCategory={setActiveCategory}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            sortOrder={sortOrder}
-            setSortOrder={setSortOrder}
-          />
+          {/* Decorative dots */}
+          <div className="flex justify-center items-center gap-3 mt-8">
+            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse animation-delay-500"></div>
+            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse animation-delay-1000"></div>
+          </div>
+        </div>
+      </div>
 
-          {/* News Grid */}
-          <div className="mt-12">
-            {filteredAndSortedNews.length === 0 ? (
-              <div className="text-center py-16">
-                {normalizedNewsData.length === 0 ? (
-                  <>
-                    <div className="text-6xl mb-4">📰</div>
-                    <h3 className="text-2xl font-semibold text-white mb-4">No News Data Found</h3>
-                    {/* <p className="text-gray-400 mb-8">
-                      Check the debug info above to see what's happening with the data loading.
-                    </p> */}
-                    {/* <div className="bg-yellow-900/50 border border-yellow-700 text-yellow-300 p-4 rounded-lg max-w-md mx-auto">
-                      <p className="font-bold">Troubleshooting Steps:</p>
-                      <ol className="text-left mt-2 text-sm">
-                        <li>1. Check if data was imported correctly</li>
-                        <li>2. Verify the storage key: {STORAGE_KEYS.NEWS}</li>
-                        <li>3. Check browser localStorage in DevTools</li>
-                        <li>4. Try refreshing the page</li>
-                      </ol>
-                    </div> */}
-                  </>
-                ) : (
-                  <>
-                    <div className="text-6xl mb-4">🔍</div>
-                    <h3 className="text-2xl font-semibold text-white mb-4">No Results Found</h3>
-                    <p className="text-gray-400 mb-8">
-                      Found {normalizedNewsData.length} articles, but none match your current filters.
-                    </p>
-                    <button
-                      onClick={() => {
-                        setSearchTerm('');
-                        setActiveCategory('All');
-                      }}
-                      className="px-6 py-3 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors border border-blue-700"
-                    >
-                      Clear Filters
-                    </button>
-                  </>
-                )}
+      <div className="container mx-auto px-4 pb-24">
+        {/* Filter Controls */}
+        <div className="mb-12">
+          <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-8 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Search */}
+              <div>
+                <label htmlFor="search" className="block text-sm font-medium text-gray-400 mb-3">
+                  Search Articles
+                </label>
+                <input
+                  type="text"
+                  id="search"
+                  placeholder="Search by title or content..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-3 backdrop-blur-sm bg-white/5 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder-gray-500 transition-all duration-200"
+                />
               </div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              
+              {/* Category filter */}
+              <div>
+                <label htmlFor="category" className="block text-sm font-medium text-gray-400 mb-3">
+                  Filter by Category
+                </label>
+                <select
+                  id="category"
+                  value={activeCategory}
+                  onChange={(e) => setActiveCategory(e.target.value)}
+                  className="w-full px-4 py-3 backdrop-blur-sm bg-white/5 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white transition-all duration-200"
+                >
+                  {categories.map(category => (
+                    <option key={category} value={category} className="bg-slate-800 text-white">
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              {/* Sort filter */}
+              <div>
+                <label htmlFor="sort" className="block text-sm font-medium text-gray-400 mb-3">
+                  Sort by Date
+                </label>
+                <select
+                  id="sort"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  className="w-full px-4 py-3 backdrop-blur-sm bg-white/5 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white transition-all duration-200"
+                >
+                  <option value="newest" className="bg-slate-800 text-white">Newest First</option>
+                  <option value="oldest" className="bg-slate-800 text-white">Oldest First</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Results Counter */}
+        <div className="mb-8">
+          <p className="text-lg text-gray-400">
+            Showing <span className="text-white font-medium">{filteredAndSortedNews.length}</span> of <span className="text-white font-medium">{normalizedNewsData.length}</span> articles
+          </p>
+        </div>
+
+        {/* News Grid or Empty State */}
+        {filteredAndSortedNews.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mx-auto mb-8 shadow-lg">
+              <span className="text-4xl">
+                {normalizedNewsData.length === 0 ? '📰' : '🔍'}
+              </span>
+            </div>
+            <h3 className="text-3xl font-bold text-white mb-4">
+              {normalizedNewsData.length === 0 ? 'No News Articles Yet' : 'No Results Found'}
+            </h3>
+            <p className="text-gray-400 text-lg mb-8">
+              {normalizedNewsData.length === 0 
+                ? 'News articles will be displayed here once they are added.' 
+                : `Found ${normalizedNewsData.length} articles, but none match your current filters.`}
+            </p>
+            {normalizedNewsData.length > 0 && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setActiveCategory('All');
+                }}
+                className="group/btn px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 relative overflow-hidden hover:scale-105"
               >
-                {filteredAndSortedNews.map((news, index) => (
-                  <NewsCard key={news._id} news={news} index={index} />
-                ))}
-              </motion.div>
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  Clear Filters
+                  <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
+                </span>
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
+              </button>
             )}
           </div>
+        ) : (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: { 
+                  staggerChildren: 0.1,
+                  delayChildren: 0.3
+                }
+              }
+            }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {filteredAndSortedNews.map((news, index) => (
+              <NewsCard key={news._id} news={news} index={index} />
+            ))}
+          </motion.div>
+        )}
 
-          {/* Statistics */}
-          {normalizedNewsData.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="mt-16 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 rounded-2xl p-8 text-center border border-blue-700/30"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <div className="text-3xl font-bold text-white">{normalizedNewsData.length}</div>
-                  <div className="text-blue-300">Total Articles</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-white">{categories.length - 1}</div>
-                  <div className="text-blue-300">Categories</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-white">
-                    {normalizedNewsData.filter(news => {
-                      const publishDate = new Date(news.publishedAt);
-                      const oneMonthAgo = new Date();
-                      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-                      return publishDate > oneMonthAgo;
-                    }).length}
+        {/* Statistics */}
+        {normalizedNewsData.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="mt-24"
+          >
+            <div className="flex flex-col lg:flex-row items-center gap-16">
+              {/* Title Section */}
+              <div className="lg:w-1/3">
+                <div className="text-center lg:text-left">
+                  {/* Animated gradient line */}
+                  <div className="bg-gradient-to-r from-emerald-500 via-blue-500 to-indigo-500 h-1.5 w-24 mx-auto lg:mx-0 mb-8 rounded-full shadow-lg"></div>
+                  
+                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                    <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                      News Statistics
+                    </span>
+                  </h2>
+                  
+                  <p className="text-gray-400 text-lg md:text-xl leading-relaxed">
+                    Stay informed with our latest updates and achievements
+                  </p>
+                  
+                  {/* Decorative dots */}
+                  <div className="hidden lg:block mt-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse animation-delay-500"></div>
+                      <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse animation-delay-1000"></div>
+                    </div>
                   </div>
-                  <div className="text-blue-300">Recent Updates</div>
                 </div>
               </div>
-            </motion.div>
-          )}
-        </div>
+              
+              {/* Stats Grid */}
+              <div className="lg:w-2/3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <motion.div
+                    whileHover={{ y: -8, scale: 1.03 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden h-full flex flex-col border border-white/10 hover:border-white/20 transition-all duration-300"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-teal-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                    
+                    <div className="p-6 text-center relative z-10">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <span className="text-2xl">📰</span>
+                      </div>
+                      
+                      <div className="text-3xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
+                        {normalizedNewsData.length}
+                      </div>
+                      <div className="text-emerald-300 group-hover:text-emerald-200 transition-colors duration-300">
+                        Total Articles
+                      </div>
+                    </div>
+                  </motion.div>
+                  
+                  <motion.div
+                    whileHover={{ y: -8, scale: 1.03 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden h-full flex flex-col border border-white/10 hover:border-white/20 transition-all duration-300"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                    
+                    <div className="p-6 text-center relative z-10">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <span className="text-2xl">🏷️</span>
+                      </div>
+                      
+                      <div className="text-3xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
+                        {categories.length - 1}
+                      </div>
+                      <div className="text-blue-300 group-hover:text-blue-200 transition-colors duration-300">
+                        Categories
+                      </div>
+                    </div>
+                  </motion.div>
+                  
+                  <motion.div
+                    whileHover={{ y: -8, scale: 1.03 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden h-full flex flex-col border border-white/10 hover:border-white/20 transition-all duration-300"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+                    
+                    <div className="p-6 text-center relative z-10">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <span className="text-2xl">🆕</span>
+                      </div>
+                      
+                      <div className="text-3xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
+                        {normalizedNewsData.filter(news => {
+                          const publishDate = new Date(news.publishedAt);
+                          const oneMonthAgo = new Date();
+                          oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+                          return publishDate > oneMonthAgo;
+                        }).length}
+                      </div>
+                      <div className="text-purple-300 group-hover:text-purple-200 transition-colors duration-300">
+                        Recent Updates
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
     </Layout>
   );

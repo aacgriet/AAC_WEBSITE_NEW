@@ -1,10 +1,11 @@
-// src/pages/admin/index.js - COMPLETE FIXED IMPLEMENTATION
+// src/pages/admin/index.js - MODERNIZED UI VERSION
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import { motion, AnimatePresence } from "framer-motion";
 import Layout from "@/components/Layout";
 import { STORAGE_KEYS, StorageManager } from "@/lib/storage";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import AdminAuth from "@/components/AdminAuth";
 import PublicationsForm from "@/components/Forms/PublicationsForm";
 import PatentsForm from "@/components/Forms/PatentsForm";
 import BooksForm from "@/components/Forms/BooksForm";
@@ -15,52 +16,59 @@ import EventsForm from "@/components/Forms/EventsForm";
 import ProjectsForm from "@/components/Forms/ProjectsForm";
 
 const ADMIN_SECTIONS = [
-  { key: "news", label: "News", icon: "📰", storageKey: STORAGE_KEYS.NEWS },
+  { key: "news", label: "News", icon: "📰", storageKey: STORAGE_KEYS.NEWS, color: "from-red-500 to-red-600" },
   {
     key: "projects",
     label: "Projects",
     icon: "🚀",
     storageKey: STORAGE_KEYS.PROJECTS,
+    color: "from-blue-500 to-blue-600"
   },
   {
     key: "events",
     label: "Events",
     icon: "📅",
     storageKey: STORAGE_KEYS.EVENTS,
+    color: "from-green-500 to-green-600"
   },
   {
     key: "publications",
     label: "Publications",
     icon: "📄",
     storageKey: STORAGE_KEYS.PUBLICATIONS,
+    color: "from-purple-500 to-purple-600"
   },
   {
     key: "patents",
     label: "Patents",
     icon: "⚖️",
     storageKey: STORAGE_KEYS.PATENTS,
+    color: "from-amber-500 to-amber-600"
   },
   {
     key: "startups",
     label: "Startups",
     icon: "🏢",
     storageKey: STORAGE_KEYS.STARTUPS,
+    color: "from-emerald-500 to-emerald-600"
   },
   {
     key: "books",
     label: "Books & Blogs",
     icon: "📚",
     storageKey: STORAGE_KEYS.BOOKS,
+    color: "from-indigo-500 to-indigo-600"
   },
   {
     key: "alumni",
     label: "Alumni",
     icon: "🎓",
     storageKey: STORAGE_KEYS.ALUMNI,
+    color: "from-pink-500 to-pink-600"
   },
 ];
 
-// Simple Migration Component with proper error handling
+// Simple Migration Component with modern UI
 const SimpleMigrationComponent = () => {
   const [stats, setStats] = useState(null);
   const [migrating, setMigrating] = useState(false);
@@ -228,51 +236,102 @@ const SimpleMigrationComponent = () => {
   }, []);
 
   return (
-    <div className="bg-[#1a2535] rounded-xl p-6 border border-gray-700">
-      <h3 className="text-xl font-bold mb-4 text-white">Data Migration Utility</h3>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300 shadow-xl"
+    >
+      {/* Header with gradient line */}
+      <div className="mb-8">
+        <div className="bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 h-1.5 w-24 mb-6 rounded-full shadow-lg"></div>
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <span className="text-white text-xl font-bold">⚡</span>
+          </div>
+          <h3 className="text-2xl font-bold text-white">Data Migration Utility</h3>
+        </div>
+      </div>
 
       {error && (
-        <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg mb-4">
-          Error: {error}
-        </div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-red-500/10 border border-red-500/20 text-red-300 px-6 py-4 rounded-xl mb-8 backdrop-blur-sm"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-red-500 text-xl">⚠️</span>
+            <div>
+              <span className="font-medium">Error:</span> {error}
+            </div>
+          </div>
+        </motion.div>
       )}
 
-      <div className="space-y-4 mb-6">
+      <div className="flex flex-wrap gap-4 mb-8">
         <button
           onClick={handleMigration}
           disabled={migrating}
-          className="px-4 py-2 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors disabled:opacity-50 border border-blue-700"
+          className="group/btn px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-blue-500/25 hover:scale-105 relative overflow-hidden"
         >
-          {migrating ? "Adding Sample Data..." : "Add Sample Data"}
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            {migrating ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Adding Sample Data...
+              </>
+            ) : (
+              <>
+                Add Sample Data
+                <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
+              </>
+            )}
+          </span>
+          <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
         </button>
 
         <button
           onClick={handleClearData}
           disabled={migrating}
-          className="px-4 py-2 bg-red-900 text-red-300 rounded-lg hover:bg-red-800 transition-colors disabled:opacity-50 border border-red-700 ml-4"
+          className="group/btn px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-red-500/25 hover:scale-105 relative overflow-hidden"
         >
-          Clear All Data
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            Clear All Data
+            <span className="group-hover/btn:translate-x-1 transition-transform duration-200">🗑️</span>
+          </span>
+          <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
         </button>
       </div>
 
       {stats && (
-        <div className="bg-[#0e1421] rounded-lg p-4 border border-gray-700">
-          <h4 className="font-semibold mb-3 text-white">Current Data Stats:</h4>
-          <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="backdrop-blur-sm bg-black/20 rounded-xl p-6 border border-white/5 shadow-lg">
+          <h4 className="font-semibold mb-6 text-white flex items-center gap-3 text-lg">
+            <span className="text-blue-400 text-xl">📊</span>
+            Current Data Statistics
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Object.entries(stats).map(([key, count]) => (
-              <div key={key} className="text-gray-300">
-                <span className="font-medium">{key.replace('aac_', '').toUpperCase()}:</span>{" "}
-                {typeof count === "number" ? `${count} items` : count}
-              </div>
+              <motion.div
+                key={key}
+                whileHover={{ scale: 1.02 }}
+                className="backdrop-blur-sm bg-white/5 rounded-lg p-4 border border-white/10 hover:border-white/20 transition-all duration-300"
+              >
+                <div className="text-gray-300 text-sm font-medium mb-1">
+                  {key.replace('aac_', '').toUpperCase()}
+                </div>
+                <div className="text-white text-lg font-semibold">
+                  {typeof count === "number" ? `${count} items` : count}
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
-// Main Admin Dashboard Component
+// Main Admin Dashboard Component with modern UI
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState("alumni");
   const [showForm, setShowForm] = useState(false);
@@ -454,83 +513,215 @@ const AdminDashboard = () => {
     return "No date";
   };
 
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const childVariants = {
+    hidden: { y: 30, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.6 } }
+  };
+
   return (
-    <Layout>
-      <Head>
-        <title>Admin Dashboard | AAC</title>
-        <meta name="description" content="Admin dashboard for managing AAC website content" />
-      </Head>
+    <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      {/* Enhanced Global Breathing Effect */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[30%] -left-[20%] w-[60%] h-[100%] bg-gradient-to-br from-blue-400/10 to-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-[10%] -right-[20%] w-[60%] h-[80%] bg-gradient-to-br from-indigo-400/10 to-pink-600/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+        <div className="absolute top-[40%] -left-[25%] w-[70%] h-[70%] bg-gradient-to-br from-emerald-400/10 to-teal-600/10 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
+        <div className="absolute top-[70%] -right-[15%] w-[65%] h-[65%] bg-gradient-to-br from-purple-400/10 to-rose-600/10 rounded-full blur-3xl animate-pulse animation-delay-3000"></div>
+      </div>
 
-      <div className="min-h-screen bg-[#0e1421] py-24 px-4">
-        <div className="container mx-auto max-w-7xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-8"
-          >
-            <h1 className="text-4xl font-bold text-white mb-2">Admin Dashboard</h1>
-            <p className="text-gray-300">Manage your website content and data</p>
-          </motion.div>
+      {/* Animated grid pattern */}
+      <div className="fixed inset-0 opacity-5 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-y-12 animate-pulse"></div>
+        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-white/3 to-transparent transform skew-y-6 animate-pulse animation-delay-2000"></div>
+      </div>
 
+      <Layout>
+        <Head>
+          <title>Admin Dashboard | AAC</title>
+          <meta name="description" content="Admin dashboard for managing AAC website content" />
+          <meta name="robots" content="noindex, nofollow" />
+        </Head>
+
+        {/* Hero Section with mandatory blue theme */}
+        <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 pt-24 pb-20 mb-12 overflow-hidden">
+          {/* Animated background blobs */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute top-[10%] -right-[10%] w-[50%] h-[50%] bg-gradient-to-br from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+            <div className="absolute bottom-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-br from-emerald-400/20 to-teal-600/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
+          </div>
+
+          {/* Animated grid pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-y-12 animate-pulse"></div>
+          </div>
+          
+          <div className="container mx-auto mt-7 px-4 relative z-10 text-center">
+            {/* Enhanced badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white rounded-full mb-6 border border-white/20 shadow-lg"
+            >
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium">Administrative Control Panel</span>
+            </motion.div>
+            
+            {/* Title with gradient effect */}
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
+            >
+              <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
+                Admin
+              </span>{' '}
+              <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                Dashboard
+              </span>
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl md:text-2xl text-blue-100/90 max-w-4xl mx-auto leading-relaxed"
+            >
+              Manage your website content and data with ease
+            </motion.p>
+
+            {/* Decorative dots */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="flex justify-center items-center gap-3 mt-8"
+            >
+              <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse animation-delay-500"></div>
+              <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse animation-delay-1000"></div>
+            </motion.div>
+          </div>
+        </div>
+
+        <div className="container mx-auto max-w-7xl px-4 relative z-10">
           {/* Navigation Tabs */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            {ADMIN_SECTIONS.map((section) => (
-              <button
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-12"
+          >
+            {ADMIN_SECTIONS.map((section, index) => (
+              <motion.button
                 key={section.key}
+                variants={childVariants}
                 onClick={() => {
                   setActiveSection(section.key);
                   setShowForm(false);
                   setEditingId(null);
                 }}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                whileHover={{ scale: 1.05, y: -5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                className={`group relative p-6 rounded-2xl font-medium transition-all duration-300 shadow-lg ${
                   activeSection === section.key
-                    ? "bg-blue-900 text-blue-300 border border-blue-700"
-                    : "bg-[#1a2535] text-gray-300 hover:bg-gray-700 border border-gray-600"
+                    ? `bg-gradient-to-r ${section.color} text-white shadow-lg`
+                    : "bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10 hover:border-white/20"
                 }`}
               >
-                <span>{section.icon}</span>
-                <span>{section.label}</span>
-              </button>
+                <div className="flex flex-col items-center gap-3">
+                  <span className="text-2xl group-hover:scale-110 transition-transform duration-300">{section.icon}</span>
+                  <span className="text-sm font-medium">{section.label}</span>
+                </div>
+                {activeSection === section.key && (
+                  <div className="absolute inset-0 rounded-2xl bg-white/5"></div>
+                )}
+              </motion.button>
             ))}
-          </div>
+          </motion.div>
 
           {/* Utility Buttons */}
-          <div className="flex flex-wrap gap-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-wrap gap-4 mb-12"
+          >
             <button
               onClick={toggleImportExport}
-              className="px-4 py-2 bg-green-900 text-green-300 rounded-lg hover:bg-green-800 transition-colors border border-green-700"
+              className="group/btn px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 hover:scale-105 relative overflow-hidden"
             >
-              Import/Export Data
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                <span>📤</span>
+                Import/Export Data
+                <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
+              </span>
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
             </button>
             <button
               onClick={toggleMigration}
-              className="px-4 py-2 bg-purple-900 text-purple-300 rounded-lg hover:bg-purple-800 transition-colors border border-purple-700"
+              className="group/btn px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 shadow-lg hover:shadow-purple-500/25 hover:scale-105 relative overflow-hidden"
             >
-              Data Migration
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                <span>🔄</span>
+                Data Migration
+                <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
+              </span>
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
             </button>
-          </div>
+          </motion.div>
 
           {/* Import/Export Section */}
           <AnimatePresence>
             {showImportExport && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-8"
+                initial={{ opacity: 0, height: 0, y: -20 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="mb-12"
               >
-                <div className="bg-[#1a2535] rounded-xl p-6 border border-gray-700">
-                  <h3 className="text-xl font-bold mb-4 text-white">Import/Export Data</h3>
+                <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300 shadow-xl">
+                  <div className="mb-8">
+                    <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 h-1.5 w-24 mb-6 rounded-full shadow-lg"></div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
+                        <span className="text-white text-xl font-bold">📤</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-white">Import/Export Data</h3>
+                    </div>
+                  </div>
                   <div className="flex flex-wrap gap-4">
                     <button
                       onClick={handleExport}
-                      className="px-4 py-2 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors border border-blue-700"
+                      className="group/btn px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/25 hover:scale-105 relative overflow-hidden"
                     >
-                      Export All Data
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        <span>⬇️</span>
+                        Export All Data
+                        <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
+                      </span>
+                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
                     </button>
-                    <label className="px-4 py-2 bg-orange-900 text-orange-300 rounded-lg hover:bg-orange-800 transition-colors cursor-pointer border border-orange-700">
-                      Import Data
+                    <label className="group/btn px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 cursor-pointer shadow-lg hover:shadow-orange-500/25 hover:scale-105 relative overflow-hidden">
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        <span>⬆️</span>
+                        Import Data
+                        <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
+                      </span>
+                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
                       <input
                         type="file"
                         accept=".json"
@@ -548,10 +739,11 @@ const AdminDashboard = () => {
           <AnimatePresence>
             {showMigration && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-8"
+                initial={{ opacity: 0, height: 0, y: -20 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="mb-12"
               >
                 <SimpleMigrationComponent />
               </motion.div>
@@ -577,80 +769,154 @@ const AdminDashboard = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
-                className="bg-[#1a2535] rounded-xl shadow-xl p-8 border border-gray-700"
+                className="backdrop-blur-sm bg-white/5 rounded-2xl shadow-2xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300"
               >
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">
-                    Manage {currentSection?.label}
-                  </h2>
-                  <button
-                    onClick={handleAdd}
-                    className="px-6 py-2 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors border border-blue-700"
-                  >
-                    Add New {currentSection?.label.slice(0, -1)}
-                  </button>
+                {/* Section Header */}
+                <div className="mb-8">
+                  <div className={`bg-gradient-to-r ${currentSection?.color} h-1.5 w-24 mb-6 rounded-full shadow-lg`}></div>
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${currentSection?.color} flex items-center justify-center shadow-lg`}>
+                        <span className="text-white text-xl">{currentSection?.icon}</span>
+                      </div>
+                      <h2 className="text-3xl font-bold text-white">
+                        Manage {currentSection?.label}
+                      </h2>
+                    </div>
+                    <button
+                      onClick={handleAdd}
+                      className="group/btn px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 shadow-lg hover:shadow-blue-500/25 hover:scale-105 relative overflow-hidden"
+                    >
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        <span>➕</span>
+                        Add New {currentSection?.label.slice(0, -1)}
+                        <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
+                      </span>
+                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Results Counter */}
+                <div className="mb-8">
+                  <p className="text-lg text-gray-400">
+                    Showing <span className="text-white font-medium">{data.length}</span> total {currentSection?.label.toLowerCase()}
+                  </p>
                 </div>
 
                 {/* Loading State */}
                 {loading && (
-                  <div className="flex justify-center items-center py-12">
-                    <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="flex items-center justify-center py-20">
+                    <div className="text-center">
+                      <div className="relative mb-8">
+                        <div className="w-16 h-16 border-4 border-white/10 border-t-blue-500 rounded-full animate-spin"></div>
+                        <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin animation-delay-150"></div>
+                      </div>
+                      <p className="text-xl text-gray-400">Loading {currentSection?.label.toLowerCase()}...</p>
+                    </div>
                   </div>
                 )}
 
                 {/* Error State */}
                 {error && (
-                  <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg mb-4">
-                    Error loading data: {error.message || error}
-                  </div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-red-500/10 border border-red-500/20 text-red-300 px-6 py-4 rounded-xl mb-8 backdrop-blur-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-red-500 text-xl">⚠️</span>
+                      <div>
+                        <div className="font-medium">Error loading data</div>
+                        <div className="text-sm text-red-400 mt-1">{error.message || error}</div>
+                      </div>
+                    </div>
+                  </motion.div>
                 )}
 
                 {/* Data List */}
                 {!loading && !error && (
                   <div className="space-y-4">
                     {data.length === 0 ? (
-                      <div className="text-center py-12 text-gray-400">
-                        <p className="text-xl mb-4">No {currentSection?.label.toLowerCase()} found</p>
-                        <p>Click "Add New" to create your first entry</p>
+                      <div className="text-center py-20">
+                        <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${currentSection?.color} flex items-center justify-center mx-auto mb-8 shadow-lg`}>
+                          <span className="text-4xl">{currentSection?.icon}</span>
+                        </div>
+                        <h3 className="text-3xl font-bold text-white mb-4">
+                          No {currentSection?.label.toLowerCase()} found
+                        </h3>
+                        <p className="text-gray-400 text-lg">Click "Add New" to create your first entry</p>
                       </div>
                     ) : (
-                      <div className="grid gap-4">
-                        {data.map((item) => (
-                          <div
+                      <motion.div
+                        variants={staggerContainer}
+                        initial="hidden"
+                        animate="visible"
+                        className="grid gap-4"
+                      >
+                        {data.map((item, index) => (
+                          <motion.div
                             key={getItemId(item)}
-                            className="bg-[#0e1421] rounded-lg p-4 border border-gray-600 hover:border-gray-500 transition-colors"
+                            variants={childVariants}
+                            whileHover={{ y: -5, scale: 1.02 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                            className="group backdrop-blur-sm bg-white/5 rounded-xl p-6 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 shadow-lg relative overflow-hidden"
                           >
-                            <div className="flex justify-between items-start">
-                              <div className="flex-grow">
-                                <h3 className="text-lg font-semibold text-white mb-2">
+                            {/* Gradient overlay on hover */}
+                            <div className={`absolute inset-0 bg-gradient-to-br ${currentSection?.color}/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl`}></div>
+                            
+                            <div className="flex justify-between items-start gap-4 relative z-10">
+                              <div className="flex-grow min-w-0">
+                                <h3 className="text-xl font-semibold text-white mb-3 line-clamp-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
                                   {getItemTitle(item)}
                                 </h3>
-                                <div className="flex flex-wrap gap-4 text-sm text-gray-400">
-                                  <span>ID: {getItemId(item)}</span>
-                                  <span>Date: {getItemDate(item)}</span>
-                                  {item.status && <span>Status: {item.status}</span>}
-                                  {item.categories && <span>Category: {item.categories}</span>}
-                                  {item.category && <span>Category: {item.category}</span>}
+                                <div className="flex flex-wrap gap-4 text-sm">
+                                  <div className="flex items-center gap-2 text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
+                                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                    <span>ID: {getItemId(item)}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
+                                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                    <span>Date: {getItemDate(item)}</span>
+                                  </div>
+                                  {item.status && (
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                      <span className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">Status:</span>
+                                      <span className="px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded-lg text-xs font-medium border border-yellow-500/30">
+                                        {item.status}
+                                      </span>
+                                    </div>
+                                  )}
+                                  {(item.categories || item.category) && (
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                                      <span className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">Category:</span>
+                                      <span className="px-2 py-1 bg-purple-500/20 text-purple-300 rounded-lg text-xs font-medium border border-purple-500/30">
+                                        {item.categories || item.category}
+                                      </span>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
-                              <div className="flex gap-2 ml-4">
+                              <div className="flex gap-2 flex-shrink-0">
                                 <button
                                   onClick={() => handleEdit(getItemId(item))}
-                                  className="px-3 py-1 bg-blue-900 text-blue-300 rounded hover:bg-blue-800 transition-colors text-sm border border-blue-700"
+                                  className="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-lg hover:bg-blue-500/30 transition-all duration-300 text-sm font-medium border border-blue-500/30 hover:border-blue-500/50 hover:scale-105"
                                 >
                                   Edit
                                 </button>
                                 <button
                                   onClick={() => handleDelete(getItemId(item))}
-                                  className="px-3 py-1 bg-red-900 text-red-300 rounded hover:bg-red-800 transition-colors text-sm border border-red-700"
+                                  className="px-4 py-2 bg-red-500/20 text-red-300 rounded-lg hover:bg-red-500/30 transition-all duration-300 text-sm font-medium border border-red-500/30 hover:border-red-500/50 hover:scale-105"
                                 >
                                   Delete
                                 </button>
                               </div>
                             </div>
-                          </div>
+                          </motion.div>
                         ))}
-                      </div>
+                      </motion.div>
                     )}
                   </div>
                 )}
@@ -658,9 +924,18 @@ const AdminDashboard = () => {
             )}
           </AnimatePresence>
         </div>
-      </div>
-    </Layout>
+      </Layout>
+    </div>
   );
 };
 
-export default AdminDashboard;
+// ONLY CHANGE: Wrap with AdminAuth
+const AdminPage = () => {
+  return (
+    <AdminAuth>
+      <AdminDashboard />
+    </AdminAuth>
+  );
+};
+
+export default AdminPage;

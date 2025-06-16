@@ -1,8 +1,9 @@
-// src/pages/Administration/index.js - Fixed Administration Page
+// src/pages/Administration/index.js - Updated with Modern Premium UI
 import React, { useState } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { FaUsers, FaLightbulb, FaUserTie } from 'react-icons/fa';
 import Layout from '@/components/Layout';
 
 const AdministrationPage = () => {
@@ -124,73 +125,144 @@ const AdministrationPage = () => {
     },
   ];
   
+  // Tab configuration
+  const tabs = [
+    { 
+      key: 'instigators', 
+      label: 'Instigators', 
+      icon: FaLightbulb,
+      count: instigatorData.length,
+      color: 'from-amber-500 to-amber-600'
+    },
+    { 
+      key: 'advisors', 
+      label: 'Advisors', 
+      icon: FaUserTie,
+      count: advisorData.length,
+      color: 'from-blue-500 to-blue-600'
+    },
+    { 
+      key: 'committee', 
+      label: 'Core Committee', 
+      icon: FaUsers,
+      count: coreCommitteeData.length,
+      color: 'from-purple-500 to-purple-600'
+    }
+  ];
+  
   // Components for different display types
-  const InstigatorCard = ({ data }) => (
+  const InstigatorCard = ({ data, index }) => (
     <motion.div 
       variants={itemVariants}
-      className="bg-[#1a2535] rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row border border-gray-700"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.2, duration: 0.6 }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300"
     >
-      <div className="md:w-1/3 p-8 flex items-center justify-center bg-gradient-to-br from-blue-900/30 to-indigo-900/30">
-        <div className="relative w-64 h-64 rounded-full overflow-hidden border-4 border-blue-900/50 shadow-lg">
-          <Image 
-            src={data.image} 
-            alt={data.name} 
-            fill 
-            className="object-cover"
-          />
+      {/* Gradient overlay on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-orange-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+      
+      <div className="flex flex-col md:flex-row relative z-10">
+        <div className="md:w-1/3 p-8 flex items-center justify-center backdrop-blur-sm bg-white/5">
+          <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-2xl overflow-hidden border-4 border-white/20 shadow-lg group-hover:scale-105 transition-transform duration-300">
+            <Image 
+              src={data.image} 
+              alt={data.name} 
+              fill 
+              className="object-cover"
+            />
+          </div>
         </div>
-      </div>
-      <div className="md:w-2/3 p-8">
-        <h3 className="text-2xl font-bold mb-4 text-white">{data.name}</h3>
-        <p className="text-gray-300 leading-relaxed">{data.about}</p>
+        <div className="md:w-2/3 p-8">
+          {/* Gradient section line */}
+          <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 h-1.5 w-24 mb-6 rounded-full shadow-lg"></div>
+          
+          <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
+            {data.name}
+          </h3>
+          <p className="text-gray-400 leading-relaxed text-lg group-hover:text-gray-300 transition-colors duration-300">
+            {data.about}
+          </p>
+        </div>
       </div>
     </motion.div>
   );
   
-  const AdvisorCard = ({ data }) => (
+  const AdvisorCard = ({ data, index }) => (
     <motion.div
       variants={itemVariants}
-      className="bg-[#1a2535] rounded-xl shadow-xl overflow-hidden flex flex-col md:flex-row border border-gray-700"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.2, duration: 0.6 }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300"
     >
-      <div className="md:w-1/3 p-8 flex items-center justify-center bg-gradient-to-br from-blue-900/30 to-indigo-900/30">
-        <div className="relative w-64 h-64 rounded-full overflow-hidden border-4 border-blue-900/50 shadow-lg">
-          <Image 
-            src={data.image} 
-            alt={data.name} 
-            fill 
-            className="object-cover"
-          />
+      {/* Gradient overlay on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+      
+      <div className="flex flex-col md:flex-row relative z-10">
+        <div className="md:w-1/3 p-8 flex items-center justify-center backdrop-blur-sm bg-white/5">
+          <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-2xl overflow-hidden border-4 border-white/20 shadow-lg group-hover:scale-105 transition-transform duration-300">
+            <Image 
+              src={data.image} 
+              alt={data.name} 
+              fill 
+              className="object-cover"
+            />
+          </div>
         </div>
-      </div>
-      <div className="md:w-2/3 p-8">
-        <h3 className="text-2xl font-bold mb-2 text-white">{data.name}</h3>
-        <h4 className="text-xl text-blue-400 mb-4">{data.occupation}</h4>
-        <p className="text-gray-300 leading-relaxed">{data.about}</p>
+        <div className="md:w-2/3 p-8">
+          {/* Gradient section line */}
+          <div className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 h-1.5 w-24 mb-6 rounded-full shadow-lg"></div>
+          
+          <h3 className="text-2xl md:text-3xl font-bold mb-3 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
+            {data.name}
+          </h3>
+          <div className="mb-4">
+            <span className="px-3 py-1.5 bg-blue-500/20 text-blue-300 rounded-lg text-sm font-medium border border-blue-500/30">
+              {data.occupation}
+            </span>
+          </div>
+          <p className="text-gray-400 leading-relaxed text-lg group-hover:text-gray-300 transition-colors duration-300">
+            {data.about}
+          </p>
+        </div>
       </div>
     </motion.div>
   );
   
-  const CommitteeMemberCard = ({ data }) => (
+  const CommitteeMemberCard = ({ data, index }) => (
     <motion.div
       variants={itemVariants}
-      whileHover={{ y: -10 }}
-      transition={{ duration: 0.3 }}
-      className="bg-[#1a2535] rounded-xl shadow-xl overflow-hidden border border-gray-700"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.6 }}
+      whileHover={{ y: -8, scale: 1.03 }}
+      className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300"
     >
-      <div className="aspect-square relative">
-        <Image 
-          src={data.Image} 
-          alt={data.Name} 
-          fill 
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-          <p className="text-white">{data.Designation}</p>
+      {/* Gradient overlay on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+      
+      <div className="relative z-10">
+        <div className="aspect-square relative overflow-hidden rounded-t-2xl">
+          <Image 
+            src={data.Image} 
+            alt={data.Name} 
+            fill 
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         </div>
-      </div>
-      <div className="p-4">
-        <h3 className="font-bold text-lg text-white text-center">{data.Name}</h3>
-        <p className="text-blue-400 text-center text-sm">{data.Designation}</p>
+        
+        <div className="p-6">
+          <h3 className="font-bold text-xl text-white text-center mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
+            {data.Name}
+          </h3>
+          <p className="text-purple-300 text-center text-sm group-hover:text-purple-200 transition-colors duration-300">
+            {data.Designation}
+          </p>
+        </div>
       </div>
     </motion.div>
   );
@@ -202,63 +274,86 @@ const AdministrationPage = () => {
         <meta name="description" content="Meet the leadership, advisors, and core committee members who guide the Advanced Academic Center towards excellence." />
       </Head>
       
-      {/* FIXED: Hero Section - No Gap, Covers from Top */}
-      <div className="relative bg-gradient-to-b from-blue-900 to-indigo-900 pt-24 pb-20 mb-12">
-        {/* Background pattern */}
-        <div className="absolute inset-0 overflow-hidden opacity-10">
-          <div className="absolute -top-[10%] -left-[10%] w-[70%] h-[50%] bg-white rounded-full blur-3xl"></div>
-          <div className="absolute top-[20%] -right-[5%] w-[40%] h-[40%] bg-blue-400 rounded-full blur-3xl"></div>
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 pt-24 pb-20 mb-12 overflow-hidden">
+        {/* Animated background blobs */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-[10%] -right-[10%] w-[50%] h-[50%] bg-gradient-to-br from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+          <div className="absolute bottom-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-br from-emerald-400/20 to-teal-600/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
+        </div>
+
+        {/* Animated grid pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-y-12 animate-pulse"></div>
         </div>
         
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
-          >
-            <span className="inline-block px-3 py-1 text-sm font-medium bg-white/20 backdrop-blur-sm text-white rounded-full mb-4">
-              Advanced Academic Center
+        <div className="container mx-auto mt-7 px-4 relative z-10 text-center">
+          {/* Enhanced badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-md text-white rounded-full mb-6 border border-white/20 shadow-lg">
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium">Leadership & Governance</span>
+          </div>
+          
+          {/* Title with gradient effect */}
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
+              Leadership
+            </span>{' '}
+            <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              @AAC
             </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-              Leadership <span className="text-blue-300">@AAC</span>
-            </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Meet the visionary leaders, dedicated advisors, and dynamic team members who drive our mission of academic excellence and innovation.
-            </p>
-          </motion.div>
-        </div>
-      </div>
-      
-      {/* Navigation Tabs */}
-      <div className="container mx-auto px-4 mb-12">
-        <div className="flex justify-center">
-          <div className="bg-[#1a2535] rounded-full p-2 border border-gray-700">
-            <div className="flex space-x-2">
-              {[
-                { key: 'instigators', label: 'Instigators' },
-                { key: 'advisors', label: 'Advisors' },
-                { key: 'committee', label: 'Core Committee' }
-              ].map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveCategory(tab.key)}
-                  className={`px-6 py-3 rounded-full transition-all duration-300 ${
-                    activeCategory === tab.key
-                      ? 'bg-blue-900 text-blue-300 shadow-lg border border-blue-700'
-                      : 'text-gray-300 hover:text-white hover:bg-[#243447]'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-blue-100/90 max-w-4xl mx-auto leading-relaxed">
+            Meet the visionary leaders, dedicated advisors, and dynamic team members who drive our mission of academic excellence and innovation
+          </p>
+
+          {/* Decorative dots */}
+          <div className="flex justify-center items-center gap-3 mt-8">
+            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse animation-delay-500"></div>
+            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse animation-delay-1000"></div>
           </div>
         </div>
       </div>
       
-      {/* Content Section */}
-      <div className="container mx-auto px-4 pb-16">
+      <div className="container mx-auto px-4 pb-24">
+        {/* Navigation Tabs */}
+        <div className="mb-12">
+          <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-8 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300">
+            <div className="flex flex-wrap justify-center gap-4">
+              {tabs.map((tab) => {
+                const IconComponent = tab.icon;
+                return (
+                  <motion.button
+                    key={tab.key}
+                    onClick={() => setActiveCategory(tab.key)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`group relative px-6 py-4 rounded-xl transition-all duration-300 flex items-center gap-3 ${
+                      activeCategory === tab.key
+                        ? 'bg-gradient-to-r ' + tab.color + ' text-white shadow-lg'
+                        : 'bg-white/5 text-gray-300 hover:text-white hover:bg-white/10 border border-white/20 hover:border-white/30'
+                    }`}
+                  >
+                    <IconComponent className="text-lg" />
+                    <span className="font-medium">{tab.label}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                      activeCategory === tab.key
+                        ? 'bg-white/20 text-white'
+                        : 'bg-white/10 text-gray-400 group-hover:text-gray-300'
+                    }`}>
+                      {tab.count}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+        
+        {/* Content Section */}
         <motion.div
           key={activeCategory}
           variants={pageVariants}
@@ -268,49 +363,101 @@ const AdministrationPage = () => {
         >
           {activeCategory === 'instigators' && (
             <>
+              {/* Title Section */}
               <motion.div variants={itemVariants} className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">The Instigators</h2>
-                <p className="text-gray-400 max-w-3xl mx-auto">
-                  The visionary minds who conceived and established the Advanced Academic Center, 
-                  laying the foundation for academic excellence and research innovation.
+                <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 h-1.5 w-24 mx-auto mb-8 rounded-full shadow-lg"></div>
+                
+                <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                  <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    The Instigators
+                  </span>
+                </h2>
+                
+                <p className="text-gray-400 text-lg max-w-4xl mx-auto leading-relaxed">
+                  The visionary minds who conceived and established the Advanced Academic Center, laying the foundation for academic excellence and research innovation.
                 </p>
+                
+                {/* Decorative dots */}
+                <div className="flex justify-center items-center gap-3 mt-8">
+                  <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse animation-delay-500"></div>
+                  <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse animation-delay-1000"></div>
+                </div>
               </motion.div>
-              {instigatorData.map((item) => (
-                <InstigatorCard key={item.id} data={item} />
-              ))}
+              
+              {/* Content */}
+              <div className="space-y-8">
+                {instigatorData.map((item, index) => (
+                  <InstigatorCard key={item.id} data={item} index={index} />
+                ))}
+              </div>
             </>
           )}
           
           {activeCategory === 'advisors' && (
             <>
+              {/* Title Section */}
               <motion.div variants={itemVariants} className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Advisory Board</h2>
-                <p className="text-gray-400 max-w-3xl mx-auto">
-                  Distinguished leaders and academics who provide strategic guidance and mentorship 
-                  to shape the future of AAC.
+                <div className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 h-1.5 w-24 mx-auto mb-8 rounded-full shadow-lg"></div>
+                
+                <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                  <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    Advisory Board
+                  </span>
+                </h2>
+                
+                <p className="text-gray-400 text-lg max-w-4xl mx-auto leading-relaxed">
+                  Distinguished leaders and academics who provide strategic guidance and mentorship to shape the future of AAC.
                 </p>
+                
+                {/* Decorative dots */}
+                <div className="flex justify-center items-center gap-3 mt-8">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse animation-delay-500"></div>
+                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse animation-delay-1000"></div>
+                </div>
               </motion.div>
-              {advisorData.map((item) => (
-                <AdvisorCard key={item.id} data={item} />
-              ))}
+              
+              {/* Content */}
+              <div className="space-y-8">
+                {advisorData.map((item, index) => (
+                  <AdvisorCard key={item.id} data={item} index={index} />
+                ))}
+              </div>
             </>
           )}
           
           {activeCategory === 'committee' && (
             <>
+              {/* Title Section */}
               <motion.div variants={itemVariants} className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Core Committee</h2>
-                <p className="text-gray-400 max-w-3xl mx-auto">
-                  The dynamic student leadership team driving initiatives, events, and the day-to-day 
-                  operations of the Advanced Academic Center.
+                <div className="bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 h-1.5 w-24 mx-auto mb-8 rounded-full shadow-lg"></div>
+                
+                <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                  <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    Core Committee
+                  </span>
+                </h2>
+                
+                <p className="text-gray-400 text-lg max-w-4xl mx-auto leading-relaxed">
+                  The dynamic student leadership team driving initiatives, events, and the day-to-day operations of the Advanced Academic Center.
                 </p>
+                
+                {/* Decorative dots */}
+                <div className="flex justify-center items-center gap-3 mt-8">
+                  <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse animation-delay-500"></div>
+                  <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse animation-delay-1000"></div>
+                </div>
               </motion.div>
+              
+              {/* Content Grid */}
               <motion.div 
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                 variants={pageVariants}
               >
-                {coreCommitteeData.map((item) => (
-                  <CommitteeMemberCard key={item.Id} data={item} />
+                {coreCommitteeData.map((item, index) => (
+                  <CommitteeMemberCard key={item.Id} data={item} index={index} />
                 ))}
               </motion.div>
             </>

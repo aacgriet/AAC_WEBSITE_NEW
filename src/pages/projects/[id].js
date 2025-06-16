@@ -1,4 +1,3 @@
-// src/pages/projects/[id].js - Updated with localStorage integration
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -54,10 +53,13 @@ const ProjectDetail = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-gray-400">Loading project...</p>
+            <div className="relative mb-8">
+              <div className="w-16 h-16 border-4 border-white/10 border-t-blue-500 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin animation-delay-150"></div>
+            </div>
+            <p className="text-xl text-gray-400">Loading project...</p>
           </div>
         </div>
       </Layout>
@@ -67,11 +69,14 @@ const ProjectDetail = () => {
   if (!project) {
     return (
       <Layout>
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-white mb-4">Project Not Found</h1>
-            <p className="text-gray-400 mb-6">The project you're looking for doesn't exist.</p>
-            <Link href="/projects" className="px-6 py-3 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors border border-blue-700">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center mx-auto mb-8 shadow-lg">
+              <span className="text-4xl">❌</span>
+            </div>
+            <h1 className="text-3xl font-bold text-white mb-4">Project Not Found</h1>
+            <p className="text-gray-400 text-lg mb-8">The project you're looking for doesn't exist.</p>
+            <Link href="/projects" className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 hover:scale-105">
               Back to Projects
             </Link>
           </div>
@@ -116,74 +121,85 @@ const ProjectDetail = () => {
       </Head>
       
       {/* Project Header */}
-      <div className="relative h-[60vh] bg-gradient-to-b from-blue-800 to-blue-900">
-        {/* Background Image or Gradient */}
-        {project.mainImage?.asset?.url ? (
+      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 pt-24 pb-20 mb-12 overflow-hidden">
+        {/* Animated background blobs */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-[10%] -right-[10%] w-[50%] h-[50%] bg-gradient-to-br from-indigo-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+          <div className="absolute bottom-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-br from-emerald-400/20 to-teal-600/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
+        </div>
+
+        {/* Background Image Overlay */}
+        {project.mainImage?.asset?.url && (
           <>
             <div className="absolute inset-0">
               <Image
                 src={project.mainImage.asset.url}
                 alt={project.title}
                 fill
-                className="object-cover"
+                className="object-cover opacity-20"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-blue-900/60 to-blue-900"></div>
+              <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-blue-900/80 to-indigo-900/80"></div>
             </div>
           </>
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-b from-blue-800 to-blue-900"></div>
         )}
         
-        <div className="absolute inset-0 flex flex-col justify-end px-4 pb-16">
-          <div className="container mx-auto max-w-6xl relative z-10">
-            <Link href="/projects" className="inline-flex items-center text-white mb-6 hover:underline">
-              <FaArrowLeft className="mr-2" /> Back to Projects
-            </Link>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 max-w-4xl">
+        <div className="container mx-auto mt-7 px-4 relative z-10">
+          <Link href="/projects" className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-8 transition-colors duration-200">
+            <FaArrowLeft /> Back to Projects
+          </Link>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 max-w-4xl">
+              <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
                 {project.title}
-              </h1>
-              
-              <div className="flex flex-wrap gap-4 items-center text-white/80 mb-4">
-                <div className="flex items-center">
-                  <FaCalendar className="mr-2" />
+              </span>
+            </h1>
+            
+            <div className="flex flex-wrap gap-4 items-center text-blue-100/80 mb-6">
+              {publishDate && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
+                  <FaCalendar />
                   <span>{publishDate}</span>
                 </div>
-                <div className="flex items-center">
-                  <FaUserAlt className="mr-2" />
-                  <span>{project.author || 'AAC Team'}</span>
-                </div>
-                <div className="flex items-center">
-                  <FaFolder className="mr-2" />
-                  <span>{project.categories || 'Research'}</span>
-                </div>
-                {project.status && (
-                  <div className="flex items-center">
-                    <FaClock className="mr-2" />
-                    <span className="capitalize">{project.status}</span>
-                  </div>
-                )}
-              </div>
-              
-              {project.description && (
-                <p className="text-white/80 text-lg max-w-3xl">
-                  {project.description}
-                </p>
               )}
-            </motion.div>
-          </div>
+              {project.author && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
+                  <FaUserAlt />
+                  <span>{project.author}</span>
+                </div>
+              )}
+              {project.categories && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
+                  <FaFolder />
+                  <span>{project.categories}</span>
+                </div>
+              )}
+              {project.status && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
+                  <FaClock />
+                  <span className="capitalize">{project.status}</span>
+                </div>
+              )}
+            </div>
+            
+            {project.description && (
+              <p className="text-xl text-blue-100/90 max-w-3xl leading-relaxed">
+                {project.description}
+              </p>
+            )}
+          </motion.div>
         </div>
       </div>
       
       {/* Sticky Navigation Bar */}
       <motion.div 
         className={`sticky top-20 z-30 py-4 transition-all duration-300 ${
-          scrolled ? 'bg-[#0e1421] shadow-md border-b border-gray-800' : 'bg-transparent'
+          scrolled ? 'backdrop-blur-md bg-white/5 shadow-xl border-b border-white/20' : 'bg-transparent'
         }`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -194,10 +210,10 @@ const ProjectDetail = () => {
             <div className="flex space-x-6">
               <button
                 onClick={() => setActiveTab('overview')}
-                className={`px-4 py-2 transition-colors ${
+                className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                   activeTab === 'overview' 
-                    ? 'text-blue-400 border-b-2 border-blue-400 font-medium' 
-                    : 'text-gray-400 hover:text-blue-400'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
+                    : 'text-gray-400 hover:text-white hover:bg-white/10'
                 }`}
               >
                 Overview
@@ -205,10 +221,10 @@ const ProjectDetail = () => {
               {project.names && project.names.length > 0 && (
                 <button
                   onClick={() => setActiveTab('team')}
-                  className={`px-4 py-2 transition-colors ${
+                  className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                     activeTab === 'team' 
-                      ? 'text-blue-400 border-b-2 border-blue-400 font-medium' 
-                      : 'text-gray-400 hover:text-blue-400'
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
+                      : 'text-gray-400 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   Team
@@ -216,17 +232,17 @@ const ProjectDetail = () => {
               )}
               <button
                 onClick={() => setActiveTab('gallery')}
-                className={`px-4 py-2 transition-colors ${
+                className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                   activeTab === 'gallery' 
-                    ? 'text-blue-400 border-b-2 border-blue-400 font-medium' 
-                    : 'text-gray-400 hover:text-blue-400'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
+                    : 'text-gray-400 hover:text-white hover:bg-white/10'
                 }`}
               >
                 Gallery
               </button>
             </div>
             
-            <div className="flex space-x-4">
+            <div className="flex space-x-3">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -234,13 +250,13 @@ const ProjectDetail = () => {
                   setIsLiked(!isLiked);
                   setLikes(isLiked ? likes - 1 : likes + 1);
                 }}
-                className={`flex items-center space-x-1 px-3 py-1.5 rounded-full ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                   isLiked 
-                    ? 'bg-red-900/50 text-red-400 border border-red-700/50' 
-                    : 'bg-[#1a2535] text-gray-300 hover:bg-[#1a2535]/80 border border-gray-700'
+                    ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg' 
+                    : 'bg-white/10 text-gray-300 hover:bg-white/20 backdrop-blur-sm border border-white/20'
                 }`}
               >
-                <FaHeart className={isLiked ? 'text-red-400' : 'text-gray-500'} />
+                <FaHeart />
                 <span>{likes}</span>
               </motion.button>
               
@@ -248,22 +264,22 @@ const ProjectDetail = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsBookmarked(!isBookmarked)}
-                className={`flex items-center space-x-1 px-3 py-1.5 rounded-full ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
                   isBookmarked 
-                    ? 'bg-blue-900/50 text-blue-400 border border-blue-700/50' 
-                    : 'bg-[#1a2535] text-gray-300 hover:bg-[#1a2535]/80 border border-gray-700'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
+                    : 'bg-white/10 text-gray-300 hover:bg-white/20 backdrop-blur-sm border border-white/20'
                 }`}
               >
-                <FaBookmark className={isBookmarked ? 'text-blue-400' : 'text-gray-500'} />
+                <FaBookmark />
                 <span>Save</span>
               </motion.button>
               
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center space-x-1 px-3 py-1.5 rounded-full bg-[#1a2535] text-gray-300 hover:bg-[#1a2535]/80 border border-gray-700"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium bg-white/10 text-gray-300 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all duration-200"
               >
-                <FaShare className="text-gray-500" />
+                <FaShare />
                 <span>Share</span>
               </motion.button>
             </div>
@@ -272,224 +288,253 @@ const ProjectDetail = () => {
       </motion.div>
       
       {/* Main Content Area */}
-      <div className="py-12 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <AnimatePresence mode="wait">
-            {activeTab === 'overview' && (
-              <motion.div
-                key="overview"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="grid grid-cols-1 lg:grid-cols-3 gap-8"
-              >
-                {/* Main Content */}
-                <div className="lg:col-span-2">
-                  <motion.div
-                    variants={staggerContainer}
-                    initial="hidden"
-                    animate="visible"
-                    className="bg-[#1a2535] rounded-2xl shadow-lg p-8 border border-gray-700"
+      <div className="container mx-auto max-w-6xl px-4 pb-24">
+        <AnimatePresence mode="wait">
+          {activeTab === 'overview' && (
+            <motion.div
+              key="overview"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+            >
+              {/* Main Content */}
+              <div className="lg:col-span-2">
+                <motion.div
+                  variants={staggerContainer}
+                  initial="hidden"
+                  animate="visible"
+                  className="backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl p-8 border border-white/10"
+                >
+                  <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 h-1.5 w-24 mb-8 rounded-full shadow-lg"></div>
+                  
+                  <motion.h2 
+                    variants={fadeIn}
+                    className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent"
                   >
-                    <motion.h2 
-                      variants={fadeIn}
-                      className="text-2xl font-bold mb-6 pb-4 border-b border-gray-700 text-white"
-                    >
-                      Project Overview
-                    </motion.h2>
-                    
-                    <motion.div variants={fadeIn} className="prose prose-lg max-w-none prose-invert">
-                      {project._rawBody ? (
-                        <div className="text-gray-300 whitespace-pre-wrap leading-relaxed">
-                          {project._rawBody}
-                        </div>
-                      ) : project.body ? (
-                        <div className="text-gray-300 whitespace-pre-wrap leading-relaxed">
-                          {project.body}
-                        </div>
-                      ) : (
-                        <p className="text-gray-400">
-                          No detailed information available for this project. Please check back later or contact the team for more information.
-                        </p>
-                      )}
-                    </motion.div>
+                    Project Overview
+                  </motion.h2>
+                  
+                  <motion.div variants={fadeIn}>
+                    {project._rawBody || project.body ? (
+                      <div className="text-gray-300 text-lg leading-relaxed whitespace-pre-wrap">
+                        {project._rawBody || project.body}
+                      </div>
+                    ) : (
+                      <p className="text-gray-400 text-lg">
+                        No detailed information available for this project. Please check back later or contact the team for more information.
+                      </p>
+                    )}
                   </motion.div>
-                </div>
+                </motion.div>
+              </div>
+              
+              {/* Sidebar */}
+              <div className="space-y-6">
+                <motion.div
+                  variants={fadeIn}
+                  initial="hidden"
+                  animate="visible"
+                  className="backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl p-6 border border-white/10"
+                >
+                  <h3 className="text-lg font-bold mb-4 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Project Details</h3>
+                  <div className="space-y-4">
+                    {[
+                      { label: "Status", value: project.status || 'Completed' },
+                      { label: "Duration", value: "6 months" },
+                      { label: "Category", value: project.categories || 'Research' },
+                      { label: "Date", value: publishDate }
+                    ].map((detail, index) => (
+                      <div key={index} className="flex items-start gap-4">
+                        <div className="w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
+                        <div className="flex-1">
+                          <span className="text-gray-400 text-sm block mb-1">{detail.label}</span>
+                          <span className="text-gray-300 font-medium">{detail.value}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
                 
-                {/* Sidebar */}
-                <div>
+                {project.names && project.names.length > 0 && (
                   <motion.div
                     variants={fadeIn}
                     initial="hidden"
                     animate="visible"
-                    className="bg-[#1a2535] rounded-2xl shadow-lg p-6 mb-6 border border-gray-700"
+                    transition={{ delay: 0.2 }}
+                    className="backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl p-6 border border-white/10"
                   >
-                    <h3 className="text-lg font-bold mb-4 pb-2 border-b border-gray-700 text-white">Project Details</h3>
-                    <ul className="space-y-3">
-                      <li className="flex justify-between">
-                        <span className="text-gray-400">Status:</span>
-                        <span className="font-medium text-gray-300 capitalize">{project.status || 'Completed'}</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span className="text-gray-400">Duration:</span>
-                        <span className="font-medium text-gray-300">6 months</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span className="text-gray-400">Category:</span>
-                        <span className="font-medium text-gray-300">{project.categories || 'Research'}</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span className="text-gray-400">Date:</span>
-                        <span className="font-medium text-gray-300">{publishDate}</span>
-                      </li>
-                    </ul>
-                  </motion.div>
-                  
-                  {project.names && project.names.length > 0 && (
-                    <motion.div
-                      variants={fadeIn}
-                      initial="hidden"
-                      animate="visible"
-                      transition={{ delay: 0.2 }}
-                      className="bg-[#1a2535] rounded-2xl shadow-lg p-6 border border-gray-700"
-                    >
-                      <h3 className="text-lg font-bold mb-4 pb-2 border-b border-gray-700 text-white">Team Members</h3>
-                      <ul className="space-y-2">
-                        {project.names.map((name, index) => (
-                          <li key={index} className="flex items-center py-1">
-                            <div className="w-8 h-8 rounded-full bg-blue-900/50 border border-blue-700/50 flex items-center justify-center text-blue-300 font-medium mr-3">
-                              {name.charAt(0)}
-                            </div>
-                            <span className="text-gray-300">{name}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </motion.div>
-                  )}
-                </div>
-              </motion.div>
-            )}
-            
-            {activeTab === 'team' && (
-              <motion.div
-                key="team"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="bg-[#1a2535] rounded-2xl shadow-lg p-8 border border-gray-700">
-                  <h2 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-700 text-white">Team Members</h2>
-                  
-                  {project.names && project.names.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <h3 className="text-lg font-bold mb-4 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Team Members</h3>
+                    <div className="space-y-3">
                       {project.names.map((name, index) => (
-                        <motion.div
-                          key={index}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.1, duration: 0.5 }}
-                          className="bg-[#0e1421] rounded-xl p-6 flex flex-col items-center border border-gray-700"
-                        >
-                          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-800 to-indigo-900 text-white flex items-center justify-center text-3xl font-bold mb-4 border border-blue-700/50">
+                        <div key={index} className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold shadow-lg">
                             {name.charAt(0)}
                           </div>
-                          <h3 className="text-xl font-bold mb-1 text-white text-center">{name}</h3>
-                          <p className="text-gray-400 text-center mb-4">Team Member</p>
-                          <div className="mt-auto">
-                            <button className="px-4 py-2 bg-blue-900/30 text-blue-300 rounded-full hover:bg-blue-900/50 transition-colors border border-blue-700/50">
-                              Contact
-                            </button>
-                          </div>
-                        </motion.div>
+                          <span className="text-gray-300 font-medium">{name}</span>
+                        </div>
                       ))}
                     </div>
-                  ) : (
-                    <p className="text-gray-400">No team information available for this project.</p>
-                  )}
-                </div>
-              </motion.div>
-            )}
-            
-            {activeTab === 'gallery' && (
-              <motion.div
-                key="gallery"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="bg-[#1a2535] rounded-2xl shadow-lg p-8 border border-gray-700">
-                  <h2 className="text-2xl font-bold mb-8 pb-4 border-b border-gray-700 text-white">Project Gallery</h2>
-                  
-                  {project.mainImage?.asset?.url ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.5 }}
-                        className="relative aspect-video rounded-xl overflow-hidden cursor-pointer"
-                      >
-                        <Image
-                          src={project.mainImage.asset.url}
-                          alt={project.title}
-                          fill
-                          className="object-cover hover:scale-105 transition-transform duration-500"
-                        />
-                      </motion.div>
-                      
-                      <div className="flex items-center justify-center text-gray-400 h-full">
-                        <p>More project images will be available soon.</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-gray-400">No gallery images available for this project.</p>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
-          {/* More Projects */}
-          {moreProjects.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="mt-16"
-            >
-              <h2 className="text-2xl font-bold mb-8 text-white">More Projects</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {moreProjects.map((item) => (
-                  <motion.div
-                    key={item.id}
-                    whileHover={{ y: -10 }}
-                    className="bg-[#1a2535] rounded-xl shadow-lg overflow-hidden flex-shrink-0 border border-gray-700"
-                  >
-                    <div className="p-6">
-                      <h3 className="text-lg font-bold mb-2 text-white">{item.title}</h3>
-                      <p className="text-gray-400 mb-4 line-clamp-2">
-                        {item.description || item._rawBody || "Explore this innovative project..."}
-                      </p>
-                      <Link 
-                        href={`/projects/${item.id}`}
-                        className="text-blue-400 hover:text-blue-300 font-medium"
-                      >
-                        View details →
-                      </Link>
-                    </div>
                   </motion.div>
-                ))}
+                )}
               </div>
             </motion.div>
           )}
-        </div>
+          
+          {activeTab === 'team' && (
+            <motion.div
+              key="team"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl p-8 border border-white/10">
+                <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 h-1.5 w-24 mb-8 rounded-full shadow-lg"></div>
+                
+                <h2 className="text-2xl font-bold mb-8 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Team Members</h2>
+                
+                {project.names && project.names.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {project.names.map((name, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1, duration: 0.5 }}
+                        className="group backdrop-blur-sm bg-white/5 rounded-2xl p-6 flex flex-col items-center border border-white/10 hover:border-white/20 transition-all duration-300"
+                      >
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center text-2xl font-bold mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          {name.charAt(0)}
+                        </div>
+                        <h3 className="text-xl font-bold mb-2 text-white text-center">{name}</h3>
+                        <p className="text-gray-400 text-center mb-4">Team Member</p>
+                        <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 hover:scale-105">
+                          Contact
+                        </button>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-400 text-lg">No team information available for this project.</p>
+                )}
+              </div>
+            </motion.div>
+          )}
+          
+          {activeTab === 'gallery' && (
+            <motion.div
+              key="gallery"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl p-8 border border-white/10">
+                <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 h-1.5 w-24 mb-8 rounded-full shadow-lg"></div>
+                
+                <h2 className="text-2xl font-bold mb-8 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Project Gallery</h2>
+                
+                {project.mainImage?.asset?.url ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                      className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer group"
+                    >
+                      <Image
+                        src={project.mainImage.asset.url}
+                        alt={project.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    </motion.div>
+                    
+                    <div className="flex items-center justify-center text-gray-400 h-full backdrop-blur-sm bg-white/5 rounded-2xl border border-white/10">
+                      <p className="text-center">More project images will be available soon.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-gray-400 text-lg">No gallery images available for this project.</p>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* More Projects */}
+        {moreProjects.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="mt-24"
+          >
+            <div className="flex flex-col lg:flex-row items-center gap-16">
+              {/* Title Section */}
+              <div className="lg:w-1/3">
+                <div className="text-center lg:text-left">
+                  <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 h-1.5 w-24 mx-auto lg:mx-0 mb-8 rounded-full shadow-lg"></div>
+                  
+                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                    <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                      More Projects
+                    </span>
+                  </h2>
+                  
+                  <p className="text-gray-400 text-lg md:text-xl leading-relaxed">
+                    Explore other innovative projects from our research and development initiatives.
+                  </p>
+                  
+                  <div className="hidden lg:block mt-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse animation-delay-500"></div>
+                      <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse animation-delay-1000"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Projects Grid */}
+              <div className="lg:w-2/3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {moreProjects.map((item, index) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1, duration: 0.5 }}
+                      className="group backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300"
+                    >
+                      <div className="p-6">
+                        <h3 className="text-lg font-bold mb-3 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
+                          {item.title}
+                        </h3>
+                        <p className="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-2 group-hover:text-gray-300 transition-colors duration-300">
+                          {item.description || item._rawBody || "Explore this innovative project..."}
+                        </p>
+                        <Link 
+                          href={`/projects/${item.id}`}
+                          className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200"
+                        >
+                          View details
+                          <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+                        </Link>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
     </Layout>
   );
 };
-
 export default ProjectDetail;
