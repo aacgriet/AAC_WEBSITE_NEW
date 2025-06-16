@@ -64,7 +64,7 @@ const Home = () => {
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           <div className="container mx-auto px-4 relative z-10 text-center">
             {/* Logo with enhanced breathing effect */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}
@@ -81,7 +81,7 @@ const Home = () => {
                   className="relative z-10 drop-shadow-2xl"
                 />
               </div>
-            </motion.div>
+            </motion.div> */}
 
             {/* Enhanced badge with breathing effect */}
             <motion.div

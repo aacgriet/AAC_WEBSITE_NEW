@@ -140,14 +140,14 @@ const EventsPage = () => {
         </Head>
         
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-          <div className="text-center">
-            <div className="relative mb-8">
-              <div className="w-16 h-16 border-4 border-white/10 border-t-blue-500 rounded-full animate-spin"></div>
-              <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin animation-delay-150"></div>
-            </div>
-            <p className="text-xl text-gray-400">Loading events...</p>
-          </div>
+      <div className="text-center">
+        <div className="relative mb-8 flex items-center justify-center">
+          <div className="w-16 h-16 border-4 border-white/10 border-t-blue-500 rounded-full animate-spin"></div>
+          <div className="absolute w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin" style={{animationDelay: '150ms'}}></div>
         </div>
+        <p className="text-xl text-gray-400">Loading events...</p>
+      </div>
+    </div>
       </Layout>
     );
   }

@@ -1,4 +1,4 @@
-// src/components/LoadingSpinner.jsx - Consistent loading component
+// src/components/LoadingSpinner.jsx - Fixed centering issues
 import React from 'react';
 import { motion } from 'framer-motion';
 
@@ -42,11 +42,10 @@ const LoadingSpinner = ({
 
   return (
     <div className={containerClasses}>
-
-      <div className="text-center">
-        {/* Multi-layered spinner - Now centered */}
-        <div className="flex justify-center mb-6">
-          <div className="relative">
+      <div className="flex flex-col items-center justify-center text-center">
+        {/* Multi-layered spinner - Properly centered */}
+        <div className="flex items-center justify-center mb-6">
+          <div className="relative flex items-center justify-center">
             <div className={`${config.spinner} border-white/10 border-t-blue-500 rounded-full animate-spin`}></div>
             <div className={`absolute inset-0 ${config.spinner} border-transparent border-t-purple-500 rounded-full animate-spin animation-delay-150`}></div>
             <div className={`absolute inset-2 ${config.spinner.replace('w-12 h-12', 'w-8 h-8').replace('w-16 h-16', 'w-12 h-12').replace('w-20 h-20', 'w-16 h-16').replace('w-6 h-6', 'w-4 h-4')} border-transparent border-t-indigo-400 rounded-full animate-spin animation-delay-300`}></div>
@@ -55,7 +54,7 @@ const LoadingSpinner = ({
         
         {showText && (
           <motion.p 
-            className={`text-white ${config.text} font-medium`}
+            className={`text-white ${config.text} font-medium text-center`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
@@ -64,8 +63,8 @@ const LoadingSpinner = ({
           </motion.p>
         )}
 
-        {/* Pulsing dots */}
-        <div className="flex justify-center items-center gap-2 mt-4">
+        {/* Pulsing dots - Centered */}
+        <div className="flex items-center justify-center gap-2 mt-4">
           <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
           <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse animation-delay-200"></div>
           <div className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse animation-delay-400"></div>
