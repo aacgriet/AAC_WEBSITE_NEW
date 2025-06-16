@@ -1,4 +1,4 @@
-// src/components/Footer.jsx - Fixed arrow positioning
+// src/components/Footer.jsx - Fixed arrow z-index positioning
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -98,14 +98,15 @@ const Footer = () => {
 
   return (
     <div className="relative">
-      {/* Back to top button - Positioned exactly in the middle */}
-      <div className="flex justify-center relative z-50 -mt-8">
+      {/* Back to top button - Fixed with proper z-index */}
+      <div className="flex justify-center relative z-10 -mt-8">
         <motion.button
           whileHover={{ scale: 1.1, y: -2 }}
           whileTap={{ scale: 0.9 }}
           className="group relative backdrop-blur-sm bg-white/10 hover:bg-white/20 rounded-full p-4 shadow-2xl border border-white/20 hover:border-white/30 transition-all duration-300 overflow-hidden"
           onClick={scrollToTop}
           aria-label="Back to top"
+          style={{ zIndex: 5 }} // Lower z-index to not conflict with cards
         >
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -113,7 +114,7 @@ const Footer = () => {
         </motion.button>
       </div>
 
-      <footer className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden -mt-8">
+      <footer className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden -mt-8" style={{ zIndex: 1 }}>
         {/* Animated background blobs */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -bottom-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-blue-400/10 to-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
