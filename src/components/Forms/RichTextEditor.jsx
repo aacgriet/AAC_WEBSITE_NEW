@@ -1,9 +1,10 @@
-// src/components/Forms/RichTextEditor.jsx
+// src/components/Forms/RichTextEditor.jsx - Fixed to handle onChange properly
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 const RichTextEditor = ({ 
   label = 'Content', 
+  name,
   value = '', 
   onChange, 
   required = false,
@@ -12,8 +13,19 @@ const RichTextEditor = ({
   placeholder = 'Enter content...'
 }) => {
   const [isPreview, setIsPreview] = useState(false);
-  const [selectedText, setSelectedText] = useState('');
   const textareaRef = useRef(null);
+
+  // Handle change event properly
+  const handleInputChange = (e) => {
+    if (onChange) {
+      // Create proper event object if onChange expects it
+      if (name) {
+        onChange({ target: { name, value: e.target.value } });
+      } else {
+        onChange(e);
+      }
+    }
+  };
 
   const insertMarkdown = (before, after = '') => {
     const textarea = textareaRef.current;
@@ -22,7 +34,18 @@ const RichTextEditor = ({
     const selectedText = value.substring(start, end);
     
     const newText = value.substring(0, start) + before + selectedText + after + value.substring(end);
-    onChange({ target: { value: newText } });
+    
+    // Trigger onChange with proper event structure
+    const syntheticEvent = {
+      target: {
+        name: name,
+        value: newText
+      }
+    };
+    
+    if (onChange) {
+      onChange(syntheticEvent);
+    }
     
     setTimeout(() => {
       textarea.focus();
@@ -114,8 +137,9 @@ const RichTextEditor = ({
         ) : (
           <textarea
             ref={textareaRef}
+            name={name}
             value={value}
-            onChange={onChange}
+            onChange={handleInputChange}
             placeholder={`${placeholder}\n\nSupported formatting:\n**bold** *italic* \`code\` [link](url)\n- lists\n## headings\n> quotes\n\`\`\`code blocks\`\`\``}
             required={required}
             rows={12}

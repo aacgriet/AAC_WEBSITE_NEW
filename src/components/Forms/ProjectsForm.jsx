@@ -1,8 +1,7 @@
-// src/components/Forms/ProjectsForm.jsx - Updated with Schema
+// src/components/Forms/ProjectsForm.jsx - Fixed RichTextEditor usage
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
-import RichTextEditor from './RichTextEditor';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { STORAGE_KEYS } from '@/lib/storage';
 
@@ -296,22 +295,24 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
         />
       )}
 
-      <RichTextEditor
+      <TextAreaField
         label="Project Description (Main Content)"
         name="_rawBody"
         value={formData._rawBody}
         onChange={handleInputChange}
         placeholder="Write detailed project information, methodology, technologies used, results, etc..."
+        rows={8}
         required
         error={errors._rawBody}
       />
 
-      <RichTextEditor
+      <TextAreaField
         label="Additional Content (Optional)"
         name="body"
         value={formData.body}
         onChange={handleInputChange}
         placeholder="Any additional content or notes..."
+        rows={6}
       />
 
       {errors.submit && (

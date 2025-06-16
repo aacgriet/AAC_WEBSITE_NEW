@@ -1,4 +1,4 @@
-// src/components/Events/EventDetail.jsx - Updated with Modern Premium UI
+// src/components/Events/EventDetail.jsx - Fixed span tag issue in pagination
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -166,8 +166,6 @@ const EventDetail = ({ title, description, images = [], date, location, organize
                   }}
                   pagination={{
                     type: 'fraction',
-                    formatFractionCurrent: number => `<span class="text-blue-400">${number}</span>`,
-                    formatFractionTotal: number => `<span>${number}</span>`,
                   }}
                   navigation={{
                     prevEl: navigationPrevRef.current,

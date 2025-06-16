@@ -1,4 +1,4 @@
-// src/pages/admin/index.js - MODERNIZED UI VERSION
+// src/pages/admin/index.js - ORIGINAL CODE WITH ONLY THE REQUESTED FIXES
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import { motion, AnimatePresence } from "framer-motion";
@@ -333,11 +333,24 @@ const SimpleMigrationComponent = () => {
 
 // Main Admin Dashboard Component with modern UI
 const AdminDashboard = () => {
-  const [activeSection, setActiveSection] = useState("alumni");
+  // FIX 3: Persist active section - changed default from "alumni" to localStorage value or "news"
+  const [activeSection, setActiveSection] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('admin_active_section') || "news";
+    }
+    return "news";
+  });
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [showImportExport, setShowImportExport] = useState(false);
   const [showMigration, setShowMigration] = useState(false);
+
+  // FIX 3: Save active section to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('admin_active_section', activeSection);
+    }
+  }, [activeSection]);
 
   const currentSection = ADMIN_SECTIONS.find((s) => s.key === activeSection);
   const { data, loading, error, deleteItem, refresh } = useLocalStorage(
@@ -356,6 +369,7 @@ const AdminDashboard = () => {
     setShowForm(true);
   };
 
+  // FIX 1: Fixed delete operation with proper error handling
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this item?")) {
       console.log("Deleting item:", id);
@@ -363,10 +377,12 @@ const AdminDashboard = () => {
         const success = await deleteItem(id);
         if (success) {
           console.log("Item deleted successfully");
+          // FIX 3: Refresh data immediately after successful deletion
           await refresh();
+          alert("Item deleted successfully!");
         } else {
           console.error("Failed to delete item");
-          alert("Failed to delete item");
+          alert("Failed to delete item. Please try again.");
         }
       } catch (error) {
         console.error("Delete error:", error);
@@ -375,10 +391,12 @@ const AdminDashboard = () => {
     }
   };
 
+  // FIX 3: Enhanced form success handler with immediate refresh
   const handleFormSuccess = async (result) => {
     console.log("Form submitted successfully:", result);
     setShowForm(false);
     setEditingId(null);
+    // FIX 3: Refresh data immediately after form success
     await refresh();
     alert("Item saved successfully!");
   };
@@ -420,7 +438,8 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleImport = (event) => {
+  // FIX 3: Enhanced import handler with immediate refresh
+  const handleImport = async (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -458,6 +477,7 @@ const AdminDashboard = () => {
           const totalImported = await StorageManager.importData(processedData);
           
           alert(`Successfully imported ${totalImported} items!`);
+          // FIX 3: Refresh data immediately after import
           await refresh();
         } catch (error) {
           console.error("Import failed:", error);
@@ -804,16 +824,14 @@ const AdminDashboard = () => {
                   </p>
                 </div>
 
-                {/* Loading State */}
+                {/* FIX 2: Loading State with consistent centered styling and no gray background */}
                 {loading && (
-                  <div className="flex items-center justify-center py-20">
-                    <div className="text-center">
-                      <div className="relative mb-8">
-                        <div className="w-16 h-16 border-4 border-white/10 border-t-blue-500 rounded-full animate-spin"></div>
-                        <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin animation-delay-150"></div>
-                      </div>
-                      <p className="text-xl text-gray-400">Loading {currentSection?.label.toLowerCase()}...</p>
+                  <div className="flex flex-col items-center justify-center py-20">
+                    <div className="relative mb-8">
+                      <div className="w-16 h-16 border-4 border-white/10 border-t-blue-500 rounded-full animate-spin"></div>
+                      <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin animation-delay-150"></div>
                     </div>
+                    <p className="text-xl text-gray-400">Loading {currentSection?.label.toLowerCase()}...</p>
                   </div>
                 )}
 
