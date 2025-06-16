@@ -1,4 +1,4 @@
-// src/hooks/useLocalStorage.js - Updated to work with async database operations
+// src/hooks/useLocalStorage.js - Fixed version with better delete handling
 import { useState, useEffect, useCallback } from 'react';
 import { StorageManager } from '@/lib/storage';
 
@@ -15,12 +15,13 @@ export function useLocalStorage(key, initialValue = []) {
       try {
         console.log(`useLocalStorage: Loading data for key: ${key}`);
         setLoading(true);
+        setError(null);
+        
         const storedData = await StorageManager.get(key);
         console.log(`useLocalStorage: Loaded data:`, storedData);
         
         if (isMounted) {
           setData(storedData);
-          setError(null);
         }
       } catch (err) {
         console.error(`useLocalStorage: Error loading data for key ${key}:`, err);
@@ -53,16 +54,17 @@ export function useLocalStorage(key, initialValue = []) {
         // Update local state immediately for better UX
         setData(prevData => {
           const updatedData = [...prevData, newItem];
-          console.log(`useLocalStorage: Updated data:`, updatedData);
+          console.log(`useLocalStorage: Updated data after add:`, updatedData);
           return updatedData;
         });
+        return newItem;
+      } else {
+        throw new Error('Failed to add item');
       }
-      
-      return newItem;
     } catch (err) {
       console.error(`useLocalStorage: Error adding item to ${key}:`, err);
       setError(err);
-      return null;
+      throw err; // Re-throw to let the component handle it
     }
   }, [key]);
 
@@ -80,16 +82,17 @@ export function useLocalStorage(key, initialValue = []) {
           const updatedData = prevData.map(item => 
             (item.id === id || item._id === id) ? updatedItem : item
           );
-          console.log(`useLocalStorage: Updated data:`, updatedData);
+          console.log(`useLocalStorage: Updated data after update:`, updatedData);
           return updatedData;
         });
+        return updatedItem;
+      } else {
+        throw new Error('Failed to update item');
       }
-      
-      return updatedItem;
     } catch (err) {
       console.error(`useLocalStorage: Error updating item ${id} in ${key}:`, err);
       setError(err);
-      return null;
+      throw err; // Re-throw to let the component handle it
     }
   }, [key]);
 
@@ -98,25 +101,35 @@ export function useLocalStorage(key, initialValue = []) {
       console.log(`useLocalStorage: Deleting item ${id} from ${key}`);
       setError(null);
       
+      // Optimistically update UI first
+      const originalData = data;
+      setData(prevData => {
+        const updatedData = prevData.filter(item => item.id !== id && item._id !== id);
+        console.log(`useLocalStorage: Optimistically updated data after delete:`, updatedData);
+        return updatedData;
+      });
+      
+      // Attempt the actual delete
       const success = await StorageManager.delete(key, id);
       console.log(`useLocalStorage: Delete success:`, success);
       
-      if (success) {
-        // Update local state immediately for better UX
-        setData(prevData => {
-          const updatedData = prevData.filter(item => item.id !== id && item._id !== id);
-          console.log(`useLocalStorage: Updated data after delete:`, updatedData);
-          return updatedData;
-        });
+      if (!success) {
+        // Revert the optimistic update if the delete failed
+        console.error(`useLocalStorage: Delete failed, reverting data`);
+        setData(originalData);
+        throw new Error('Failed to delete item');
       }
       
-      return success;
+      return true;
     } catch (err) {
       console.error(`useLocalStorage: Error deleting item ${id} from ${key}:`, err);
       setError(err);
-      return false;
+      
+      // Revert optimistic update on error
+      setData(data);
+      throw err; // Re-throw to let the component handle it
     }
-  }, [key]);
+  }, [key, data]);
 
   const getItemById = useCallback((id) => {
     const item = data.find(item => (item.id === id || item._id === id)) || null;
@@ -172,12 +185,13 @@ export function useLocalStorageItem(key, id) {
       try {
         console.log(`useLocalStorageItem: Loading item ${id} from ${key}`);
         setLoading(true);
+        setError(null);
+        
         const storedItem = await StorageManager.getById(key, id);
         console.log(`useLocalStorageItem: Loaded item:`, storedItem);
         
         if (isMounted) {
           setItem(storedItem);
-          setError(null);
         }
       } catch (err) {
         console.error(`useLocalStorageItem: Error loading item ${id} from ${key}:`, err);
@@ -208,13 +222,14 @@ export function useLocalStorageItem(key, id) {
       
       if (updatedItem) {
         setItem(updatedItem);
+        return updatedItem;
+      } else {
+        throw new Error('Failed to update item');
       }
-      
-      return updatedItem;
     } catch (err) {
       console.error(`useLocalStorageItem: Error updating item ${id} in ${key}:`, err);
       setError(err);
-      return null;
+      throw err;
     }
   }, [key, id]);
 
@@ -228,13 +243,14 @@ export function useLocalStorageItem(key, id) {
       
       if (success) {
         setItem(null);
+        return true;
+      } else {
+        throw new Error('Failed to delete item');
       }
-      
-      return success;
     } catch (err) {
       console.error(`useLocalStorageItem: Error deleting item ${id} from ${key}:`, err);
       setError(err);
-      return false;
+      throw err;
     }
   }, [key, id]);
 

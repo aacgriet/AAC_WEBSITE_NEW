@@ -115,7 +115,7 @@ function MyApp({ Component, pageProps, router }) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="Advanced Academic Center (AAC) at GRIET, Hyderabad - An inter-disciplinary research centre focused on innovation and excellence" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/images/logo.png" />
       </Head>
       
       <main className={`${inter.variable} ${merriweather.variable} ${jakarta.variable} ${sora.variable} ${workSans.variable} font-sans`}>
