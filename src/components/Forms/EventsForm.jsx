@@ -44,7 +44,7 @@ const EventsForm = ({ eventId = null, onSuccess, onCancel }) => {
         });
       }
     }
-  }, [eventId, getItemById]);
+  }, [eventId, eventsData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

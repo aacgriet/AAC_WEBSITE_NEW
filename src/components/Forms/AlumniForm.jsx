@@ -63,7 +63,7 @@ const AlumniForm = ({ alumnusId = null, onSuccess, onCancel }) => {
         });
       }
     }
-  }, [alumnusId, getItemById]);
+  }, [alumnusId, alumniData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

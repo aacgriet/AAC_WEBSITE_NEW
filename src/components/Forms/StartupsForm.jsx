@@ -43,6 +43,7 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
   const { data: startupsData, addItem, updateItem, getItemById } = useDatabase('startups');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [dateKey, setDateKey] = useState(0);
   
   const [formData, setFormData] = useState({
     id: '',
@@ -74,8 +75,10 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
           appScreenshots: existingStartup.appScreenshots || ['']
         });
       }
+
+      setDateKey(prev => prev + 1);
     }
-  }, [startupId, getItemById]);
+  }, [startupId, startupsData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -303,15 +306,17 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
             Establishment Date <span className="text-red-400">*</span>
           </label>
           <input
-            type="date"
-            id="establishedDate"
-            name="establishedDate"
-            value={formData.establishedDate}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            style={{ colorScheme: 'dark' }}
-          />
+  type="date"
+  id="establishedDate"
+  name="establishedDate"
+  value={formData.establishedDate || ''}
+  onChange={handleInputChange}
+  required
+  className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+  style={{ colorScheme: 'dark' }}
+  key={`establishedDate-${dateKey}-${formData.establishedDate}`}
+/>
+
           {errors.establishedDate && <p className="text-red-400 text-sm">{errors.establishedDate}</p>}
         </div>
 

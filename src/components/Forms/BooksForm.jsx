@@ -57,7 +57,7 @@ const BooksForm = ({ bookId = null, onSuccess, onCancel }) => {
         });
       }
     }
-  }, [bookId, getItemById]);
+  }, [bookId, booksData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

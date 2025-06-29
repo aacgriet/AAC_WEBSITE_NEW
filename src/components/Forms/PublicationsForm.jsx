@@ -56,7 +56,7 @@ const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
         });
       }
     }
-  }, [publicationId, getItemById]);
+  }, [publicationId, publicationsData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

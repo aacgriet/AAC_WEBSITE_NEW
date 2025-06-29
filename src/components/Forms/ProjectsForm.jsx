@@ -725,6 +725,8 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
   const { data: projectsData, addItem, updateItem, getItemById } = useDatabase('projects');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [dateKey, setDateKey] = useState(0);
+
   
   const [formData, setFormData] = useState({
     _id: '',
@@ -771,9 +773,10 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
           _rawBody: existingProject._rawBody || '',
           body: existingProject.body || []
         });
+        setDateKey(prev => prev + 1);
       }
     }
-  }, [projectId, getItemById]);
+  }, [projectId, projectsData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -980,15 +983,16 @@ const ProjectsForm = ({ projectId = null, onSuccess, onCancel }) => {
             Project Date <span className="text-red-400">*</span>
           </label>
           <input
-            type="date"
-            id="publishedAt"
-            name="publishedAt"
-            value={formData.publishedAt}
-            onChange={handleInputChange}
-            required
-            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
-            style={{ colorScheme: 'dark' }}
-          />
+  type="date"
+  id="publishedAt"
+  name="publishedAt"
+  value={formData.publishedAt || ''}
+  onChange={handleInputChange}
+  required
+  className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+  style={{ colorScheme: 'dark' }}
+  key={`publishedAt-${dateKey}-${formData.publishedAt}`}
+/>
           {errors.publishedAt && <p className="text-red-400 text-sm">{errors.publishedAt}</p>}
         </div>
 
