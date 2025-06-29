@@ -1,10 +1,9 @@
-// src/components/Forms/PatentsForm.jsx - Updated with proper fields
+// src/components/Forms/PatentsForm.jsx - Updated with fixed date input (no default)
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
-// import { useLocalStorage } from '@/hooks/useLocalStorage';
-// import { STORAGE_KEYS } from '@/lib/storage';
 import { useDatabase } from '@/hooks/useDatabase';
+
 const PATENT_OFFICES = [
   'India',
   'USA',
@@ -45,7 +44,6 @@ const PATENT_COLORS = [
 ];
 
 const PatentsForm = ({ patentId = null, onSuccess, onCancel }) => {
-  // const { data: patentsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.PATENTS);
   const { data: patentsData, addItem, updateItem, getItemById } = useDatabase('patents');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
@@ -56,7 +54,7 @@ const PatentsForm = ({ patentId = null, onSuccess, onCancel }) => {
     inventors: [''],
     patentOffice: 'India',
     applicationNumber: '',
-    date: new Date().toISOString().split('T')[0],
+    date: '', // REMOVED DEFAULT DATE - Now empty by default
     status: 'Published Online',
     description: '',
     category: '',
@@ -70,9 +68,10 @@ const PatentsForm = ({ patentId = null, onSuccess, onCancel }) => {
       if (existingPatent) {
         setFormData({
           ...existingPatent,
+          // Convert date to proper date format for date input
           date: existingPatent.date ? 
             new Date(existingPatent.date).toISOString().split('T')[0] : 
-            new Date().toISOString().split('T')[0],
+            '', // Keep empty if no date exists
           inventors: Array.isArray(existingPatent.inventors) ? existingPatent.inventors : ['']
         });
       }
@@ -141,23 +140,25 @@ const PatentsForm = ({ patentId = null, onSuccess, onCancel }) => {
       const patentItem = {
         ...formData,
         inventors: formData.inventors.filter(inv => inv.trim()),
+        // Convert the date input to ISO string for storage
+        date: new Date(formData.date).toISOString(),
         id: patentId || formData.shortTitle.toLowerCase().replace(/[^a-z0-9]/g, ''),
         createdAt: patentId ? undefined : new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
       
       let result;
-if (patentId) {
-  result = await updateItem(patentId, patentItem);
-} else {
-  result = await addItem(patentItem);
-}
+      if (patentId) {
+        result = await updateItem(patentId, patentItem);
+      } else {
+        result = await addItem(patentItem);
+      }
 
-if (result) {
-  onSuccess?.(result);
-} else {
-  setErrors({ submit: 'Failed to save patent' });
-}
+      if (result) {
+        onSuccess?.(result);
+      } else {
+        setErrors({ submit: 'Failed to save patent' });
+      }
     } catch (error) {
       console.error('Error saving patent:', error);
       setErrors({ submit: 'Error saving patent: ' + error.message });
@@ -235,15 +236,23 @@ if (result) {
           error={errors.applicationNumber}
         />
 
-        <FormField
-          label="Filing Date"
-          name="date"
-          type="date"
-          value={formData.date}
-          onChange={handleInputChange}
-          required
-          error={errors.date}
-        />
+        {/* FIXED: Date input with calendar picker (no default) */}
+        <div className="space-y-2">
+          <label htmlFor="date" className="block text-sm font-medium text-gray-300">
+            Filing Date <span className="text-red-400">*</span>
+          </label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value={formData.date}
+            onChange={handleInputChange}
+            required
+            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            style={{ colorScheme: 'dark' }}
+          />
+          {errors.date && <p className="text-red-400 text-sm">{errors.date}</p>}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -325,7 +325,8 @@ const ProjectCard = ({ project }) => {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Created:</span>
-                        <span className="text-white">{formatDate(project._createdAt)}</span>
+                        {/* <span className="text-white">{formatDate(project._createdAt)}</span> */}
+                        <span className="text-white">{formatDate(project.publishedAt)}</span>
                       </div>
                       {project._updatedAt && project._updatedAt !== project._createdAt && (
                         <div className="flex justify-between">

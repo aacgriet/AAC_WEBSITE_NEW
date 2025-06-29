@@ -136,10 +136,10 @@ const StartupCard = ({ startup, index }) => {
           </div>
           
           {/* Established Date */}
-          <div className="mb-4 flex items-center justify-center gap-2 text-gray-400 text-sm">
+          {/* <div className="mb-4 flex items-center justify-center gap-2 text-gray-400 text-sm">
             <FaCalendar className="text-xs" />
             <span>Est. {formatDate(startup.establishedDate)}</span>
-          </div>
+          </div> */}
           
           {/* Description Preview */}
           <p className="text-gray-400 text-sm leading-relaxed mb-4 group-hover:text-gray-300 transition-colors duration-300 line-clamp-3 text-center">

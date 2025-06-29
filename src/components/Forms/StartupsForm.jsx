@@ -1,9 +1,7 @@
-// src/components/Forms/StartupsForm.jsx - Updated to match UI data structure
+// src/components/Forms/StartupsForm.jsx - Updated with fixed date input (no default)
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
-// import { useLocalStorage } from '@/hooks/useLocalStorage';
-// import { STORAGE_KEYS } from '@/lib/storage';
 import { useDatabase } from '@/hooks/useDatabase';
 
 const STARTUP_CATEGORIES = [
@@ -42,7 +40,6 @@ const STARTUP_STATUSES = [
 ];
 
 const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
-  // const { data: startupsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.STARTUPS);
   const { data: startupsData, addItem, updateItem, getItemById } = useDatabase('startups');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
@@ -58,7 +55,7 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
     color: 'blue',
     status: 'Active',
     founders: [''],
-    establishedDate: new Date().toISOString().split('T')[0],
+    establishedDate: '', // REMOVED DEFAULT DATE - Now empty by default
     website: '',
     appScreenshots: ['']
   });
@@ -69,9 +66,10 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
       if (existingStartup) {
         setFormData({
           ...existingStartup,
+          // Convert establishedDate to proper date format for date input
           establishedDate: existingStartup.establishedDate ? 
             new Date(existingStartup.establishedDate).toISOString().split('T')[0] : 
-            new Date().toISOString().split('T')[0],
+            '', // Keep empty if no date exists
           founders: existingStartup.founders || [''],
           appScreenshots: existingStartup.appScreenshots || ['']
         });
@@ -180,6 +178,7 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
     try {
       const startupItem = {
         ...formData,
+        // Convert the date input to ISO string for storage
         establishedDate: new Date(formData.establishedDate).toISOString(),
         founders: formData.founders.filter(founder => founder.trim()),
         appScreenshots: formData.appScreenshots.filter(screenshot => screenshot.trim()),
@@ -189,15 +188,15 @@ const StartupsForm = ({ startupId = null, onSuccess, onCancel }) => {
       };
       
       let result;
-if (startupId) {
-  result = await updateItem(startupId, startupItem);
-} else {
-  result = await addItem(startupItem);
-}
+      if (startupId) {
+        result = await updateItem(startupId, startupItem);
+      } else {
+        result = await addItem(startupItem);
+      }
 
-if (result) {
-  onSuccess?.(result);
-}
+      if (result) {
+        onSuccess?.(result);
+      }
     } catch (error) {
       console.error('Error saving startup:', error);
       setErrors({ submit: 'Failed to save startup' });
@@ -298,15 +297,23 @@ if (result) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormField
-          label="Establishment Date"
-          name="establishedDate"
-          type="date"
-          value={formData.establishedDate}
-          onChange={handleInputChange}
-          required
-          error={errors.establishedDate}
-        />
+        {/* FIXED: Date input with calendar picker (no default) */}
+        <div className="space-y-2">
+          <label htmlFor="establishedDate" className="block text-sm font-medium text-gray-300">
+            Establishment Date <span className="text-red-400">*</span>
+          </label>
+          <input
+            type="date"
+            id="establishedDate"
+            name="establishedDate"
+            value={formData.establishedDate}
+            onChange={handleInputChange}
+            required
+            className="w-full px-4 py-2 bg-[#0e1421] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+            style={{ colorScheme: 'dark' }}
+          />
+          {errors.establishedDate && <p className="text-red-400 text-sm">{errors.establishedDate}</p>}
+        </div>
 
         <FormField
           label="Website URL"

@@ -42,6 +42,78 @@ const coreCommitteeData = [
     Designation: "PR Coordinator",
     Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160199/AAC-web/corecommittee2024/SrijaCherukuri.jpg",
   },
+  {
+    Id: "25",
+    Name: "Rohitha Tunikipati",
+    Designation: "Manager",
+    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160199/AAC-web/corecommittee2024/RohithaTunikipati.jpg",
+  },
+  {
+    Id: "13",
+    Name: "Rithvik Mandya",
+    Designation: "Manager",
+    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160197/AAC-web/corecommittee2024/RithvikMandya.jpg",
+  },
+  {
+    Id: "14",
+    Name: "Harshitha Chilupuri",
+    Designation: "Manager",
+    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160195/AAC-web/corecommittee2024/ChilupuriHarshitha.jpg",
+  },
+  {
+    Id: "15",
+    Name: "Swetha Soundararajan",
+    Designation: "Manager",
+    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160200/AAC-web/corecommittee2024/SwethaSoundar.jpg",
+  },
+  {
+    Id: "16",
+    Name: "Nishith Reddy Duvvuru",
+    Designation: "Manager",
+    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160195/AAC-web/corecommittee2024/AsahiSahiba.jpg",
+  },
+  {
+    Id: "17",
+    Name: "N Akshaya",
+    Designation: "Manager",
+    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160200/AAC-web/corecommittee2024/AkshayaN.png",
+  },
+  {
+    Id: "18",
+    Name: "Meghana Satya Datla",
+    Designation: "Manager",
+    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160197/AAC-web/corecommittee2024/MeghanaDatla.jpg",
+  },
+  {
+    Id: "19",
+    Name: "Chilkuri Abhinav Reddy",
+    Designation: "Manager",
+    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160194/AAC-web/corecommittee2024/AbhinavChilkuri.jpg",
+  },
+  {
+    Id: "20",
+    Name: "Chava Sai Sree Praneeth",
+    Designation: "Manager",
+    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160200/AAC-web/corecommittee2024/SaiPranu.jpg",
+  },
+  {
+    Id: "21",
+    Name: "Arekela Anjali",
+    Designation: "Manager",
+    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160200/AAC-web/corecommittee2024/AnjaliArekela.jpg",
+  },
+  {
+    Id: "22",
+    Name: "Abhinav Jayanth",
+    Designation: "Manager",
+    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_400,h_400,ar_1:1,g_auto/v1717163090/AAC-web/corecommittee2024/AbhinavJayanthUltraProMax.png",
+  },
+  {
+    Id: "23",
+    Name: "Endrapu Kranthi Raj",
+    Designation: "Manager",
+    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160196/AAC-web/corecommittee2024/KranthiRaj.jpg",
+  },
 ];
 
 const MemberCard = ({ img, name, designation }) => {
