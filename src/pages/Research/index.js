@@ -49,9 +49,24 @@ const QuickLinks = [
     description: "Publications and knowledge sharing",
     gradient: "from-indigo-500 to-indigo-600"
   },
+  { 
+    name: "Hackathon", 
+    path: "#",
+    icon: "🏆",
+    description: "Join exciting hackathon events and challenges",
+    gradient: "from-red-500 to-red-600",
+    isExternal: true
+  },
 ];
 
-const LinkBox = ({ children, path, icon, description, gradient }) => {
+const LinkBox = ({ children, path, icon, description, gradient, isExternal, onClick }) => {
+  const handleClick = (e) => {
+    if (isExternal && onClick) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <Link href={path}>
       <motion.div
@@ -61,6 +76,7 @@ const LinkBox = ({ children, path, icon, description, gradient }) => {
           y: -8
         }}
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
+        onClick={handleClick}
       >
         {/* Gradient overlay on hover */}
         <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`}></div>
@@ -90,6 +106,11 @@ const LinkBox = ({ children, path, icon, description, gradient }) => {
 };
 
 const ResearchPage = () => {
+  // Handle hackathon link click
+  const handleHackathonClick = () => {
+    window.open('https://docs.google.com/forms/d/1R9ANe21fM1yI1mhzR29ArysdJmNFARASlrfBE0gdVKQ/preview', '_blank');
+  };
+
   const parentVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -236,6 +257,8 @@ const ResearchPage = () => {
                     icon={link.icon}
                     description={link.description}
                     gradient={link.gradient}
+                    isExternal={link.isExternal}
+                    onClick={link.name === "Hackathon" ? handleHackathonClick : undefined}
                   >
                     {link.name}
                   </LinkBox>
