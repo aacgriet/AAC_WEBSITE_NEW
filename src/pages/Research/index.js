@@ -8,13 +8,6 @@ import SectionParticles from '@/components/SectionParticles';
 
 const QuickLinks = [
   { 
-    name: "Projects", 
-    path: "/projects",
-    icon: "🚀",
-    description: "Explore innovative research projects",
-    gradient: "from-blue-500 to-blue-600"
-  },
-  { 
     name: "Publications", 
     path: "/Publications",
     icon: "📄",
@@ -34,13 +27,6 @@ const QuickLinks = [
     icon: "🏢",
     description: "Entrepreneurial ventures and ideas",
     gradient: "from-emerald-500 to-emerald-600"
-  },
-  { 
-    name: "Alumni", 
-    path: "/Alumni",
-    icon: "🎓",
-    description: "Our successful graduates",
-    gradient: "from-pink-500 to-pink-600"
   },
   { 
     name: "Books & Blogs", 

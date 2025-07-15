@@ -86,11 +86,12 @@ const Navbar = () => {
               {/* Left links */}
               <div className="flex space-x-4">
                 <Link href="/Research" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">Research</Link>
+                <Link href="/projects" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">Projects</Link>
                 <Link href="/Events" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">Events</Link>
               </div>
 
               {/* Logo */}
-              <Link href="/" className="absolute left-1/2 transform -translate-x-1/2">
+              {/* <Link href="/" className="absolute left-1/2 transform -translate-x-1/2">
                 <div 
                   className="rounded-full p-3 shadow-md hover:shadow-lg transition-all duration-300"
                   style={{
@@ -100,19 +101,20 @@ const Navbar = () => {
                   }}
                 >
                   <Image
-                    width={60}
-                    height={60}
+                    width={70}
+                    height={70}
                     src="/images/logo.png"
                     alt="AAC Logo"
                     className="transition-transform hover:scale-105 duration-300"
                   />
                 </div>
-              </Link>
+              </Link> */}
 
               {/* Right links */}
               <div className="flex space-x-4">
-                <Link href="/News" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">News</Link>
+                <Link href="/Achievements" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">Achievements</Link>
                 <Link href="/Administration" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">Administration</Link>
+                <Link href="/News" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">About AAC</Link>
               </div>
             </div>
           </div>

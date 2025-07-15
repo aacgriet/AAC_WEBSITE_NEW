@@ -645,8 +645,7 @@ const AdministrationPage = () => {
         "https://res.cloudinary.com/aacgriet/image/upload/v1664100147/AAC-web/mentors/iyengar_dmrolm.jpg",
     },
   ];
-  
-  const advisorData = [
+  const headAdvisorData = [
     {
     id: "1",
     name: "Dr. Jandhyala N Murthy",
@@ -654,7 +653,7 @@ const AdministrationPage = () => {
     about:
       "Dr. Jandhyala N Murthy after voluntarily taking retirement from the IAF as a Wing Commander in 2001,immediately joined as a professor in the Department of Mechanical Engineering at GRIET.Later on taking up the position as the Director of GRIET since 31 January 2018, after a successful tenure as the Principal of GRIET since March 2004.His areas of interest span the Thermal Engineering domain, Gas Turbine Combustion Chambers, simulation and education.",
     image:
-      "https://res.cloudinary.com/aacgriet/image/upload/v1664100146/AAC-web/mentors/Dr-Jandhyala-Murthy_tgqu8z.jpg",
+      "https://res.cloudinary.com/aacgriet/image/upload/v1752569355/AAC-web/mentors/jandhyala.png",
   },
   {
     id: "2",
@@ -665,15 +664,6 @@ const AdministrationPage = () => {
     image:
       "https://res.cloudinary.com/aacgriet/image/upload/v1664100147/AAC-web/mentors/jpraveen_mzj4fp.jpg",
   },
-  // {
-  //   id: "3",
-  //   name: "M.G.Sekharam",
-  //   occupation: "CHIEF ADMINISTRATIVE OFFICER,GRIET",
-  //   about:
-  //     "Mr. M.G. Sekaram joined GRIET as Chief Administrative Officer on June 27th,2019 after taking voluntary retirement from Railways.He is very passionate about teaching and had been teaching Railway staff for past 27years in various fora.",
-  //   image:
-  //     "https://res.cloudinary.com/aacgriet/image/upload/v1664100150/AAC-web/mentors/mgsekharam_nvuywr.png",
-  // },
   {
     id: "4",
     name: "Dr. Mamidi Kiran Kumar",
@@ -683,6 +673,8 @@ const AdministrationPage = () => {
     image:
       "https://res.cloudinary.com/dltvvelmx/image/upload/v1694781872/kiran1610_hhgs1v.jpg",
   },
+  ];
+  const advisorData = [
   {
     id: "5",
     name: "Dr. Arvind Vishnubhatla",
@@ -862,6 +854,14 @@ const AdministrationPage = () => {
       color: 'from-amber-500 to-amber-600'
     },
     { 
+      key: 'headadvisors', 
+      label: 'Head Advisors', 
+      icon: FaLightbulb,
+      count: headAdvisorData.length,
+      color: 'from-amber-500 to-amber-600'
+    },
+    
+    { 
       key: 'advisors', 
       label: 'Advisors', 
       icon: FaUserTie,
@@ -908,6 +908,48 @@ const AdministrationPage = () => {
           <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
             {data.name}
           </h3>
+          <p className="text-gray-400 leading-relaxed text-lg group-hover:text-gray-300 transition-colors duration-300">
+            {data.about}
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+  const HeadAdvisorCard = ({ data, index }) => (
+    <motion.div 
+      variants={itemVariants}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.2, duration: 0.6 }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300"
+    >
+      {/* Gradient overlay on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-orange-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+      
+      <div className="flex flex-col md:flex-row relative z-10">
+        <div className="md:w-1/3 p-8 flex items-center justify-center backdrop-blur-sm bg-white/5">
+          <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-2xl overflow-hidden border-4 border-white/20 shadow-lg group-hover:scale-105 transition-transform duration-300">
+            <Image 
+              src={data.image} 
+              alt={data.name} 
+              fill 
+              className="object-cover"
+            />
+          </div>
+        </div>
+        <div className="md:w-2/3 p-8">
+          {/* Gradient section line */}
+          <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 h-1.5 w-24 mb-6 rounded-full shadow-lg"></div>
+          
+          <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
+            {data.name}
+          </h3>
+          <div className="mb-4">
+            <span className="px-3 py-1.5 bg-blue-500/20 text-blue-300 rounded-lg text-sm font-medium border border-blue-500/30">
+              {data.occupation}
+            </span>
+          </div>
           <p className="text-gray-400 leading-relaxed text-lg group-hover:text-gray-300 transition-colors duration-300">
             {data.about}
           </p>
@@ -1120,7 +1162,41 @@ const AdministrationPage = () => {
               </div>
             </>
           )}
+
+          {activeCategory === 'headadvisors' && (
+            <>
+              {/* Title Section */}
+              <motion.div variants={itemVariants} className="text-center mb-12">
+                <div className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 h-1.5 w-24 mx-auto mb-8 rounded-full shadow-lg"></div>
+                
+                <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                  <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    Head Advisory Board
+                  </span>
+                </h2>
+                
+                <p className="text-gray-400 text-lg max-w-4xl mx-auto leading-relaxed">
+                 The guiding forces who envisioned and established the club, shaping its mission and inspiring a legacy of leadership and impact.
+                </p>
+                
+                {/* Decorative dots */}
+                <div className="flex justify-center items-center gap-3 mt-8">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse animation-delay-500"></div>
+                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse animation-delay-1000"></div>
+                </div>
+              </motion.div>
+              
+              {/* Content */}
+              <div className="space-y-8">
+                {headAdvisorData.map((item, index) => (
+                  <HeadAdvisorCard key={item.id} data={item} index={index} />
+                ))}
+              </div>
+            </>
+          )}
           
+
           {activeCategory === 'advisors' && (
             <>
               {/* Title Section */}

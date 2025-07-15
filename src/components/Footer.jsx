@@ -168,6 +168,7 @@ const Footer = () => {
                     <h3 className="text-2xl font-bold text-white">Quick Links</h3>
                   </div>
                   <div className="flex flex-col space-y-3">
+                    <FooterLink href="/Achievements">Achievements</FooterLink>
                     <FooterLink href="/Research">Research</FooterLink>
                     <FooterLink href="/Events">Events</FooterLink>
                     <FooterLink href="/News">News</FooterLink>

@@ -84,7 +84,8 @@ const Home = () => {
             </motion.div> */}
 
             {/* Enhanced badge with breathing effect */}
-            <motion.div
+
+            {/* <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -93,9 +94,10 @@ const Home = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-600/20 opacity-0 animate-pulse"></div>
               <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse relative z-10"></div>
               <span className="text-sm font-medium relative z-10">Innovation • Research • Excellence</span>
-            </motion.div>
+            </motion.div> */}
             
             {/* Title with enhanced gradient effect */}
+
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -109,7 +111,16 @@ const Home = () => {
                 Center
               </span>
             </motion.h1>
-            
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-5xl md:text-xl lg:text-xl font-bold mb-6"
+            >
+              <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
+                Gokaraju Rangaraju Institute of Engineering and Technology
+              </span>
+            </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

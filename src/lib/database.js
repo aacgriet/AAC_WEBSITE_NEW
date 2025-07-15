@@ -18,6 +18,7 @@ export class DatabaseService {
   // Model mapping for different content types
   static MODEL_MAP = {
     'aac_news': 'news',
+    'aac_achievements': 'achievements',
     'aac_projects': 'project',
     'aac_events': 'event',
     'aac_publications': 'publication',
@@ -67,6 +68,24 @@ export class DatabaseService {
           sanityId: data._id || null,
           sanityRev: data._rev || null,
           sanityType: data._type || 'News',
+          mainImageUrl: data.mainImage?.asset?.url || data.mainImageUrl || null,
+          mainImageAltText: data.mainImage?.asset?.altText || data.mainImageAltText || null,
+          links: data.links || []
+        };
+        case 'achievements':
+        return {
+          ...baseTransform,
+          id: data.id || data._id || this.generateId(),
+          title: data.title || '',
+          slug: typeof data.slug === 'object' ? data.slug?.current : data.slug,
+          content: data.content || null,
+          rawBody: data._rawBody || data.rawBody || null,
+          publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),
+          categories: data.categories || null,
+          status: data.status || 'published',
+          sanityId: data._id || null,
+          sanityRev: data._rev || null,
+          sanityType: data._type || 'Achievements',
           mainImageUrl: data.mainImage?.asset?.url || data.mainImageUrl || null,
           mainImageAltText: data.mainImage?.asset?.altText || data.mainImageAltText || null,
           links: data.links || []
@@ -227,6 +246,28 @@ export class DatabaseService {
     
     switch (modelName) {
       case 'news':
+        return {
+          ...baseTransform,
+          id: data.id,
+          _id: data.sanityId || data.id,
+          title: data.title,
+          slug: { current: data.slug },
+          content: data.content,
+          _rawBody: data.rawBody,
+          publishedAt: data.publishedAt?.toISOString(),
+          categories: data.categories,
+          status: data.status,
+          _rev: data.sanityRev,
+          _type: data.sanityType,
+          mainImage: data.mainImageUrl ? {
+            asset: {
+              url: data.mainImageUrl,
+              altText: data.mainImageAltText
+            }
+          } : null,
+          links: data.links || []
+        };
+        case 'achievements':
         return {
           ...baseTransform,
           id: data.id,
