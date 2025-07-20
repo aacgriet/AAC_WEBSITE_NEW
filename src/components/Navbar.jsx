@@ -50,16 +50,15 @@ const Navbar = () => {
         initial="hidden"
         animate="visible"
         variants={navVariants}
-        className={`w-[800px] transition-all duration-300 border rounded-xl ${
+        className={`w-[900px] transition-all duration-300 border rounded-xl ${
           scrolled ? "backdrop-blur-md bg-opacity-20 shadow-lg border-gray-600" : "border-gray-600"
         }`}
         style={{ 
           backgroundColor: scrolled ? themeColors.darkBg : 'transparent'
         }}
       >
-        <div className="px-4">
-
-          <div className="flex h-16 items-center justify-between relative">
+        <div className="px-6">
+          <div className="flex h-16 items-center relative">
 
             {/* Mobile menu button */}
             <motion.button
@@ -81,41 +80,39 @@ const Navbar = () => {
               )}
             </motion.button>
 
-            {/* Desktop navigation */}
-            <div className="hidden md:flex w-full items-center justify-between">
+            {/* Desktop navigation - Grid layout for equal spacing */}
+            <div className="hidden md:grid grid-cols-7 gap-2 w-full items-center">
               {/* Left links */}
-              <div className="flex space-x-4">
-                <Link href="/Research" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">Research</Link>
-                <Link href="/projects" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">Projects</Link>
-                <Link href="/Events" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">Events</Link>
-              </div>
+              <Link href="/Research" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition text-center whitespace-nowrap">Research</Link>
+              <Link href="/projects" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition text-center whitespace-nowrap">Projects</Link>
+              <Link href="/Events" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition text-center whitespace-nowrap">Events</Link>
 
-              {/* Logo */}
-              {/* <Link href="/" className="absolute left-1/2 transform -translate-x-1/2">
-                <div 
-                  className="rounded-full p-3 shadow-md hover:shadow-lg transition-all duration-300"
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    backdropFilter: 'blur(8px)',
-                    boxShadow: `0 0 15px rgba(87, 225, 255, 0.3)`
-                  }}
-                >
-                  <Image
-                    width={70}
-                    height={70}
-                    src="/images/logo.png"
-                    alt="AAC Logo"
-                    className="transition-transform hover:scale-105 duration-300"
-                  />
-                </div>
-              </Link> */}
+              {/* Logo - center column */}
+              <div className="flex justify-center">
+                <Link href="/">
+                  <div 
+                    className="rounded-full p-3 shadow-md hover:shadow-lg transition-all duration-300"
+                    style={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                      backdropFilter: 'blur(8px)',
+                      boxShadow: `0 0 15px rgba(87, 225, 255, 0.3)`
+                    }}
+                  >
+                    <Image
+                      width={60}
+                      height={60}
+                      src="/images/logo.png"
+                      alt="AAC Logo"
+                      className="transition-transform hover:scale-105 duration-300"
+                    />
+                  </div>
+                </Link>
+              </div>
 
               {/* Right links */}
-              <div className="flex space-x-4">
-                <Link href="/Achievements" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">Achievements</Link>
-                <Link href="/Administration" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">Administration</Link>
-                <Link href="/News" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition">About AAC</Link>
-              </div>
+              <Link href="/Achievements" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition text-center whitespace-nowrap">Achievements</Link>
+              <Link href="/Administration" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition text-center whitespace-nowrap">Administration</Link>
+              <Link href="/News" className="px-3 py-1 text-white hover:bg-white/20 rounded-full transition text-center whitespace-nowrap">About AAC</Link>
             </div>
           </div>
 
@@ -134,7 +131,7 @@ const Navbar = () => {
                 }}
               >
                 <div className="flex flex-col space-y-6 text-center">
-                  {["Home", "Research", "Events", "News", "Administration"].map((item, i) => (
+                  {["Home", "Research", "Projects", "Events", "Achievements", "Administration", "About AAC"].map((item, i) => (
                     <motion.div
                       key={item}
                       custom={i}
@@ -143,7 +140,7 @@ const Navbar = () => {
                       animate="open"
                     >
                       <Link
-                        href={item === "Home" ? "/" : `/${item}`}
+                        href={item === "Home" ? "/" : item === "About AAC" ? "/News" : item === "Projects" ? "/projects" : `/${item}`}
                         className="text-white text-3xl font-light tracking-wide hover:text-[#57e1ff] transition-colors"
                         onClick={() => setIsOpen(false)}
                       >

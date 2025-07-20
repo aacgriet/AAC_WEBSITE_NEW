@@ -10,7 +10,8 @@ export const STORAGE_KEYS = {
   BOOKS: 'aac_books',
   ALUMNI: 'aac_alumni',
   STARTUPS: 'aac_startups',
-  CORE_COMMITTEE: 'aac_core_committee'
+  CORE_COMMITTEE: 'aac_core_committee',
+  ACHIEVEMENTS: 'aac_achievements'
 };
 
 export class StorageManager {

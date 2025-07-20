@@ -13,7 +13,8 @@ const TABLE_MODELS = {
   books: 'book',
   alumni: 'alumni',
   startups: 'startup',
-  corecommittee: 'coreCommittee'
+  corecommittee: 'coreCommittee',
+  achievements: 'achievement' // Added achievements mapping
 };
 
 // Helper function to get Prisma model
@@ -164,6 +165,19 @@ const transformDataForDB = (tableName, data) => {
         appScreenshots: JSON.stringify(data.appScreenshots || []),
       };
       
+    case 'achievements':
+      return {
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        date: new Date(data.date),
+        names: JSON.stringify(data.names || []),
+        images: JSON.stringify(data.images || []),
+        mainImage: data.mainImage,
+        category: data.category,
+        status: data.status || 'published',
+      };
+      
     default:
       return data;
   }
@@ -262,6 +276,13 @@ const transformDataFromDB = (tableName, data) => {
         ...data,
         founders: parseJsonField(data.founders),
         appScreenshots: parseJsonField(data.appScreenshots),
+      };
+      
+    case 'achievements':
+      return {
+        ...data,
+        names: parseJsonField(data.names),
+        images: parseJsonField(data.images),
       };
       
     default:

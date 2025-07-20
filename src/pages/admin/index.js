@@ -1,5 +1,4 @@
-
-// src/pages/admin/index.js - Updated with Premium UI Design System
+// src/pages/admin/index.js - Updated with Premium UI Design System and Achievements
 import React, { useState, useEffect, useRef } from 'react';
 import { useDatabase } from '@/hooks/useDatabase';
 import AdminAuth from '@/components/AdminAuth';
@@ -83,7 +82,8 @@ import {
   FaFileExport,
   FaDatabase,
   FaExclamationTriangle,
-  FaTachometerAlt
+  FaTachometerAlt,
+  FaTrophy
 } from 'react-icons/fa';
 
 // Form components
@@ -95,12 +95,15 @@ import PatentsForm from '@/components/Forms/PatentsForm';
 import BooksForm from '@/components/Forms/BooksForm';
 import StartupsForm from '@/components/Forms/StartupsForm';
 import AlumniForm from '@/components/Forms/AlumniForm';
+import AchievementsForm from '@/components/Forms/AchievementsForm';
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [selectedItem, setSelectedItem] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formType, setFormType] = useState('add');
+  const [showAchievementsForm, setShowAchievementsForm] = useState(false);
+  const [editingAchievementId, setEditingAchievementId] = useState(null);
   
   // Delete All Modal State
   const [deleteAllModal, setDeleteAllModal] = useState({
@@ -119,6 +122,14 @@ const AdminDashboard = () => {
   
   const fileInputRef = useRef(null);
 
+  const { 
+    data: achievementsData, 
+    isLoading: achievementsLoading, 
+    addItem: addAchievement, 
+    updateItem: updateAchievement, 
+    deleteItem: deleteAchievement 
+  } = useDatabase('achievements');
+
   // Database hooks for all collections
   const newsDB = useDatabase('news');
   const eventsDB = useDatabase('events');
@@ -129,6 +140,16 @@ const AdminDashboard = () => {
   const startupsDB = useDatabase('startups');
   const alumniDB = useDatabase('alumni');
 
+  const handleEditAchievement = (achievementId) => {
+    setEditingAchievementId(achievementId);
+    setShowAchievementsForm(true);
+  };
+
+  const handleAchievementSuccess = () => {
+    setShowAchievementsForm(false);
+    setEditingAchievementId(null);
+  };
+  
   // Get database hook based on section
   const getDBHook = (section) => {
     const dbMap = {
@@ -139,7 +160,8 @@ const AdminDashboard = () => {
       patents: patentsDB,
       books: booksDB,
       startups: startupsDB,
-      alumni: alumniDB
+      alumni: alumniDB,
+      achievements: { data: achievementsData, deleteItem: deleteAchievement }
     };
     return dbMap[section];
   };
@@ -202,6 +224,13 @@ const AdminDashboard = () => {
         icon: <FaGraduationCap />, 
         color: 'from-teal-500 to-teal-600',
         section: 'alumni'
+      },
+      { 
+        title: 'Achievements', 
+        count: achievementsData?.length || 0, 
+        icon: <FaTrophy />, 
+        color: 'from-yellow-500 to-yellow-600',
+        section: 'achievements'
       }
     ];
   };
@@ -216,7 +245,8 @@ const AdminDashboard = () => {
     { id: 'patents', label: 'Patents', icon: <FaCertificate /> },
     { id: 'books', label: 'Books & Blogs', icon: <FaBook /> },
     { id: 'startups', label: 'Startups', icon: <FaRocket /> },
-    { id: 'alumni', label: 'Alumni', icon: <FaGraduationCap /> }
+    { id: 'alumni', label: 'Alumni', icon: <FaGraduationCap /> },
+    { id: 'achievements', label: 'Achievements', icon: <FaTrophy /> }
   ];
 
   // Handle form submission success
@@ -388,6 +418,7 @@ const AdminDashboard = () => {
        activeSection === 'patents' ? 'patentId' :
        activeSection === 'books' ? 'bookId' :
        activeSection === 'startups' ? 'startupId' :
+       activeSection === 'achievements' ? 'achievementId' :
        'alumnusId']: formType === 'edit' ? (selectedItem?.id || selectedItem?._id) : null,
       onSuccess: handleFormSuccess,
       onCancel: handleFormCancel
@@ -402,6 +433,7 @@ const AdminDashboard = () => {
       case 'books': return <BooksForm {...formProps} />;
       case 'startups': return <StartupsForm {...formProps} />;
       case 'alumni': return <AlumniForm {...formProps} />;
+      case 'achievements': return <AchievementsForm {...formProps} />;
       default: return null;
     }
   };
@@ -478,7 +510,7 @@ const AdminDashboard = () => {
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
         {getStats().map((stat, index) => (
           <motion.div
@@ -882,6 +914,22 @@ const AdminDashboard = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Achievements Modal */}
+        {showAchievementsForm && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+              <AchievementsForm
+                achievementId={editingAchievementId}
+                onSuccess={handleAchievementSuccess}
+                onCancel={() => {
+                  setShowAchievementsForm(false);
+                  setEditingAchievementId(null);
+                }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Hidden file input for import */}
         <input

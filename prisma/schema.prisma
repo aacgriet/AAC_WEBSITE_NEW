@@ -224,3 +224,21 @@ model CoreCommittee {
   
   @@map("core_committee")
 }
+
+
+model Achievement {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  date        DateTime
+  names       Json     // Array of names/contributors
+  images      Json     // Array of image URLs
+  mainImage   String?  // Primary image URL
+  category    String?  // Categories: Awards, Jobs, Internships, Hackathons, Others
+  status      String   @default("published")
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("achievements")
+}
