@@ -60,8 +60,9 @@ const PageHero = ({ title, subtitle, tag, highlightTitle = false }) => {
                       </>
                     );
                   } else {
+                    // Single word gets the colorful gradient
                     return (
-                      <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
+                      <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
                         {title}
                       </span>
                     );
@@ -88,8 +89,9 @@ const PageHero = ({ title, subtitle, tag, highlightTitle = false }) => {
                     </>
                   );
                 } else {
+                  // Single word gets the colorful gradient
                   return (
-                    <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
                       {title}
                     </span>
                   );

@@ -96,31 +96,38 @@ const Home = () => {
               <span className="text-sm font-medium relative z-10">Innovation • Research • Excellence</span>
             </motion.div> */}
             
-            {/* Title with enhanced gradient effect */}
+            {/* Modern Title Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="mb-8"
+            >
+              {/* Main Title */}
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
+                  Advanced Academic{' '}
+                </span>
+                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                  Center
+                </span>
+              </h1>
+              
+              {/* Subtitle with modern styling */}
+              <div className="relative">
+                <h2 className="text-lg md:text-xl lg:text-2xl font-medium text-blue-100/80 max-w-3xl mx-auto leading-relaxed">
+                  <span className="bg-gradient-to-r from-blue-200 to-indigo-300 bg-clip-text text-transparent">
+                    Gokaraju Rangaraju Institute of Engineering and Technology
+                  </span>
+                </h2>
+                
+                {/* Decorative line */}
+                <div className="flex justify-center mt-6 mb-2">
+                  <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-blue-400/60 to-transparent rounded-full"></div>
+                </div>
+              </div>
+            </motion.div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
-            >
-              <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
-                Advanced Academic
-              </span>{' '}
-              <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                Center
-              </span>
-            </motion.h1>
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-5xl md:text-xl lg:text-xl font-bold mb-6"
-            >
-              <span className="bg-gradient-to-r from-white via-blue-100 to-indigo-200 bg-clip-text text-transparent">
-                Gokaraju Rangaraju Institute of Engineering and Technology
-              </span>
-            </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
