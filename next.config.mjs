@@ -8,6 +8,14 @@ const nextConfig = {
         hostname: 'res.cloudinary.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: '**', // This allows any HTTPS hostname
+      },
+      {
+        protocol: 'http',
+        hostname: '**', // This allows any HTTP hostname
+      },
     ],
   },
   env: {

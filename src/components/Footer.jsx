@@ -1,4 +1,4 @@
-// src/components/Footer.jsx - Fixed arrow z-index positioning
+// src/components/Footer.jsx - Updated with logos moved inside Connect section
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -12,26 +12,6 @@ import {
   FaEnvelope,
   FaExternalLinkAlt
 } from 'react-icons/fa';
-
-const Logo = () => {
-  return (
-    <motion.div 
-      whileHover={{ scale: 1.05 }}
-      className="flex items-center justify-center mb-8"
-    >
-      <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-2xl"></div>
-        <Image 
-          src="/images/logo.png"
-          height={120} 
-          width={120} 
-          alt="AAC Logo" 
-          className="relative z-10 drop-shadow-2xl"
-        />
-      </div>
-    </motion.div>
-  );
-};
 
 const SocialButton = ({ children, label, href, color = "from-blue-500 to-blue-600" }) => {
   return (
@@ -135,10 +115,6 @@ const Footer = () => {
           className="relative z-10 text-white"
         >
           <div className="container mx-auto py-20 px-4">
-            <motion.div variants={itemVariants}>
-              <Logo />
-            </motion.div>
-            
             {/* Main content area */}
             <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-8 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300 mb-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -234,6 +210,49 @@ const Footer = () => {
                       </div>
                     </div>
                   </motion.a>
+
+                  {/* Logos Section - Added below Get In Touch */}
+                  <div className="pt-6">
+                    <div className="flex justify-start items-center gap-8">
+                      {/* AAC Logo */}
+                      <motion.div 
+                        whileHover={{ scale: 1.05 }}
+                        className="flex items-center justify-center"
+                      >
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-2xl"></div>
+                          <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center relative z-10 border border-white/20">
+                            <Image 
+                              src="/images/logo.png"
+                              height={100} 
+                              width={100} 
+                              alt="AAC Logo" 
+                              className="drop-shadow-xl"
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+
+                      {/* GRIET Logo */}
+                      <motion.div 
+                        whileHover={{ scale: 1.05 }}
+                        className="flex items-center justify-center"
+                      >
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-gradient-to-br from-orange-400/20 to-red-600/20 rounded-full blur-2xl"></div>
+                          <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center relative z-10 border border-white/20 overflow-hidden">
+                            <Image 
+                              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqTkkG-9c2jad8zMOjRkn8o8qZ-L9nnRC5JA&s"
+                              height={100} 
+                              width={100} 
+                              alt="GRIET Logo" 
+                              className="drop-shadow-xl object-cover rounded-full"
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    </div>
+                  </div>
                 </motion.div>
               </div>
             </div>
