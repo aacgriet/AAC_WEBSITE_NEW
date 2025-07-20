@@ -1,6 +1,4 @@
-
-
-// src/pages/projects/index.js - Updated to use database
+// src/pages/projects/index.js - Updated to use database with GitHub stats
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Layout from '@/components/Layout';
@@ -249,7 +247,7 @@ const Projects = () => {
             className="mt-16 backdrop-blur-sm bg-white/5 rounded-2xl p-8 border border-white/10"
           >
             <h3 className="text-2xl font-bold text-white mb-6 text-center">Project Statistics</h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-400 mb-2">
                   {projectsData.length}
@@ -276,6 +274,13 @@ const Projects = () => {
                   {years.length - 1}
                 </div>
                 <div className="text-gray-400">Active Years</div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-3xl font-bold text-pink-400 mb-2">
+                  {projectsData.filter(p => p.githubRepo && p.githubRepo.trim()).length}
+                </div>
+                <div className="text-gray-400">With GitHub</div>
               </div>
             </div>
           </motion.div>

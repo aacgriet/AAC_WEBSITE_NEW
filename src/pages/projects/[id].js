@@ -1,4 +1,4 @@
-// src/pages/projects/[id].js - Modernized Project Detail Page
+// src/pages/projects/[id].js - Fixed Project Detail Page
 import React from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -6,22 +6,23 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import Layout from '@/components/Layout';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { STORAGE_KEYS } from '@/lib/storage';
-import { FaArrowLeft, FaCalendar, FaUser, FaUsers, FaFolder, FaCode, FaExternalLinkAlt } from 'react-icons/fa';
+import { useDatabase } from '@/hooks/useDatabase';
+import { FaArrowLeft, FaCalendar, FaUser, FaUsers, FaFolder, FaCode, FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
 
 const ProjectDetail = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { data: projects, loading, error } = useLocalStorage(STORAGE_KEYS.PROJECTS);
+  const { data: projects, loading, error } = useDatabase('projects');
 
   // Find the specific project
-  const project = projects.find(p => p._id === id || p.id === id);
+  const project = projects?.find(p => p._id === id || p.id === id);
 
   // Get related projects (same category, excluding current)
   const relatedProjects = projects
-    .filter(p => p.categories === project?.categories && (p._id !== id && p.id !== id))
-    .slice(0, 3);
+    ? projects
+        .filter(p => p.categories === project?.categories && (p._id !== id && p.id !== id))
+        .slice(0, 3)
+    : [];
 
   // Format date for display
   const formatDate = (dateString) => {
@@ -130,7 +131,7 @@ const ProjectDetail = () => {
               <span className="text-4xl">❌</span>
             </div>
             <h3 className="text-3xl font-bold text-white mb-4">Project Not Found</h3>
-            <p className="text-gray-400 text-lg mb-8">The project you're looking for doesn't exist or has been removed.</p>
+            <p className="text-gray-400 text-lg mb-8">The project you&apos;re looking for doesn&apos;t exist or has been removed.</p>
             <Link
               href="/projects"
               className="group/btn inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 relative overflow-hidden hover:scale-105"
@@ -149,9 +150,9 @@ const ProjectDetail = () => {
 
   const gradientClass = getCategoryGradient(project.categories);
   const categoryIcon = getCategoryIcon(project.categories);
-  const formattedTitle = project.title.split(' ').length > 1 
+  const formattedTitle = project.title && project.title.split(' ').length > 1 
     ? project.title.split(' ').slice(0, -1).join(' ') + ' ' + project.title.split(' ').slice(-1)[0]
-    : project.title;
+    : project.title || 'Untitled Project';
 
   return (
     <Layout>
@@ -261,6 +262,20 @@ const ProjectDetail = () => {
                 <span>{project.author}</span>
               </div>
             )}
+
+            {/* GitHub Badge */}
+            {project.githubRepo && (
+              <a
+                href={project.githubRepo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-2 px-4 py-2 backdrop-blur-sm bg-white/5 text-gray-300 rounded-full border border-white/20 shadow-lg hover:bg-gray-900/40 transition-colors duration-300"
+              >
+                <FaGithub className="text-gray-400 group-hover:scale-110 transition-transform duration-200" />
+                <span>GitHub Repository</span>
+                <FaExternalLinkAlt className="text-xs" />
+              </a>
+            )}
           </div>
         </motion.div>
 
@@ -278,7 +293,7 @@ const ProjectDetail = () => {
               >
                 <Image
                   src={project.mainImage.asset.url}
-                  alt={project.title}
+                  alt={project.title || 'Project image'}
                   fill
                   className="object-cover"
                   priority
@@ -300,6 +315,31 @@ const ProjectDetail = () => {
                   {getDescriptionText()}
                 </div>
               </div>
+
+              {/* GitHub Repository Section */}
+              {project.githubRepo && (
+                <div className="mt-8 pt-6 border-t border-white/10">
+                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <FaGithub className="text-gray-400" />
+                    Source Code
+                  </h3>
+                  <a
+                    href={project.githubRepo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-3 px-6 py-4 bg-gray-800 hover:bg-gray-700 text-white rounded-xl transition-colors duration-200 border border-gray-700 hover:border-gray-600"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-200">
+                      <FaGithub className="text-lg text-white" />
+                    </div>
+                    <div>
+                      <div className="font-medium">View on GitHub</div>
+                      <div className="text-gray-400 text-sm">Access the complete source code and documentation</div>
+                    </div>
+                    <FaExternalLinkAlt className="text-gray-400 group-hover:translate-x-1 transition-transform duration-200" />
+                  </a>
+                </div>
+              )}
             </motion.div>
           </div>
 
@@ -331,6 +371,12 @@ const ProjectDetail = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400">Team Size:</span>
                     <span className="text-white">{project.names.length} members</span>
+                  </div>
+                )}
+                {project.githubRepo && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Source Code:</span>
+                    <span className="text-green-400 font-medium">Available</span>
                   </div>
                 )}
               </div>

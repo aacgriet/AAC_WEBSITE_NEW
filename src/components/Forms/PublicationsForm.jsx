@@ -1,9 +1,7 @@
-// src/components/Forms/PublicationsForm.jsx - Updated to match your data structure
+// src/components/Forms/PublicationsForm.jsx - Updated with research paper link
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField, ArrayField } from './BaseForm';
 import ImageUpload from './ImageUpload';
-// import { useLocalStorage } from '@/hooks/useLocalStorage';
-// import { STORAGE_KEYS } from '@/lib/storage';
 import { useDatabase } from '@/hooks/useDatabase';
 
 const PUBLICATION_CATEGORIES = [
@@ -28,7 +26,6 @@ const PUBLICATION_CATEGORIES = [
 ];
 
 const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
-  // const { data: publicationsData, addItem, updateItem, getItemById } = useLocalStorage(STORAGE_KEYS.PUBLICATIONS);
   const { data: publicationsData, addItem, updateItem, getItemById } = useDatabase('publications');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
@@ -41,7 +38,8 @@ const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
     image: '',
     category: '',
     year: new Date().getFullYear(),
-    downloadUrl: ''
+    downloadUrl: '', // Existing field for PDF
+    paperLink: ''    // NEW FIELD: Research paper link (optional)
   });
 
   useEffect(() => {
@@ -52,7 +50,8 @@ const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
           ...existingPublication,
           authors: existingPublication.authors || [''],
           year: existingPublication.year || new Date().getFullYear(),
-          downloadUrl: existingPublication.downloadUrl || ''
+          downloadUrl: existingPublication.downloadUrl || '',
+          paperLink: existingPublication.paperLink || '' // Load existing paper link
         });
       }
     }
@@ -112,6 +111,11 @@ const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
     if (formData.downloadUrl && !formData.downloadUrl.startsWith('http')) {
       newErrors.downloadUrl = 'Download URL must start with http:// or https://';
     }
+
+    // Validate paper link if provided (optional field)
+    if (formData.paperLink && !formData.paperLink.startsWith('http')) {
+      newErrors.paperLink = 'Paper link must start with http:// or https://';
+    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -134,15 +138,15 @@ const PublicationsForm = ({ publicationId = null, onSuccess, onCancel }) => {
       };
       
       let result;
-if (publicationId) {
-  result = await updateItem(publicationId, publicationItem);
-} else {
-  result = await addItem(publicationItem);
-}
+      if (publicationId) {
+        result = await updateItem(publicationId, publicationItem);
+      } else {
+        result = await addItem(publicationItem);
+      }
 
-if (result) {
-  onSuccess?.(result);
-}
+      if (result) {
+        onSuccess?.(result);
+      }
     } catch (error) {
       console.error('Error saving publication:', error);
       setErrors({ submit: 'Failed to save publication' });
@@ -224,15 +228,37 @@ if (result) {
         />
       </div>
 
-      <FormField
-        label="PDF Download URL (Optional)"
-        name="downloadUrl"
-        type="url"
-        value={formData.downloadUrl}
-        onChange={handleInputChange}
-        placeholder="Enter the direct link to the PDF file"
-        error={errors.downloadUrl}
-      />
+      {/* Updated Links Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium text-white">Publication Links (Optional)</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            label="PDF Download URL"
+            name="downloadUrl"
+            type="url"
+            value={formData.downloadUrl}
+            onChange={handleInputChange}
+            placeholder="https://example.com/paper.pdf"
+            error={errors.downloadUrl}
+          />
+
+          {/* NEW FIELD: Research Paper Link */}
+          <FormField
+            label="Research Paper Link"
+            name="paperLink"
+            type="url"
+            value={formData.paperLink}
+            onChange={handleInputChange}
+            placeholder="https://doi.org/10.xxxx/example or journal website link"
+            error={errors.paperLink}
+          />
+        </div>
+        
+        <p className="text-gray-400 text-sm">
+          Add links to the paper's official publication page, DOI link, or journal website where readers can access or cite the paper.
+        </p>
+      </div>
 
       <ImageUpload
         label="Publication Image/Figure"

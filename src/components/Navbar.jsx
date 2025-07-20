@@ -91,7 +91,7 @@ const Navbar = () => {
         initial="hidden"
         animate="visible"
         variants={navVariants}
-        className={`w-[1000px] transition-all duration-300 border rounded-xl ${
+        className={`w-[900px] transition-all duration-300 border rounded-xl ${
           scrolled ? "backdrop-blur-md bg-opacity-20 shadow-lg border-gray-600" : "border-gray-600"
         }`}
         style={{ 

@@ -1,5 +1,4 @@
-
-// src/pages/Publications/index.js - Updated to use database
+// src/pages/Publications/index.js - Updated to use database with paper links
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -7,7 +6,7 @@ import Layout from '@/components/Layout';
 import PageHero from '@/components/PageHero';
 import LoadingSpinner, { ContentLoading } from '@/components/LoadingSpinner';
 import { useDatabase } from '@/hooks/useDatabase';
-import { FaDownload, FaCalendar, FaUsers, FaBook, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaDownload, FaCalendar, FaUsers, FaBook, FaExternalLinkAlt, FaLink } from 'react-icons/fa';
 
 const PublicationCard = ({ publication, index }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -42,6 +41,13 @@ const PublicationCard = ({ publication, index }) => {
   };
 
   const handleDownload = (e, url) => {
+    e.stopPropagation();
+    if (url) {
+      window.open(url, '_blank');
+    }
+  };
+
+  const handlePaperLink = (e, url) => {
     e.stopPropagation();
     if (url) {
       window.open(url, '_blank');
@@ -105,9 +111,21 @@ const PublicationCard = ({ publication, index }) => {
             {publication.abstract}
           </p>
           
-          {/* Download Button */}
-          {publication.downloadUrl && (
-            <div className="mb-4">
+          {/* Action Buttons */}
+          <div className="mb-4 flex flex-wrap gap-2">
+            {/* Research Paper Link Button */}
+            {publication.paperLink && (
+              <button
+                onClick={(e) => handlePaperLink(e, publication.paperLink)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 text-blue-300 rounded-lg text-sm font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-colors"
+              >
+                <FaLink className="text-xs" />
+                Research Paper
+              </button>
+            )}
+            
+            {/* Download Button */}
+            {publication.downloadUrl && (
               <button
                 onClick={(e) => handleDownload(e, publication.downloadUrl)}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-300 rounded-lg text-sm font-medium border border-green-500/30 hover:bg-green-500/30 transition-colors"
@@ -115,8 +133,8 @@ const PublicationCard = ({ publication, index }) => {
                 <FaDownload className="text-xs" />
                 Download PDF
               </button>
-            </div>
-          )}
+            )}
+          </div>
           
           {/* Read more indicator */}
           <div className="mt-auto pt-4 border-t border-white/10 group-hover:border-white/20 transition-colors duration-300">
@@ -223,6 +241,19 @@ const PublicationCard = ({ publication, index }) => {
 
                   {/* Download/Action Buttons */}
                   <div className="flex flex-wrap gap-3">
+                    {/* Research Paper Link Button */}
+                    {publication.paperLink && (
+                      <button
+                        onClick={(e) => handlePaperLink(e, publication.paperLink)}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500/20 text-blue-300 rounded-xl font-medium border border-blue-500/30 hover:bg-blue-500/30 transition-colors"
+                      >
+                        <FaLink />
+                        Research Paper
+                        <FaExternalLinkAlt className="text-xs" />
+                      </button>
+                    )}
+                    
+                    {/* Download PDF Button */}
                     {publication.downloadUrl && (
                       <button
                         onClick={(e) => handleDownload(e, publication.downloadUrl)}
