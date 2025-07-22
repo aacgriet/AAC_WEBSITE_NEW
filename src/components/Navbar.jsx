@@ -305,7 +305,9 @@
 
 // export default Navbar;
 
-// src/components/Navbar.jsx - Clean modern design with smooth animations only, same layout and properties
+
+
+// src/components/Navbar.jsx - Fixed hover states with no interference
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -398,11 +400,13 @@ const Navbar = () => {
         initial="hidden"
         animate="visible"
         variants={navVariants}
-        className={`w-[900px] transition-all duration-300 border rounded-xl ${
-          scrolled ? "backdrop-blur-md bg-opacity-20 shadow-lg border-gray-600" : "border-gray-600"
+        className={`w-[900px] transition-all duration-300 border rounded-xl backdrop-blur-lg ${
+          scrolled 
+            ? "bg-black/30 shadow-2xl border-white/30" 
+            : "bg-white/10 border-white/20"
         }`}
         style={{ 
-          backgroundColor: scrolled ? themeColors.darkBg : 'transparent'
+          backgroundColor: scrolled ? themeColors.darkBg + 'cc' : 'rgba(255, 255, 255, 0.05)'
         }}
       >
         <div className="px-6">
@@ -428,79 +432,64 @@ const Navbar = () => {
               )}
             </motion.button>
 
-            {/* Desktop navigation - Smooth animations only */}
+            {/* Desktop navigation */}
             <div className="hidden md:flex w-full items-center justify-center">
-              {/* Left links - positioned closer to logo with slightly increased gap */}
+              {/* Left links */}
               <div className="flex items-center justify-end flex-1 gap-2 mr-6">
                 {navigationItems.slice(0, 4).map((item) => (
-                  <motion.div
+                  <div
                     key={item.name}
                     onMouseEnter={() => setHoveredItem(item.name)}
                     onMouseLeave={() => setHoveredItem(null)}
-                    whileHover={{ 
-                      scale: 1.05,
-                      transition: { duration: 0.2, ease: "easeOut" }
-                    }}
-                    whileTap={{ scale: 0.95 }}
+                    className="relative"
                   >
                     <Link 
                       href={item.path}
                       onClick={() => handleNavClick(item.name)}
-                      className={`relative px-3 py-1 font-medium transition-all duration-300 rounded-full group overflow-hidden text-center whitespace-nowrap ${
+                      className={`relative px-3 py-1 font-medium transition-all duration-300 rounded-full text-center whitespace-nowrap block ${
                         activeItem === item.name 
-                          ? 'text-white bg-white/10 shadow-lg' 
-                          : 'text-white/90 hover:text-white hover:bg-white/20'
+                          ? 'text-white bg-white/15 shadow-lg' 
+                          : hoveredItem === item.name
+                            ? 'text-white bg-white/10 transform scale-105'
+                            : 'text-white/90 hover:text-white'
                       }`}
                       style={{ fontSize: '14.5px' }}
                     >
-                      <span className="relative z-10">{item.name}</span>
+                      {item.name}
                       
-                      {/* Active/Hover indicator with smooth animation */}
-                      <AnimatePresence>
-                        {(hoveredItem === item.name || activeItem === item.name) && (
-                          <motion.div
-                            layoutId="navbar-indicator-left"
-                            className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full ${
-                              activeItem === item.name 
-                                ? 'bg-gradient-to-r from-blue-400 to-purple-400' 
-                                : 'bg-gradient-to-r from-blue-400/70 to-purple-400/70'
-                            }`}
-                            initial={{ opacity: 0, scaleX: 0 }}
-                            animate={{ opacity: 1, scaleX: 1 }}
-                            exit={{ opacity: 0, scaleX: 0 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                          />
-                        )}
-                      </AnimatePresence>
+                      {/* Individual underline for each item */}
+                      {(hoveredItem === item.name || activeItem === item.name) && (
+                        <motion.div
+                          className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full ${
+                            activeItem === item.name 
+                              ? 'bg-gradient-to-r from-blue-400 to-purple-400' 
+                              : 'bg-gradient-to-r from-blue-400/70 to-purple-400/70'
+                          }`}
+                          initial={{ scaleX: 0, opacity: 0 }}
+                          animate={{ scaleX: 1, opacity: 1 }}
+                          exit={{ scaleX: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                        />
+                      )}
                     </Link>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
 
-              {/* Logo - perfectly centered with same glow properties */}
+              {/* Logo */}
               <div className="flex-shrink-0">
                 <Link href="/" onClick={() => handleNavClick('Home')}>
-                  <motion.div 
-                    whileHover={{ 
-                      scale: 1.05, 
-                      rotate: 2,
-                      transition: { duration: 0.3, ease: "easeOut" }
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className="relative group cursor-pointer"
-                  >
-                    {/* Glow effect - same as before */}
-                    <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/30 to-purple-600/30 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="relative group cursor-pointer">
+                    {/* Glow effect only on logo hover */}
+                    <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/20 to-purple-600/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     
-                    {/* Logo container - exact same styling */}
                     <div 
-                      className="relative rounded-full p-3 shadow-2xl transition-all duration-500 group-hover:shadow-blue-500/25"
+                      className="relative rounded-full p-3 shadow-2xl transition-all duration-300 group-hover:shadow-blue-500/25 group-hover:scale-105"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%)',
-                        backdropFilter: 'blur(12px)',
-                        border: '1px solid rgba(255, 255, 255, 0.3)',
-                        boxShadow: '0 8px 32px rgba(87, 225, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
+                        backdropFilter: 'blur(20px)',
+                        border: '2px solid rgba(255, 255, 255, 0.3)',
+                        boxShadow: '0 8px 32px rgba(87, 225, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
                       }}
                     >
                       <Image
@@ -508,65 +497,59 @@ const Navbar = () => {
                         height={60}
                         src="/images/logo.png"
                         alt="AAC Logo"
-                        className="transition-transform duration-500 group-hover:scale-110"
+                        className="transition-transform duration-300 group-hover:scale-110"
                       />
                       
-                      {/* Inner glow - same as before */}
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
-                  </motion.div>
+                  </div>
                 </Link>
               </div>
 
-              {/* Right links - positioned closer to logo with reduced gap */}
+              {/* Right links */}
               <div className="flex items-center justify-start flex-1 gap-1 ml-6">
                 {navigationItems.slice(4).map((item) => (
-                  <motion.div
+                  <div
                     key={item.name}
                     onMouseEnter={() => setHoveredItem(item.name)}
                     onMouseLeave={() => setHoveredItem(null)}
-                    whileHover={{ 
-                      scale: 1.05,
-                      transition: { duration: 0.2, ease: "easeOut" }
-                    }}
-                    whileTap={{ scale: 0.95 }}
+                    className="relative"
                   >
                     <Link 
                       href={item.path}
                       onClick={() => handleNavClick(item.name)}
-                      className={`relative px-3 py-1 font-medium transition-all duration-300 rounded-full group overflow-hidden text-center whitespace-nowrap text-sm ${
+                      className={`relative px-3 py-1 font-medium transition-all duration-300 rounded-full text-center whitespace-nowrap text-sm block ${
                         activeItem === item.name 
-                          ? 'text-white bg-white/10 shadow-lg' 
-                          : 'text-white/90 hover:text-white hover:bg-white/20'
+                          ? 'text-white bg-white/15 shadow-lg' 
+                          : hoveredItem === item.name
+                            ? 'text-white bg-white/10 transform scale-105'
+                            : 'text-white/90 hover:text-white'
                       }`}
                     >
-                      <span className="relative z-10">{item.name}</span>
+                      {item.name}
                       
-                      {/* Active/Hover indicator with smooth animation */}
-                      <AnimatePresence>
-                        {(hoveredItem === item.name || activeItem === item.name) && (
-                          <motion.div
-                            layoutId="navbar-indicator-right"
-                            className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full ${
-                              activeItem === item.name 
-                                ? 'bg-gradient-to-r from-blue-400 to-purple-400' 
-                                : 'bg-gradient-to-r from-blue-400/70 to-purple-400/70'
-                            }`}
-                            initial={{ opacity: 0, scaleX: 0 }}
-                            animate={{ opacity: 1, scaleX: 1 }}
-                            exit={{ opacity: 0, scaleX: 0 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                          />
-                        )}
-                      </AnimatePresence>
+                      {/* Individual underline for each item */}
+                      {(hoveredItem === item.name || activeItem === item.name) && (
+                        <motion.div
+                          className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full ${
+                            activeItem === item.name 
+                              ? 'bg-gradient-to-r from-blue-400 to-purple-400' 
+                              : 'bg-gradient-to-r from-blue-400/70 to-purple-400/70'
+                          }`}
+                          initial={{ scaleX: 0, opacity: 0 }}
+                          animate={{ scaleX: 1, opacity: 1 }}
+                          exit={{ scaleX: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                        />
+                      )}
                     </Link>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Mobile Menu - Clean version */}
+          {/* Mobile Menu */}
           <AnimatePresence>
             {isOpen && (
               <motion.div
@@ -574,10 +557,9 @@ const Navbar = () => {
                 animate={{ opacity: 1, height: "100vh" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
-                className="fixed inset-0 flex flex-col items-center justify-center z-40"
+                className="fixed inset-0 flex flex-col items-center justify-center z-40 backdrop-blur-xl"
                 style={{ 
-                  backgroundColor: `rgba(${parseInt(themeColors.darkBg.slice(1, 3), 16)}, ${parseInt(themeColors.darkBg.slice(3, 5), 16)}, ${parseInt(themeColors.darkBg.slice(5, 7), 16)}, 0.95)`,
-                  backdropFilter: 'blur(10px)'
+                  background: `linear-gradient(135deg, ${themeColors.darkBg}f0 0%, ${themeColors.lightBg}f0 100%)`
                 }}
               >
                 <div className="flex flex-col space-y-6 text-center">
@@ -600,7 +582,7 @@ const Navbar = () => {
                     >
                       <Link
                         href={item.path}
-                        className="text-white text-3xl font-light tracking-wide hover:text-[#57e1ff] transition-colors duration-300"
+                        className="text-white text-3xl font-light tracking-wide hover:text-blue-400 transition-colors duration-300"
                         onClick={() => {
                           setIsOpen(false);
                           handleNavClick(item.name);

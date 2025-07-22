@@ -1,4 +1,4 @@
-// src/pages/About/index.js - Complete About AAC Page - FIXED GAP ONLY
+// src/pages/About/index.js - FIXED - Removed extra fixed background overlay
 import React from 'react';
 import { motion } from 'framer-motion';
 import Layout from '@/components/Layout';
@@ -124,12 +124,13 @@ const AboutAAC = () => {
 
       {/* Main Content - REMOVED GAP BY REMOVING py-20 and using -mt-12 to connect directly */}
       <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 -mt-12">
-        {/* Enhanced background effects */}
+        {/* REMOVED THIS ENTIRE FIXED BACKGROUND SECTION - IT WAS CAUSING THE OVERLAY ISSUE
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-[30%] -left-[20%] w-[60%] h-[100%] bg-gradient-to-br from-blue-400/10 to-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute top-[10%] -right-[20%] w-[60%] h-[80%] bg-gradient-to-br from-indigo-400/10 to-pink-600/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
           <div className="absolute top-[40%] -left-[25%] w-[70%] h-[70%] bg-gradient-to-br from-emerald-400/10 to-teal-600/10 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
         </div>
+        */}
 
         <div className="container mx-auto px-4 relative z-10 pt-20 pb-20">
           {/* What is AAC Section */}
@@ -496,54 +497,6 @@ const AboutAAC = () => {
                 </motion.div>
               </div>
             </div>
-          </motion.div>
-
-          {/* Call to Action */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            <motion.div
-              variants={itemVariants}
-              className="backdrop-blur-sm bg-white/5 rounded-2xl p-12 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300"
-            >
-              <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 h-1.5 w-24 mx-auto mb-8 rounded-full shadow-lg"></div>
-              
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                <span className="bg-gradient-to-r from-white via-pink-100 to-rose-200 bg-clip-text text-transparent">
-                  Ready to Join
-                </span>{' '}
-                <span className="bg-gradient-to-r from-pink-400 via-rose-400 to-red-400 bg-clip-text text-transparent">
-                  AAC?
-                </span>
-              </h2>
-              
-              <p className="text-xl text-pink-100/90 mb-8 max-w-3xl mx-auto leading-relaxed">
-                Take the first step towards advancing your technical skills and joining a community of innovators
-              </p>
-              
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="group/btn px-8 py-4 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 relative overflow-hidden hover:scale-105"
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  Apply Now
-                  <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
-                </span>
-                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
-              </motion.button>
-
-              {/* Decorative dots */}
-              <div className="flex justify-center items-center gap-3 mt-8">
-                <div className="w-3 h-3 bg-pink-500 rounded-full animate-pulse"></div>
-                <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse animation-delay-500"></div>
-                <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse animation-delay-1000"></div>
-              </div>
-            </motion.div>
           </motion.div>
         </div>
       </div>
