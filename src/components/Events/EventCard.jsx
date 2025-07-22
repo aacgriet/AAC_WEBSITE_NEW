@@ -1,5 +1,4 @@
-
-// src/components/Events/EventCard.jsx - Premium UI with database integration
+// src/components/Events/EventCard.jsx - Fixed blur issues
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -20,12 +19,12 @@ const EventCard = ({ event, date, path, img, index = 0, status, location, catego
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
       whileHover={{ y: -8, scale: 1.03 }}
-      className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden h-full flex flex-col border border-white/10 hover:border-white/20 transition-all duration-300"
+      className="group relative bg-[#1a2535] rounded-2xl shadow-xl overflow-hidden h-full flex flex-col border border-gray-700 hover:border-gray-600 transition-all duration-300"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Gradient overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
       
       {/* Event Image */}
       <div className="relative h-48 overflow-hidden rounded-t-2xl">
@@ -37,31 +36,31 @@ const EventCard = ({ event, date, path, img, index = 0, status, location, catego
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         
-        {/* Date Badge */}
-        <div className="absolute top-4 left-4">
-          <span className="px-3 py-1.5 bg-blue-500/20 text-blue-300 rounded-lg text-xs font-medium border border-blue-500/30 backdrop-blur-sm">
+        {/* Date Badge - Fixed blur issue */}
+        {/* <div className="absolute top-4 left-4">
+          <span className="px-3 py-1.5 bg-blue-500/90 text-white rounded-lg text-xs font-medium border border-blue-400/50 shadow-lg">
             {date || 'TBD'}
           </span>
-        </div>
+        </div> */}
 
         {/* Status Badge */}
-        {status && (
+        {/* {status && (
           <div className="absolute top-4 right-4">
-            <span className={`px-3 py-1.5 rounded-lg text-xs font-medium border backdrop-blur-sm ${
-              status === 'completed' ? 'bg-green-500/20 text-green-300 border-green-500/30' :
-              status === 'upcoming' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
-              status === 'ongoing' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' :
-              'bg-gray-500/20 text-gray-300 border-gray-500/30'
+            <span className={`px-3 py-1.5 rounded-lg text-xs font-medium border shadow-lg ${
+              status === 'completed' ? 'bg-green-500/90 text-white border-green-400/50' :
+              status === 'upcoming' ? 'bg-yellow-500/90 text-white border-yellow-400/50' :
+              status === 'ongoing' ? 'bg-purple-500/90 text-white border-purple-400/50' :
+              'bg-gray-500/90 text-white border-gray-400/50'
             }`}>
               {status}
             </span>
           </div>
-        )}
+        )} */}
 
         {/* Category Badge */}
         {category && (
           <div className="absolute bottom-4 left-4">
-            <span className="px-2 py-1 bg-black/40 text-white rounded text-xs font-medium backdrop-blur-sm">
+            <span className="px-2 py-1 bg-black/70 text-white rounded text-xs font-medium shadow-lg">
               {category}
             </span>
           </div>
@@ -70,11 +69,13 @@ const EventCard = ({ event, date, path, img, index = 0, status, location, catego
       
       {/* Content */}
       <div className="p-6 flex-1 flex flex-col relative z-10">
-        <h3 className="text-xl font-bold mb-3 text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
-          {event || 'Event'}
-        </h3>
+        <Link href={eventPath}>
+          <h3 className="text-xl font-bold mb-3 line-clamp-2 hover:text-blue-400 transition-colors cursor-pointer text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300">
+            {event || 'Event'}
+          </h3>
+        </Link>
         
-        <p className="text-gray-400 text-sm leading-relaxed mb-4 flex-1 group-hover:text-gray-300 transition-colors duration-300 line-clamp-3">
+        <p className="text-gray-300 text-sm leading-relaxed mb-4 flex-grow line-clamp-3 group-hover:text-gray-200 transition-colors duration-300">
           {description || 'No description available for this event.'}
         </p>
 
@@ -97,11 +98,6 @@ const EventCard = ({ event, date, path, img, index = 0, status, location, catego
           </span>
           <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
         </Link>
-      </div>
-
-      {/* Hover Effect - Animated border */}
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 animate-pulse"></div>
       </div>
     </motion.div>
   );

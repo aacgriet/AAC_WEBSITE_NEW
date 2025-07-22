@@ -1,5 +1,4 @@
-
-// src/pages/Events/index.js - Database functionality with Premium UI
+// src/pages/Events/index.js - Fixed blur issues in EventCard component
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -17,12 +16,12 @@ const EventCard = ({ event, index }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
       whileHover={{ y: -8, scale: 1.03 }}
-      className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden h-full flex flex-col border border-white/10 hover:border-white/20 transition-all duration-300"
+      className="group relative bg-[#1a2535] rounded-2xl shadow-xl overflow-hidden h-full flex flex-col border border-gray-700 hover:border-gray-600 transition-all duration-300"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Gradient overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
       
       {/* Event Image */}
       <div className="relative h-48 overflow-hidden rounded-t-2xl">
@@ -34,26 +33,26 @@ const EventCard = ({ event, index }) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         
-        {/* Date Badge */}
+        {/* Date Badge - Fixed blur issue */}
         <div className="absolute top-4 left-4">
-          <span className="px-3 py-1.5 bg-blue-500/20 text-blue-300 rounded-lg text-xs font-medium border border-blue-500/30 backdrop-blur-sm">
+          <span className="px-3 py-1.5 bg-blue-500/90 text-white rounded-lg text-xs font-medium border border-blue-400/50 shadow-lg">
             {event.date || 'TBD'}
           </span>
         </div>
 
-        {/* Status Badge */}
-        {event.status && (
+        {/* Status Badge - Fixed blur issue */}
+        {/* {event.status && (
           <div className="absolute top-4 right-4">
-            <span className={`px-3 py-1.5 rounded-lg text-xs font-medium border backdrop-blur-sm ${
-              event.status === 'completed' ? 'bg-green-500/20 text-green-300 border-green-500/30' :
-              event.status === 'upcoming' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
-              event.status === 'ongoing' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' :
-              'bg-gray-500/20 text-gray-300 border-gray-500/30'
+            <span className={`px-3 py-1.5 rounded-lg text-xs font-medium border shadow-lg ${
+              event.status === 'completed' ? 'bg-green-500/90 text-white border-green-400/50' :
+              event.status === 'upcoming' ? 'bg-yellow-500/90 text-white border-yellow-400/50' :
+              event.status === 'ongoing' ? 'bg-purple-500/90 text-white border-purple-400/50' :
+              'bg-gray-500/90 text-white border-gray-400/50'
             }`}>
               {event.status}
             </span>
           </div>
-        )}
+        )} */}
       </div>
       
       {/* Content */}

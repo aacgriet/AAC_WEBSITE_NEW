@@ -1,4 +1,4 @@
-// src/components/Footer.jsx - Updated with logos moved inside Connect section
+// src/components/Footer.jsx - Fixed logo blur and spacing issues
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -94,7 +94,7 @@ const Footer = () => {
         </motion.button>
       </div>
 
-      <footer className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden -mt-8" style={{ zIndex: 1 }}>
+      <footer className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden -mt-8 pb-1" style={{ zIndex: 1 }}>
         {/* Animated background blobs */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -bottom-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-blue-400/10 to-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
@@ -114,9 +114,9 @@ const Footer = () => {
           viewport={{ once: true }}
           className="relative z-10 text-white"
         >
-          <div className="container mx-auto py-20 px-4">
+          <div className="container mx-auto py-6 px-4">
             {/* Main content area */}
-            <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-8 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300 mb-8">
+            <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-8 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300 mb-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 {/* About Section */}
                 <motion.div variants={itemVariants} className="space-y-6">
@@ -211,45 +211,35 @@ const Footer = () => {
                     </div>
                   </motion.a>
 
-                  {/* Logos Section - Added below Get In Touch */}
-                  <div className="pt-6">
-                    <div className="flex justify-start items-center gap-8">
-                      {/* AAC Logo */}
+                  {/* Logos Section - Removed outer circles */}
+                  <div className="pt-2">
+                    <div className="flex justify-start items-center gap-6">
+                      {/* AAC Logo - No outer circle */}
                       <motion.div 
                         whileHover={{ scale: 1.05 }}
                         className="flex items-center justify-center"
                       >
-                        <div className="relative">
-                          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-2xl"></div>
-                          <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center relative z-10 border border-white/20">
-                            <Image 
-                              src="/images/logo.png"
-                              height={100} 
-                              width={100} 
-                              alt="AAC Logo" 
-                              className="drop-shadow-xl"
-                            />
-                          </div>
-                        </div>
+                        <Image 
+                          src="/images/logo.png"
+                          height={100} 
+                          width={100} 
+                          alt="AAC Logo" 
+                          className="drop-shadow-lg"
+                        />
                       </motion.div>
 
-                      {/* GRIET Logo */}
+                      {/* GRIET Logo - No outer circle */}
                       <motion.div 
                         whileHover={{ scale: 1.05 }}
                         className="flex items-center justify-center"
                       >
-                        <div className="relative">
-                          <div className="absolute inset-0 bg-gradient-to-br from-orange-400/20 to-red-600/20 rounded-full blur-2xl"></div>
-                          <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center relative z-10 border border-white/20 overflow-hidden">
-                            <Image 
-                              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqTkkG-9c2jad8zMOjRkn8o8qZ-L9nnRC5JA&s"
-                              height={100} 
-                              width={100} 
-                              alt="GRIET Logo" 
-                              className="drop-shadow-xl object-cover rounded-full"
-                            />
-                          </div>
-                        </div>
+                        <Image 
+                          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNheQM7rsjAI9PvCabTdRlLcMjO5LyORNMEA&s"
+                          height={100} 
+                          width={100} 
+                          alt="GRIET Logo" 
+                          className="drop-shadow-lg object-contain rounded-full"
+                        />
                       </motion.div>
                     </div>
                   </div>
@@ -257,7 +247,7 @@ const Footer = () => {
               </div>
             </div>
             
-            {/* Copyright Section */}
+            {/* Copyright Section - Further reduced spacing */}
             <motion.div 
               variants={itemVariants}
               className="text-center"
@@ -272,7 +262,7 @@ const Footer = () => {
                 <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
               </div>
               
-              <p className="text-gray-400 hover:text-gray-300 transition-colors duration-300">
+              <p className="text-gray-400 hover:text-gray-300 transition-colors duration-300 mb-1">
                 © {new Date().getFullYear()} Advanced Academic Center, GRIET. All rights reserved.
               </p>
             </motion.div>
