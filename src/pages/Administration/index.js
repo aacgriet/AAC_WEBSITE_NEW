@@ -1,4 +1,3 @@
-
 // src/pages/Administration/index.js - Updated with Core Committee Import and Year Filters
 import {
   coreCommitteeData,
@@ -303,61 +302,64 @@ const AdministrationPage = () => {
   );
 
   const CommitteeMemberCard = ({ data, index }) => {
-  const handleImageClick = () => {
-    if (data.linkedin) {
-      window.open(data.linkedin, '_blank', 'noopener,noreferrer');
-    }
+    const handleImageClick = () => {
+      if (data.linkedin) {
+        window.open(data.linkedin, "_blank", "noopener,noreferrer");
+      }
+    };
+
+    const imageUrl = data.image.startsWith("http")
+      ? data.image
+      : `https://drive.google.com/uc?export=view&id=${data.image}`;
+
+    return (
+      <motion.div
+        variants={itemVariants}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.1, duration: 0.6 }}
+        whileHover={{ y: -5, scale: 1.05 }}
+        onClick={handleImageClick}
+        className="group relative w-[200px] h-[380px]"
+        style={{ cursor: data.linkedin ? "pointer" : "default" }}
+      >
+        {/* Card Container */}
+        <div className="backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 h-full flex flex-col">
+          {/* Gradient overlay on hover */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+
+          {/* Image Container - Fixed height */}
+          <div className="relative w-full h-[240px] overflow-hidden flex-shrink-0">
+            <Image
+              src={imageUrl}
+              alt={data.name}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+
+            {/* LinkedIn indicator */}
+            {data.linkedin && (
+              <div className="absolute top-2 right-2 w-8 h-8 bg-[#0077b5] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                </svg>
+              </div>
+            )}
+          </div>
+
+          {/* Text Content - Fixed height with more space */}
+          <div className="p-4 text-center relative z-10 flex-1 flex flex-col justify-center h-[140px]">
+            <h3 className="font-bold text-base text-white mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300 line-clamp-3">
+              {data.name}
+            </h3>
+            <p className="text-purple-300 text-sm group-hover:text-purple-200 transition-colors duration-300 line-clamp-3">
+              {data.designation}
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    );
   };
-  
-  const imageUrl = data.image.startsWith('http') 
-    ? data.image 
-    : `https://drive.google.com/uc?export=view&id=${data.image}`;
-  
-  return (
-    <motion.div
-      variants={itemVariants}
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1, duration: 0.6 }}
-      whileHover={{ y: -5, scale: 1.05 }}
-      onClick={handleImageClick}
-      className="group relative"
-      style={{ cursor: data.linkedin ? 'pointer' : 'default' }}
-    >
-      <div className="relative">
-        {/* Smaller card with max width of 160px */}
-        <div className="aspect-[3/4] relative overflow-hidden rounded-xl max-w-[160px] mx-auto">
-          <Image 
-            src={imageUrl} 
-            alt={data.name} 
-            fill 
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          {/* Removed the black gradient shadow */}
-          
-          {/* Smaller LinkedIn indicator */}
-          {data.linkedin && (
-            <div className="absolute top-1 right-1 w-6 h-6 bg-[#0077b5] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
-                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-              </svg>
-            </div>
-          )}
-        </div>
-        
-        {/* Smaller text */}
-        <div className="p-3 text-center">
-          <h3 className="font-semibold text-sm text-white mb-0.5 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
-            {data.name}
-          </h3>
-          <p className="text-purple-300 text-xs group-hover:text-purple-200 transition-colors duration-300">
-            {data.designation}
-          </p>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
 
   return (
     <Layout>
@@ -610,16 +612,62 @@ const AdministrationPage = () => {
                 </div>
               </motion.div>
 
-              {/* Content Grid - More columns for smaller cards */}
-<motion.div 
-  key={selectedYear}
-  className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4"
-  variants={pageVariants}
->
-  {coreCommitteeData[selectedYear].map((item, index) => (
-    <CommitteeMemberCard key={`${selectedYear}-${item.name}`} data={item} index={index} />
-  ))}
-</motion.div>
+              {/* Content Grid - Organized by hierarchy */}
+              <motion.div key={selectedYear} variants={pageVariants}>
+                {/* President and Vice President Row */}
+                <div className="flex justify-center gap-6 mb-8 flex-wrap">
+                  {coreCommitteeData[selectedYear]
+                    .filter(
+                      (m) =>
+                        m.designation === "President" ||
+                        m.designation === "Vice President"
+                    )
+                    .map((item, index) => (
+                      <CommitteeMemberCard
+                        key={`${selectedYear}-${item.name}`}
+                        data={item}
+                        index={index}
+                      />
+                    ))}
+                </div>
+
+                {/* All Heads Row */}
+                <div className="flex justify-center gap-6 mb-8 flex-wrap">
+                  {coreCommitteeData[selectedYear]
+                    .filter(
+                      (m) =>
+                        m.designation.includes("Head") &&
+                        m.designation !== "President" &&
+                        m.designation !== "Vice President"
+                    )
+                    .map((item, index) => (
+                      <CommitteeMemberCard
+                        key={`${selectedYear}-${item.name}`}
+                        data={item}
+                        index={index}
+                      />
+                    ))}
+                </div>
+
+                {/* Other Members - Grid Layout */}
+                <div className="flex justify-center gap-6 flex-wrap">
+                  {coreCommitteeData[selectedYear]
+                    .filter(
+                      (m) =>
+                        m.designation !== "President" &&
+                        m.designation !== "Vice President" &&
+                        !m.designation.includes("Head")
+                    )
+                    .map((item, index) => (
+                      <div
+                        key={`${selectedYear}-${item.name}`}
+                        className="flex-shrink-0"
+                      >
+                        <CommitteeMemberCard data={item} index={index} />
+                      </div>
+                    ))}
+                </div>
+              </motion.div>
             </>
           )}
         </motion.div>

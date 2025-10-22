@@ -255,7 +255,7 @@ export const coreCommitteeData = {
     {
       name: "Dhruv Jain",
       designation: "Head Accounting & Assets",
-      image: "1uFUMErja2NCnG_E44pwY_O2XcwV5AePb",
+      image: "1k7c30VRF0bTddVXY5G9pzPaObLoilTvM",
       linkedin: null,
     },
     {

@@ -38,7 +38,7 @@ const Home = () => {
 
   return (
     <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div className="fixed top-2 left-8 z-50 hidden md:block">
+      <div className="fixed top-2 left-8 z-50 hidden min-[1600px]:block">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}

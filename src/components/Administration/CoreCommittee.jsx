@@ -1,118 +1,133 @@
-import React from 'react';
-import Image from 'next/image';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Mousewheel, Keyboard } from 'swiper';
-import 'swiper/css';
-import { motion } from 'framer-motion';
+// src/components/Administration/CoreCommittee.jsx
+import { motion } from "framer-motion";
+import Image from "next/image";
 
 const coreCommitteeData = [
   {
     Id: "1",
     Name: "Abhiram Pedamallu",
     Designation: "President",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160195/AAC-web/corecommittee2024/AbhiramPedamallu.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160195/AAC-web/corecommittee2024/AbhiramPedamallu.jpg",
   },
   {
     Id: "3",
     Name: "V. Dinesh Chandra",
     Designation: "Vice President",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160196/AAC-web/corecommittee2024/DineshChandraVakkapatla.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160196/AAC-web/corecommittee2024/DineshChandraVakkapatla.jpg",
   },
   {
     Id: "5",
     Name: "Abhiram Dodda",
     Designation: "Technical Coordinator",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160195/AAC-web/corecommittee2024/AbhiramDodda.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160195/AAC-web/corecommittee2024/AbhiramDodda.jpg",
   },
   {
     Id: "6",
     Name: "Seetaram Koushik",
     Designation: "Database Coordinator",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160199/AAC-web/corecommittee2024/SeetaramKoushik.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160199/AAC-web/corecommittee2024/SeetaramKoushik.jpg",
   },
   {
     Id: "7",
     Name: "Manav",
     Designation: "Finance Coordinator",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160196/AAC-web/corecommittee2024/Manav.webp",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160196/AAC-web/corecommittee2024/Manav.webp",
   },
   {
     Id: "8",
     Name: "Srija Cherukuri",
     Designation: "PR Coordinator",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160199/AAC-web/corecommittee2024/SrijaCherukuri.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160199/AAC-web/corecommittee2024/SrijaCherukuri.jpg",
   },
   {
     Id: "25",
     Name: "Rohitha Tunikipati",
     Designation: "Manager",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160199/AAC-web/corecommittee2024/RohithaTunikipati.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160199/AAC-web/corecommittee2024/RohithaTunikipati.jpg",
   },
   {
     Id: "13",
     Name: "Rithvik Mandya",
     Designation: "Manager",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160197/AAC-web/corecommittee2024/RithvikMandya.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160197/AAC-web/corecommittee2024/RithvikMandya.jpg",
   },
   {
     Id: "14",
     Name: "Harshitha Chilupuri",
     Designation: "Manager",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160195/AAC-web/corecommittee2024/ChilupuriHarshitha.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160195/AAC-web/corecommittee2024/ChilupuriHarshitha.jpg",
   },
   {
     Id: "15",
     Name: "Swetha Soundararajan",
     Designation: "Manager",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160200/AAC-web/corecommittee2024/SwethaSoundar.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160200/AAC-web/corecommittee2024/SwethaSoundar.jpg",
   },
   {
     Id: "16",
     Name: "Nishith Reddy Duvvuru",
     Designation: "Manager",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160195/AAC-web/corecommittee2024/AsahiSahiba.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160195/AAC-web/corecommittee2024/AsahiSahiba.jpg",
   },
   {
     Id: "17",
     Name: "N Akshaya",
     Designation: "Manager",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160200/AAC-web/corecommittee2024/AkshayaN.png",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160200/AAC-web/corecommittee2024/AkshayaN.png",
   },
   {
     Id: "18",
     Name: "Meghana Satya Datla",
     Designation: "Manager",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160197/AAC-web/corecommittee2024/MeghanaDatla.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160197/AAC-web/corecommittee2024/MeghanaDatla.jpg",
   },
   {
     Id: "19",
     Name: "Chilkuri Abhinav Reddy",
     Designation: "Manager",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160194/AAC-web/corecommittee2024/AbhinavChilkuri.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160194/AAC-web/corecommittee2024/AbhinavChilkuri.jpg",
   },
   {
     Id: "20",
     Name: "Chava Sai Sree Praneeth",
     Designation: "Manager",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160200/AAC-web/corecommittee2024/SaiPranu.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160200/AAC-web/corecommittee2024/SaiPranu.jpg",
   },
   {
     Id: "21",
     Name: "Arekela Anjali",
     Designation: "Manager",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160200/AAC-web/corecommittee2024/AnjaliArekela.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160200/AAC-web/corecommittee2024/AnjaliArekela.jpg",
   },
   {
     Id: "22",
     Name: "Abhinav Jayanth",
     Designation: "Manager",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_400,h_400,ar_1:1,g_auto/v1717163090/AAC-web/corecommittee2024/AbhinavJayanthUltraProMax.png",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_400,h_400,ar_1:1,g_auto/v1717163090/AAC-web/corecommittee2024/AbhinavJayanthUltraProMax.png",
   },
   {
     Id: "23",
     Name: "Endrapu Kranthi Raj",
     Designation: "Manager",
-    Image: "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160196/AAC-web/corecommittee2024/KranthiRaj.jpg",
+    Image:
+      "https://res.cloudinary.com/aacgriet/image/upload/c_fill,w_1600,h_1600,ar_1:1,g_auto/v1717160196/AAC-web/corecommittee2024/KranthiRaj.jpg",
   },
 ];
 
@@ -141,10 +156,29 @@ const MemberCard = ({ img, name, designation }) => {
 };
 
 const CoreCommittee = () => {
+  // Group members by designation
+  const president = coreCommitteeData.filter(
+    (m) => m.Designation === "President"
+  );
+  const vicePresident = coreCommitteeData.filter(
+    (m) => m.Designation === "Vice President"
+  );
+  const heads = coreCommitteeData.filter(
+    (m) =>
+      m.Designation.includes("Coordinator") ||
+      (m.Designation.includes("Head") && !m.Designation.includes("Manager"))
+  );
+  const others = coreCommitteeData.filter(
+    (m) =>
+      !m.Designation.includes("President") &&
+      !m.Designation.includes("Coordinator") &&
+      !m.Designation.includes("Head")
+  );
+
   return (
     <div className="my-20">
       <div className="container mx-auto my-20">
-        <motion.h2 
+        <motion.h2
           className="text-5xl font-serif text-center"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -153,41 +187,52 @@ const CoreCommittee = () => {
           CORE COMMITTEE
         </motion.h2>
       </div>
-      
-      <Swiper
-        spaceBetween={30}
-        slidesPerView={1}
-        breakpoints={{
-          640: {
-            slidesPerView: 2,
-            spaceBetween: 20,
-          },
-          768: {
-            slidesPerView: 3,
-            spaceBetween: 30,
-          },
-          1024: {
-            slidesPerView: 4,
-            spaceBetween: 40,
-          },
-        }}
-        grabCursor={true}
-        mousewheel={true}
-        keyboard={true}
-        modules={[Mousewheel, Keyboard]}
-      >
-        {coreCommitteeData.map((item) => (
-          <SwiperSlide key={item.Id}>
-            <div className="flex justify-center h-auto md:h-96">
-              <MemberCard
-                img={item.Image}
-                name={item.Name}
-                designation={item.Designation}
-              />
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+
+      <div className="container mx-auto px-4">
+        {/* President and Vice President Row */}
+        <div className="flex justify-center gap-8 mb-12 flex-wrap">
+          {president.map((item) => (
+            <MemberCard
+              key={item.Id}
+              img={item.Image}
+              name={item.Name}
+              designation={item.Designation}
+            />
+          ))}
+          {vicePresident.map((item) => (
+            <MemberCard
+              key={item.Id}
+              img={item.Image}
+              name={item.Name}
+              designation={item.Designation}
+            />
+          ))}
+        </div>
+
+        {/* Heads Row */}
+        <div className="flex justify-center gap-8 mb-12 flex-wrap">
+          {heads.map((item) => (
+            <MemberCard
+              key={item.Id}
+              img={item.Image}
+              name={item.Name}
+              designation={item.Designation}
+            />
+          ))}
+        </div>
+
+        {/* Other Members - Managers and rest */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
+          {others.map((item) => (
+            <MemberCard
+              key={item.Id}
+              img={item.Image}
+              name={item.Name}
+              designation={item.Designation}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
