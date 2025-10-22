@@ -1,4 +1,4 @@
-// src/components/Navbar.jsx - COMPLETE FIXED VERSION
+// src/components/Navbar.jsx - Mobile Logo Removed
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -86,7 +86,7 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Mobile-only navbar - NEW DESIGN */}
+      {/* Mobile-only navbar - Logo Removed */}
       <div className="md:hidden">
         {/* Hamburger Button - Moves on scroll */}
         <motion.button
@@ -150,45 +150,6 @@ const Navbar = () => {
             />
           )}
         </motion.button>
-
-        {/* Centered Logo - Fixed position */}
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-40">
-          <Link href="/" onClick={() => handleNavClick("Home")}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative group cursor-pointer"
-            >
-              {/* Animated glow effect */}
-              <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse"></div>
-
-              {/* Logo container with glass effect */}
-              <div
-                className="relative rounded-full p-2.5 shadow-2xl transition-all duration-300 ring-2 ring-white/20 group-hover:ring-white/40"
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%)",
-                  backdropFilter: "blur(20px)",
-                  boxShadow:
-                    "0 10px 40px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5)",
-                }}
-              >
-                <Image
-                  width={50}
-                  height={50}
-                  src="/images/logo.png"
-                  alt="AAC Logo"
-                  className="transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
-                />
-
-                {/* Shine effect */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-            </motion.div>
-          </Link>
-        </div>
 
         {/* Mobile Menu Overlay */}
         <AnimatePresence>
