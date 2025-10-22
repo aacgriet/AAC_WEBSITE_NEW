@@ -1,4 +1,4 @@
-// src/components/Footer.jsx
+// src/components/Footer.jsx - FIXED MOBILE CENTERING
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -122,9 +122,13 @@ const Footer = () => {
           <div className="container mx-auto py-6 px-4">
             <div className="backdrop-blur-sm bg-white/5 rounded-2xl p-8 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300 mb-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                <motion.div variants={itemVariants} className="space-y-6">
+                {/* About AAC Section - CENTERED ON MOBILE */}
+                <motion.div
+                  variants={itemVariants}
+                  className="space-y-6 text-center md:text-left"
+                >
                   <div>
-                    <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 h-1.5 w-24 mb-4 rounded-full shadow-lg"></div>
+                    <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 h-1.5 w-24 mb-4 rounded-full shadow-lg mx-auto md:mx-0"></div>
                     <h3 className="text-2xl font-bold text-white">About AAC</h3>
                   </div>
                   <p className="text-gray-300 leading-relaxed">
@@ -134,21 +138,25 @@ const Footer = () => {
                     experts with diverse backgrounds to address various aspects
                     of innovative problem areas.
                   </p>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 justify-center md:justify-start">
                     <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                     <div className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse animation-delay-500"></div>
                     <div className="w-1 h-1 bg-indigo-500 rounded-full animate-pulse animation-delay-1000"></div>
                   </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="space-y-6">
+                {/* Quick Links Section - CENTERED ON MOBILE */}
+                <motion.div
+                  variants={itemVariants}
+                  className="space-y-6 text-center md:text-left"
+                >
                   <div>
-                    <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 h-1.5 w-24 mb-4 rounded-full shadow-lg"></div>
+                    <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 h-1.5 w-24 mb-4 rounded-full shadow-lg mx-auto md:mx-0"></div>
                     <h3 className="text-2xl font-bold text-white">
                       Quick Links
                     </h3>
                   </div>
-                  <div className="flex flex-col space-y-3">
+                  <div className="flex flex-col space-y-3 items-center md:items-start">
                     <FooterLink href="/Achievements">Achievements</FooterLink>
                     <FooterLink href="/Research">Research</FooterLink>
                     <FooterLink href="/Events">Events</FooterLink>
@@ -160,15 +168,19 @@ const Footer = () => {
                   </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="space-y-6">
+                {/* Connect Section - CENTERED ON MOBILE */}
+                <motion.div
+                  variants={itemVariants}
+                  className="space-y-6 text-center md:text-left"
+                >
                   <div>
-                    <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 h-1.5 w-24 mb-4 rounded-full shadow-lg"></div>
+                    <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 h-1.5 w-24 mb-4 rounded-full shadow-lg mx-auto md:mx-0"></div>
                     <h3 className="text-2xl font-bold text-white">
                       Connect With Us
                     </h3>
                   </div>
 
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                     <SocialButton
                       label="LinkedIn"
                       href="https://www.linkedin.com/school/aac-griet/"
@@ -202,12 +214,12 @@ const Footer = () => {
                   <motion.a
                     href="mailto:aacgrietofficial@gmail.com"
                     whileHover={{ scale: 1.02 }}
-                    className="group inline-flex items-center gap-3 px-4 py-3 backdrop-blur-sm bg-white/5 hover:bg-white/10 rounded-xl border border-white/20 hover:border-white/30 transition-all duration-300"
+                    className="group inline-flex items-center gap-3 px-4 py-3 backdrop-blur-sm bg-white/5 hover:bg-white/10 rounded-xl border border-white/20 hover:border-white/30 transition-all duration-300 mx-auto md:mx-0"
                   >
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                       <FaEnvelope className="text-sm text-white" />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <div className="text-white font-medium group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
                         Get In Touch
                       </div>
@@ -218,7 +230,7 @@ const Footer = () => {
                   </motion.a>
 
                   <div className="pt-2">
-                    <div className="flex justify-start items-center gap-6">
+                    <div className="flex justify-center md:justify-start items-center gap-6">
                       <motion.div
                         whileHover={{ scale: 1.05 }}
                         className="flex items-center justify-center"
