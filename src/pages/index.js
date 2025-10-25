@@ -38,37 +38,6 @@ const Home = () => {
 
   return (
     <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div className="fixed top-2 left-8 z-50 hidden min-[1600px]:block">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative group cursor-pointer"
-        >
-          {/* Animated glow effect */}
-          <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-          {/* Logo container */}
-          <div
-            className="relative rounded-full p-3 shadow-2xl transition-all duration-300 ring-2 ring-white/20 group-hover:ring-blue-400/50 group-hover:scale-105"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)",
-              backdropFilter: "blur(20px)",
-              boxShadow: "0 10px 40px rgba(59, 130, 246, 0.2)",
-            }}
-          >
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNheQM7rsjAI9PvCabTdRlLcMjO5LyORNMEA&s"
-              alt="GRIET Logo"
-              className="w-24 h-24 md:w-32 md:h-32 rounded-full transition-transform duration-300 group-hover:scale-110"
-            />
-
-            {/* Shine effect */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </div>
-        </motion.div>
-      </div>
       {/* Enhanced Global Breathing Effect - Consistent with Footer */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {/* Primary breathing blobs - more intense like footer */}
