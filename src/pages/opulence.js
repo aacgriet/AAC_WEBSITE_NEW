@@ -1,404 +1,200 @@
 import React from 'react';
 import Head from 'next/head';
 import { 
-  Lightbulb, 
-  Terminal, 
-  Users, 
-  ArrowRight, 
-  MapPin, 
-  Phone, 
-  MessageSquare, 
-  Mail 
+  Lightbulb, Terminal, Users, ArrowRight, MapPin, 
+  CalendarDays, Phone, Mail, Mountain, Zap
 } from 'lucide-react';
 
-// Ensure these paths match your project structure
+// Make sure these paths match your actual project structure
 import Navbar from '../components/Navbar'; 
 import Footer from '../components/Footer';
 
+const ContactCard = ({ name, role, phone }) => (
+  <div className="bg-[#1a0b05]/60 border border-orange-900/30 p-6 rounded-2xl backdrop-blur-md hover:border-orange-500/50 transition-all group shadow-lg">
+    <h4 className="text-white font-black uppercase italic tracking-tighter text-xl leading-none mb-1">{name}</h4>
+    <p className="text-orange-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-4">{role}</p>
+    <a href={`tel:${phone.replace(/\s+/g, '')}`} className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm font-bold">
+      <Phone size={14} className="text-orange-600" /> {phone}
+    </a>
+  </div>
+);
+
 const EventCard = ({ icon: Icon, title, description, accentColor }) => {
   const googleDocUrl = "https://docs.google.com/document/d/19ryYEEEZXfbJv_Y-pm2emfYXjBiWuAkIojKMiyd-wGU/edit?tab=t.0";
-
+  
   return (
-    <div className="group relative p-8 rounded-2xl bg-[#ffffff05] border border-[#ffffff10] hover:border-blue-500/40 transition-all duration-500 flex flex-col h-full backdrop-blur-md">
-      <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl -z-10"></div>
-      
-      <div className={`w-14 h-14 rounded-xl ${accentColor} flex items-center justify-center mb-6 border border-white/5`}>
+    <div className="group relative p-8 rounded-3xl bg-[#2a1309]/40 border border-[#4a2311] hover:border-orange-500/50 transition-all duration-500 flex flex-col h-full backdrop-blur-xl overflow-hidden shadow-2xl">
+      <div className={`w-14 h-14 rounded-2xl ${accentColor} flex items-center justify-center mb-6 border border-orange-500/20`}>
         <Icon size={28} />
       </div>
-      
-      <h3 className="text-2xl font-bold text-white mb-4 tracking-tight">{title}</h3>
-      <p className="text-[#94a3b8] leading-relaxed mb-8 flex-grow text-[15px]">
+      <h3 className="text-2xl font-black text-white mb-4 tracking-tighter uppercase italic">{title}</h3>
+      <p className="text-[#d4a373] leading-relaxed mb-8 flex-grow text-[15px] font-medium uppercase tracking-tight">
         {description}
       </p>
-      
       <a 
         href={googleDocUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center text-sm font-bold tracking-widest text-blue-400 hover:text-blue-300 uppercase transition-colors"
+        className="flex items-center text-sm font-black tracking-widest text-orange-500 uppercase italic cursor-pointer group-hover:gap-3 transition-all"
       >
-        Register <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+        Register <ArrowRight size={16} className="ml-1" />
       </a>
     </div>
   );
 };
 
-const OrganizerCard = ({ name, role, phone }) => (
-  <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm hover:border-blue-500/30 transition-all group">
-    <p className="text-blue-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">{role}</p>
-    <h4 className="text-xl font-bold text-white mb-4 tracking-tight">{name}</h4>
-    <div className="space-y-3">
-      <a href={`tel:${phone}`} className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors text-sm">
-        <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20">
-          <Phone size={14} className="text-blue-400" />
-        </div>
-        {phone}
-      </a>
-      <a href={`https://wa.me/${phone.replace(/[\s+]/g, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors text-sm">
-        <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20">
-          <MessageSquare size={14} className="text-emerald-400" />
-        </div>
-        Chat on WhatsApp
-      </a>
-    </div>
-  </div>
-);
-
 const OpulenceLanding = () => {
-  const mapsUrl = "https://maps.app.goo.gl/ZZbS1uZP9nx9jFD38"; 
   const googleDocUrl = "https://docs.google.com/document/d/19ryYEEEZXfbJv_Y-pm2emfYXjBiWuAkIojKMiyd-wGU/edit?tab=t.0";
+  const mapsUrl = "https://maps.app.goo.gl/ZZbS1uZP9nx9jFD38";
 
-  const events = [
-    {
-      icon: Lightbulb,
-      title: "Ideathon",
-      description: "Encouraging teamwork, creativity, and problem-solving. A platform to pitch innovative ideas and turn them into real-world solutions.",
-      accentColor: "bg-blue-600/10 text-blue-500"
-    },
-    {
-      icon: Users,
-      title: "Workshops",
-      description: "Hands-on sessions with industry tools. This year, we're hosting a flagship DevOps workshop to bridge academia and professional expertise.",
-      accentColor: "bg-purple-600/10 text-purple-500"
-    },
-    {
-      icon: Terminal,
-      title: "G-Prime",
-      description: "Our premier coding contest designed to challenge technical and logical thinking across various competitive programming levels.",
-      accentColor: "bg-emerald-600/10 text-emerald-500"
-    }
+  const contacts = [
+    { name: "Aluri Surya Teja", role: "President", phone: "+91 888 503 0188" },
+    { name: "Ramesitti Bhuvan Sai", role: "Vice President", phone: "+91 888 503 0188" },
+    { name: "Raghavendra Chekuri", role: "Event Management", phone: "+91 888 503 0188" },
+    { name: "Sajid Zubair", role: "Public Relations", phone: "+91 888 503 0188" }
   ];
 
-  const organizers = [
-    {
-      name: "Aluri Surya Teja",
-      role: "President, AAC",
-      phone: "+91 888 503 0188"
+  const events = [
+    { 
+        icon: Lightbulb, 
+        title: "Ideathon", 
+        description: "Strategic brainstorming and creative problem solving for the final mission frontiers.", 
+        accentColor: "bg-orange-600/10 text-orange-500" 
     },
-    {
-      name: "AAC Core Team",
-      role: "Event Coordination",
-      phone: "+91 888 503 0188" // Update with second contact if needed
+    { 
+        icon: Users, 
+        title: "Workshops", 
+        description: "Hands-on DevOps technical drills led by industry expedition leads and core experts.", 
+        accentColor: "bg-red-600/10 text-red-500" 
+    },
+    { 
+        icon: Terminal, 
+        title: "G-Prime", 
+        description: "The premier technical coding contest across the entire Hyderabad technical frontier.", 
+        accentColor: "bg-amber-600/10 text-amber-500" 
     }
   ];
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white selection:bg-blue-500/30 font-sans">
+    <div className="min-h-screen bg-[#0f0704] text-[#fae1dd] selection:bg-orange-500/30 font-sans overflow-x-hidden">
       <Head>
-        <title>Opulence 2026 | AAC GRIET</title>
-        <meta name="description" content="Flagship technical event by Advanced Academic Center, GRIET Hyderabad." />
+        <title>OPULENCE 2026 | AAC GRIET</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      
-      {/* Background Radial Glows matching aacgriet.com */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/20 blur-[120px] rounded-full"></div>
-        <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-purple-900/10 blur-[120px] rounded-full"></div>
+
+      {/* Background Layer: Gradient + Mountains */}
+      <div className="fixed inset-0 pointer-events-none -z-10 bg-[#0f0704]">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#4a1c09]/50 via-transparent to-[#0f0704]"></div>
+        
+        {/* Mountain Silhouette SVG */}
+        <div className="absolute bottom-0 left-0 w-full h-[50vh] opacity-25 transform scale-105">
+          <svg viewBox="0 0 1440 320" preserveAspectRatio="none" className="w-full h-full">
+            <path 
+                fill="#4a1c09" 
+                fillOpacity="1" 
+                d="M0,224L48,213.3C96,203,192,181,288,186.7C384,192,480,224,576,218.7C672,213,768,171,864,149.3C960,128,1056,128,1152,149.3C1248,171,1344,213,1392,234.7L1440,256L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+            </path>
+          </svg>
+        </div>
       </div>
 
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-6 pt-32 pb-24 relative">
+      <main className="max-w-7xl mx-auto px-6 pt-32 pb-24 relative z-10">
         
         {/* Hero Section */}
-        <header className="text-center mb-28">
-          <h2 className="text-blue-500 font-bold tracking-[0.4em] uppercase text-[10px] md:text-xs mb-6 opacity-80">
-            Advanced Academic Center Presents
-          </h2>
-          <h1 className="text-6xl md:text-9xl font-black mb-8 tracking-tighter leading-none italic">
-            OPULENCE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#60a5fa] to-[#a855f7] not-italic">2026</span>
+        <header className="text-center mb-36">
+          <div className="inline-flex items-center gap-2 mb-8 px-5 py-2 rounded-full border border-orange-500/30 bg-orange-500/5 text-orange-500 text-[10px] font-black uppercase tracking-[0.4em] animate-pulse">
+            <Zap size={12} fill="currentColor" /> SYSTEM READY: MISSION 2026
+          </div>
+          
+          <h1 className="text-7xl md:text-[12rem] font-black mb-6 tracking-tighter leading-[0.8] italic uppercase text-white drop-shadow-[0_20px_50px_rgba(234,88,12,0.4)]">
+            OPULENCE <span className="text-transparent bg-clip-text bg-gradient-to-b from-orange-400 to-red-700 not-italic">2026</span>
           </h1>
-          <p className="text-[#94a3b8] text-lg md:text-xl leading-relaxed max-w-2xl mx-auto font-medium">
-            An interdisciplinary technical hub where creativity, innovation, and excellence converge to shape the future of engineering.
+          
+          <p className="text-[#d4a373] text-xl md:text-2xl leading-relaxed max-w-3xl mx-auto font-black uppercase tracking-[0.2em] opacity-90 mb-12 italic">
+            Advanced Academic Center
           </p>
           
-          <div className="mt-14 flex flex-wrap items-center justify-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            {/* REGISTER BUTTON */}
             <a 
-             
-              rel="noopener noreferrer"
-              className="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-full font-bold transition-all transform hover:scale-105 shadow-xl shadow-blue-500/20 text-sm"
+                href={googleDocUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-4 bg-orange-600 hover:bg-orange-500 text-white px-12 py-5 rounded-full font-black tracking-tighter transition-all transform hover:scale-105 shadow-[0_25px_50px_-12px_rgba(234,88,12,0.6)] uppercase italic text-lg cursor-pointer"
             >
-              🗓️ April 10th
+              <CalendarDays size={22} className="group-hover:rotate-12 transition-transform" />
+              <span className="w-px h-6 bg-white/20"></span>
+              April 10th
             </a>
             
+            {/* LOCATION BUTTON */}
             <a 
-              href={mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/10 rounded-full font-bold backdrop-blur-sm text-sm hover:bg-white/10 hover:border-blue-500/50 transition-all group"
+                href={mapsUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-10 py-5 bg-white/5 border border-white/10 rounded-full font-black text-orange-100 backdrop-blur-sm text-sm hover:border-orange-500/50 transition-all group uppercase tracking-widest italic cursor-pointer"
             >
-              <MapPin size={18} className="text-blue-400 group-hover:animate-bounce" />
-              GRIET Campus
+              <MapPin size={18} className="text-orange-500" /> GRIET Campus
             </a>
           </div>
         </header>
 
-        {/* Triple Feature Grid */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-40">
+        {/* Triple Card Section */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-44">
           {events.map((event, idx) => (
             <EventCard key={idx} {...event} />
           ))}
         </section>
 
-        {/* Contact & Organizers Section */}
-        <section id="contact" className="pt-20 border-t border-white/5">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 text-center md:text-left">
+        {/* Command Center (Contact Info) */}
+        <section id="organizers" className="pt-24 border-t border-white/5">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div className="max-w-xl">
-              <h2 className="text-4xl md:text-5xl font-black mb-4 tracking-tight">Connect with Us</h2>
-              <p className="text-gray-400 text-lg">Reach out to our lead organizers for event-specific queries or collaboration opportunities.</p>
-            </div>
-            <div className="h-px flex-grow bg-white/10 mb-6 mx-12 hidden lg:block"></div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {organizers.map((person, idx) => (
-              <OrganizerCard key={idx} {...person} />
-            ))}
-            
-            {/* Quick Email Box */}
-            <div className="bg-gradient-to-br from-blue-600/20 to-purple-700/20 border border-white/10 p-8 rounded-2xl flex flex-col justify-center relative overflow-hidden group">
-              <div className="absolute -right-4 -top-4 text-white/5 group-hover:text-white/10 transition-colors">
-                <Mail size={120} />
+              <div className="flex items-center gap-3 text-orange-500 mb-2">
+                <Mountain size={24} />
+                <span className="font-black uppercase tracking-[0.3em] text-xs">Expedition Leaders</span>
               </div>
-              <h4 className="text-white font-bold text-xl mb-2">Have Questions?</h4>
-              <p className="text-blue-200/60 text-sm mb-6">Drop us a mail for formal invitations or sponsorship details.</p>
-              <a href="mailto:aac.griet@gmail.com" className="text-white font-bold hover:text-blue-400 transition-colors flex items-center gap-2">
-                aac.griet@gmail.com <ArrowRight size={16} />
-              </a>
+              <h2 className="text-6xl font-black uppercase italic tracking-tighter leading-none">Command Center</h2>
             </div>
           </div>
-        </section>
 
-      </main>
-
-      <Footer />
-
-      {/* Smooth scroll anchor for the bounce arrow */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
-        html { scroll-behavior: smooth; }
-      `}</style>
-    </div>
-  );
-};
-
-export default OpulenceLanding;import React from 'react';
-import Head from 'next/head';
-import { 
-  Lightbulb, 
-  Terminal, 
-  Users, 
-  ArrowRight, 
-  MapPin, 
-  Phone, 
-  MessageSquare, 
-  Mail 
-} from 'lucide-react';
-
-// Ensure these paths match your project structure
-import Navbar from '../components/Navbar'; 
-import Footer from '../components/Footer';
-
-const EventCard = ({ icon: Icon, title, description, accentColor }) => {
-  const googleDocUrl = "https://docs.google.com/document/d/19ryYEEEZXfbJv_Y-pm2emfYXjBiWuAkIojKMiyd-wGU/edit?tab=t.0";
-
-  return (
-    <div className="group relative p-8 rounded-2xl bg-[#ffffff05] border border-[#ffffff10] hover:border-blue-500/40 transition-all duration-500 flex flex-col h-full backdrop-blur-md">
-      <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl -z-10"></div>
-      
-      <div className={`w-14 h-14 rounded-xl ${accentColor} flex items-center justify-center mb-6 border border-white/5`}>
-        <Icon size={28} />
-      </div>
-      
-      <h3 className="text-2xl font-bold text-white mb-4 tracking-tight">{title}</h3>
-      <p className="text-[#94a3b8] leading-relaxed mb-8 flex-grow text-[15px]">
-        {description}
-      </p>
-      
-      <a 
-        href={googleDocUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center text-sm font-bold tracking-widest text-blue-400 hover:text-blue-300 uppercase transition-colors"
-      >
-        Register <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
-      </a>
-    </div>
-  );
-};
-
-const OrganizerCard = ({ name, role, phone }) => (
-  <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm hover:border-blue-500/30 transition-all group">
-    <p className="text-blue-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">{role}</p>
-    <h4 className="text-xl font-bold text-white mb-4 tracking-tight">{name}</h4>
-    <div className="space-y-3">
-      <a href={`tel:${phone}`} className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors text-sm">
-        <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20">
-          <Phone size={14} className="text-blue-400" />
-        </div>
-        {phone}
-      </a>
-      <a href={`https://wa.me/${phone.replace(/[\s+]/g, '')}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors text-sm">
-        <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20">
-          <MessageSquare size={14} className="text-emerald-400" />
-        </div>
-        Chat on WhatsApp
-      </a>
-    </div>
-  </div>
-);
-
-const OpulenceLanding = () => {
-  const mapsUrl = "https://maps.app.goo.gl/ZZbS1uZP9nx9jFD38"; 
-  const googleDocUrl = "https://docs.google.com/document/d/19ryYEEEZXfbJv_Y-pm2emfYXjBiWuAkIojKMiyd-wGU/edit?tab=t.0";
-
-  const events = [
-    {
-      icon: Lightbulb,
-      title: "Ideathon",
-      description: "Encouraging teamwork, creativity, and problem-solving. A platform to pitch innovative ideas and turn them into real-world solutions.",
-      accentColor: "bg-blue-600/10 text-blue-500"
-    },
-    {
-      icon: Users,
-      title: "Workshops",
-      description: "Hands-on sessions with industry tools. This year, we're hosting a flagship DevOps workshop to bridge academia and professional expertise.",
-      accentColor: "bg-purple-600/10 text-purple-500"
-    },
-    {
-      icon: Terminal,
-      title: "G-Prime",
-      description: "Our premier coding contest designed to challenge technical and logical thinking across various competitive programming levels.",
-      accentColor: "bg-emerald-600/10 text-emerald-500"
-    }
-  ];
-
-  const organizers = [
-    {
-      name: "Aluri Surya Teja",
-      role: "President, AAC",
-      phone: "+91 888 503 0188"
-    },
-    {
-      name: "AAC Core Team",
-      role: "Event Coordination",
-      phone: "+91 888 503 0188" // Update with second contact if needed
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-[#020617] text-white selection:bg-blue-500/30 font-sans">
-      <Head>
-        <title>Opulence 2026 | AAC GRIET</title>
-        <meta name="description" content="Flagship technical event by Advanced Academic Center, GRIET Hyderabad." />
-      </Head>
-      
-      {/* Background Radial Glows matching aacgriet.com */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-900/20 blur-[120px] rounded-full"></div>
-        <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-purple-900/10 blur-[120px] rounded-full"></div>
-      </div>
-
-      <Navbar />
-
-      <main className="max-w-7xl mx-auto px-6 pt-32 pb-24 relative">
-        
-        {/* Hero Section */}
-        <header className="text-center mb-28">
-          <h2 className="text-blue-500 font-bold tracking-[0.4em] uppercase text-[10px] md:text-xs mb-6 opacity-80">
-            Advanced Academic Center Presents
-          </h2>
-          <h1 className="text-6xl md:text-9xl font-black mb-8 tracking-tighter leading-none italic">
-            OPULENCE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#60a5fa] to-[#a855f7] not-italic">2026</span>
-          </h1>
-          <p className="text-[#94a3b8] text-lg md:text-xl leading-relaxed max-w-2xl mx-auto font-medium">
-            An interdisciplinary technical hub where creativity, innovation, and excellence converge to shape the future of engineering.
-          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {contacts.map((person, idx) => (
+              <ContactCard key={idx} {...person} />
+            ))}
+          </div>
           
-          <div className="mt-14 flex flex-wrap items-center justify-center gap-6">
+          <div className="p-10 rounded-[2.5rem] bg-gradient-to-r from-orange-600/20 to-transparent border border-orange-500/30 flex flex-col md:flex-row items-center justify-between gap-8 backdrop-blur-md">
+            <div>
+                <p className="text-white font-black uppercase italic tracking-tighter text-2xl mb-1">Official Transmission</p>
+                <p className="text-orange-200/60 font-bold uppercase tracking-widest text-sm flex items-center gap-2">
+                    <Mail size={16} /> aac.griet@gmail.com
+                </p>
+            </div>
             <a 
-             
-              rel="noopener noreferrer"
-              className="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-full font-bold transition-all transform hover:scale-105 shadow-xl shadow-blue-500/20 text-sm"
+                href="mailto:aac.griet@gmail.com" 
+                className="w-full md:w-auto px-10 py-4 rounded-full bg-white text-black font-black uppercase italic text-sm hover:bg-orange-500 hover:text-white transition-all text-center"
             >
-              🗓️ April 10th
-            </a>
-            
-            <a 
-              href={mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/10 rounded-full font-bold backdrop-blur-sm text-sm hover:bg-white/10 hover:border-blue-500/50 transition-all group"
-            >
-              <MapPin size={18} className="text-blue-400 group-hover:animate-bounce" />
-              GRIET Campus
+                Send Message
             </a>
           </div>
-        </header>
-
-        {/* Triple Feature Grid */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-40">
-          {events.map((event, idx) => (
-            <EventCard key={idx} {...event} />
-          ))}
         </section>
-
-        {/* Contact & Organizers Section */}
-        <section id="contact" className="pt-20 border-t border-white/5">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8 text-center md:text-left">
-            <div className="max-w-xl">
-              <h2 className="text-4xl md:text-5xl font-black mb-4 tracking-tight">Connect with Us</h2>
-              <p className="text-gray-400 text-lg">Reach out to our lead organizers for event-specific queries or collaboration opportunities.</p>
-            </div>
-            <div className="h-px flex-grow bg-white/10 mb-6 mx-12 hidden lg:block"></div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {organizers.map((person, idx) => (
-              <OrganizerCard key={idx} {...person} />
-            ))}
-            
-            {/* Quick Email Box */}
-            <div className="bg-gradient-to-br from-blue-600/20 to-purple-700/20 border border-white/10 p-8 rounded-2xl flex flex-col justify-center relative overflow-hidden group">
-              <div className="absolute -right-4 -top-4 text-white/5 group-hover:text-white/10 transition-colors">
-                <Mail size={120} />
-              </div>
-              <h4 className="text-white font-bold text-xl mb-2">Have Questions?</h4>
-              <p className="text-blue-200/60 text-sm mb-6">Drop us a mail for formal invitations or sponsorship details.</p>
-              <a href="mailto:aac.griet@gmail.com" className="text-white font-bold hover:text-blue-400 transition-colors flex items-center gap-2">
-                aac.griet@gmail.com <ArrowRight size={16} />
-              </a>
-            </div>
-          </div>
-        </section>
-
       </main>
 
       <Footer />
 
-      {/* Smooth scroll anchor for the bounce arrow */}
+      {/* Blanko-style Typography Simulation */}
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
-        html { scroll-behavior: smooth; }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&display=swap');
+        h1, h2, h3, h4 { font-family: 'Montserrat', sans-serif !important; }
+        
+        body {
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+        }
       `}</style>
     </div>
   );
