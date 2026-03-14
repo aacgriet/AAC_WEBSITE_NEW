@@ -67,8 +67,8 @@ const AboutAAC = () => {
     },
     {
       icon: <FaBrain className="text-2xl" />,
-      title: "Machine Learning",
-      shortName: "ML",
+      title: "Deep Learning",
+      shortName: "DL",
       description:
         "Artificial Intelligence and Machine Learning solutions using Python, TensorFlow, and advanced algorithms.",
       color: "from-purple-500 to-purple-600",
@@ -90,8 +90,8 @@ const AboutAAC = () => {
     },
     {
       icon: <FaEye className="text-2xl" />,
-      title: "Computer Vision",
-      shortName: "CV",
+      title: "Machine Learning Operations",
+      shortName: "ML-OPS",
       description:
         "Image processing and computer vision applications using OpenCV, deep learning, and neural networks.",
       color: "from-indigo-500 to-indigo-600",

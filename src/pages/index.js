@@ -469,7 +469,16 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
               {[
                 {
-                  title: "AAC Project Expo 2025",
+                  title: "Opulence 2026",
+                  date: "Coming Soon",
+                  gradient: "from-blue-500 to-indigo-600",
+                  description:
+                  "AAC's flagship technical symposium featuring workshops and competitions",
+                  icon: "✨",
+                  highlights: ["Tech Talks", "Workshops", "Competitions"],
+                },
+                {
+                  title: "AAC Project Expo 2026",
                   date: "Coming Soon",
                   gradient: "from-purple-500 to-pink-600",
                   description:
@@ -480,15 +489,6 @@ const Home = () => {
                     "Expert Judges",
                     "Awards & Recognition",
                   ],
-                },
-                {
-                  title: "Opulence 2026",
-                  date: "Coming Soon",
-                  gradient: "from-blue-500 to-indigo-600",
-                  description:
-                    "AAC's flagship technical symposium featuring workshops and competitions",
-                  icon: "✨",
-                  highlights: ["Tech Talks", "Workshops", "Competitions"],
                 },
               ].map((event, index) => (
                 <motion.div
