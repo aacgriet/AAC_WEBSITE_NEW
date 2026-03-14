@@ -325,6 +325,122 @@ export const coreCommitteeData = {
       linkedin: null,
     },
   ],
+  2025:[
+    {
+      name: "Aluri Surya Teja",
+      designation: "President",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867382/6be24f88-b746-480e-8271-3df3e046f148_piic48.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Bhuvan Sai Ramisetti",
+      designation: "Vice President",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771784295/IMG-20250822-WA0055_-_Bhuvan_Sai_Ramisetti_x56scd.webp",
+      linkedin: null,
+    },
+    {
+      name: "Golconda Dwarak",
+      designation: "Training and Development Head",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867200/da704ae8-19e4-4c57-af9c-26126fee25de_w2kzyw.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Sajid Zubair",
+      designation: "Public Relations Head",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867426/7227a3f9-5a15-48fa-8365-478bbca2230b_tombye.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Raghavendra Chekuri",
+      designation: "Database and Event Management Head",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771786896/2nd_profiephoto_-_Raghavendra_Chekuri_cci4nz.webp",
+      linkedin: null,
+    },
+    {
+      name: "Sai Srinivas Maganti",
+      designation: "Accounting and Assets Head",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867463/bd19013e-4336-45a5-940c-2d3e95135405_vky8lg.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Hemanth Nag Bitra",
+      designation: "CAP Head",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867208/12d14136-9ae5-4fa4-b8b4-98d8b3bd0d15_f5g2mv.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Sachin Thankachan",
+      designation: "Assistant Coordinator Training & Development",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867221/237fe97f-1edb-4d18-a8f3-6c9c4c16eac2_qgu7az.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Edupuganti Dheeraj chandra",
+      designation: "Assistant Coordinator Training & Development",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867277/cf567f83-18e4-40d0-a13c-2f43bb1a0471_f73wp5.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Paruchuri Rohith ",
+      designation: "Assistant Coordinator Database & Event Management",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1773481710/IMG-20260223-WA0039_uccyhz.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Advitha Kodavatikanti ",
+      designation: "Assistant Coordinator Database & Event Management",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867123/6566f5c3-d725-40bb-a1cc-1d81700ae5f2_beycdt.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Kongari Vishal",
+      designation: "Assistant Coordinator Database & Event Management",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867406/e2328a75-0972-4014-b6d4-c5f6919bfd84_goxrub.jpg",
+      linkedin: null,
+    },
+    {
+      name: "V B sravani",
+      designation: "Assistant Coordinator Database & Event Management",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867237/fe091737-3d49-4968-99fc-3abd08f6dc67_k5y1w6.jpg",
+      linkedin: null,
+    },
+    {
+      name: "S. Niharika",
+      designation: "Assistant Coordinator Public & Corporate Relations",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867147/12e316f7-8039-4ed9-9cb7-7c2114c4b102_hzlaz3.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Chityala srakshin",
+      designation: "Assistant Coordinator Public & Corporate Relations",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771862421/IMG-20250827-WA0032_1_-_Srakshin_m8jugk.png",
+      linkedin: null,
+    },
+    {
+      name: "A.Varshitha",
+      designation: "Assistant Coordinator Public & Corporate Relations",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867441/cd06ca7e-26f8-42bb-bf45-b2b3b59537dc_ba1fuo.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Duniya vasa",
+      designation: "Assistant Coordinator Public & Corporate Relations",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867262/a6620b3b-4697-4ab3-98e4-5bfc6ef08759_bbegko.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Reddyvari Akshaya Reddy",
+      designation: "Assistant Coordinator Finance & Assets",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867509/07f7abca-5684-4311-923b-68787d17c19f_ayoc76.jpg",
+      linkedin: null,
+    },
+    {
+      name: "Aasrith Manikanta",
+      designation: "Assistant Coordinator Finance & Assets",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867133/8a4336e3-b7c7-4f30-b968-5515745fa96d_jc4tga.jpg",
+      linkedin: null,
+    },
+  ],
 };
 
 export const getCommitteeByYear = (year) => {
