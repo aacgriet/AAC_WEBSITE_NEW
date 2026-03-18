@@ -54,15 +54,15 @@ const OpulenceLanding = () => {
   const mapsUrl = "https://maps.google.com";
 
   const contacts = [
-    { name: "Aluri Surya Teja", role: "President", phone: "+91 888 503 0188" },
-    { name: "Ramesitti Bhuvan Sai", role: "Vice President", phone: "+91 888 503 0188" },
-    { name: "Raghavendra Chekuri", role: "Event Management", phone: "+91 888 503 0188" },
-    { name: "Sajid Zubair", role: "Public Relations", phone: "+91 888 503 0188" }
+    { name: "Aluri Surya Teja", role: "G-Prime", phone: "+91 8885030188" },
+    { name: "Ramesitti Bhuvan Sai", role: "IdeaSprint", phone: "+91 6302659212" },
+    { name: "Raghavendra Chekuri", role: "Workshop", phone: "+91 9652353250" },
+    
   ];
 
   const events = [
-    { icon: HiLightBulb, title: "Ideathon", description: "Strategic brainstorming and creative problem solving for the final mission frontiers.", accentColor: "bg-orange-600/10 text-orange-500" },
-    { icon: HiUsers, title: "Workshops", description: "Hands-on DevOps technical drills led by industry expedition leads and core experts.", accentColor: "bg-red-600/10 text-red-500" },
+    { icon: HiLightBulb, title: "IdeaSprint", description: "Strategic brainstorming and creative problem solving for the final mission frontiers.", accentColor: "bg-orange-600/10 text-orange-500" },
+    { icon: HiUsers, title: "DevOps Workshop", description: "Hands-on DevOps technical drills led by industry expedition leads and core experts.", accentColor: "bg-red-600/10 text-red-500" },
     { icon: HiCommandLine, title: "G-Prime", description: "The premier technical coding contest across the entire Hyderabad technical frontier.", accentColor: "bg-amber-600/10 text-amber-500" }
   ];
 
@@ -130,7 +130,7 @@ const OpulenceLanding = () => {
                 <HiRocketLaunch size={24} />
                 <span className="font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-[10px] md:text-xs">Expedition Leaders</span>
               </div>
-              <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">Command Center</h2>
+              <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">Contacts:-</h2>
             </div>
           </div>
 
@@ -142,12 +142,12 @@ const OpulenceLanding = () => {
           
           <div className="p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-r from-orange-600/20 to-transparent border border-orange-500/30 flex flex-col md:flex-row items-center justify-between gap-8 backdrop-blur-md">
             <div className="text-center md:text-left">
-                <p className="text-white font-black uppercase italic tracking-tighter text-xl md:text-2xl mb-1">Official Transmission</p>
+                <p className="text-white font-black uppercase italic tracking-tighter text-xl md:text-2xl mb-1">Mail Id:- </p>
                 <p className="text-orange-200/60 font-bold uppercase tracking-widest text-xs md:text-sm flex items-center justify-center md:justify-start gap-2">
-                    <HiEnvelope size={16} /> aac.griet@gmail.com
+                    <HiEnvelope size={16} /> aacgrietofficial@gmail.com
                 </p>
             </div>
-            <a href="mailto:aac.griet@gmail.com" className="w-full md:w-auto px-10 py-4 rounded-full bg-white text-black font-black uppercase italic text-sm hover:bg-orange-500 hover:text-white transition-all text-center shadow-lg">
+            <a href="mailto:aacgrietofficial@gmail.com" className="w-full md:w-auto px-10 py-4 rounded-full bg-white text-black font-black uppercase italic text-sm hover:bg-orange-500 hover:text-white transition-all text-center shadow-lg">
                 Send Message
             </a>
           </div>
