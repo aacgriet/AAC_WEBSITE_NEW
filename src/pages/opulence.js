@@ -61,9 +61,9 @@ const OpulenceLanding = () => {
   ];
 
   const events = [
-    { icon: HiLightBulb, title: "IdeaSprint", description: "Strategic brainstorming and creative problem solving for the final mission frontiers.", accentColor: "bg-orange-600/10 text-orange-500" },
-    { icon: HiUsers, title: "DevOps Workshop", description: "Hands-on DevOps technical drills led by industry expedition leads and core experts.", accentColor: "bg-red-600/10 text-red-500" },
-    { icon: HiCommandLine, title: "G-Prime", description: "The premier technical coding contest across the entire Hyderabad technical frontier.", accentColor: "bg-amber-600/10 text-amber-500" }
+    { icon: HiLightBulb, title: "IdeaSprint", description: "An innovation challenge where teams develop and pitch real-world solutions to NGO-driven problem statements.", accentColor: "bg-orange-600/10 text-orange-500" },
+    { icon: HiUsers, title: "DevOps Workshop", description: "A hands-on session introducing CI/CD, Docker, and cloud workflows with real-world implementation experience.", accentColor: "bg-red-600/10 text-red-500" },
+    { icon: HiCommandLine, title: "G-Prime", description: "A high-intensity competitive programming contest testing algorithmic thinking, speed, and coding efficiency across multiple rounds.", accentColor: "bg-amber-600/10 text-amber-500" }
   ];
 
   return (
