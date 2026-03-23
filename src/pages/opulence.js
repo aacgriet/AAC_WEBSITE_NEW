@@ -14,7 +14,91 @@ import {
 
 import Navbar from '../components/Navbar'; 
 import Footer from '../components/Footer';
+// const Modal = ({ isOpen, onClose, title, content }) => {
+//   if (!isOpen) return null;
 
+//   return (
+//     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+//       <div className="bg-[#1a0b05] max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-2xl p-6 md:p-8 border border-orange-500/30 relative">
+        
+//         <button
+//           onClick={onClose}
+//           className="absolute top-4 right-4 text-orange-400 hover:text-white text-xl"
+//         >
+//           ✕
+//         </button>
+
+//         <h2 className="text-2xl md:text-3xl font-black text-white mb-4 uppercase italic">
+//           {title}
+//         </h2>
+
+//         <div className="text-[#d4a373] text-sm leading-relaxed whitespace-pre-line">
+//           {content}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+const Modal = ({ isOpen, onClose, title, content }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="
+          w-full md:max-w-4xl
+          h-[92vh] md:h-auto
+          md:max-h-[85vh]
+          bg-[#1a0b05]
+          rounded-2xl
+          p-5 md:p-8
+          overflow-y-auto
+          border border-orange-500/30
+          shadow-2xl
+        "
+      >
+
+        {/* ✅ FAKE TOP SPACING (fix navbar overlap) */}
+        <div className="h-20 md:h-0"></div>
+
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg md:text-3xl font-black text-white uppercase italic">
+            {title}
+          </h2>
+
+          <button
+            onClick={onClose}
+            className="text-orange-400 hover:text-white text-xl"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* CONTENT (formatted nicely) */}
+        <div className="text-[#d4a373] text-sm md:text-[15px] leading-relaxed whitespace-pre-line space-y-3">
+          {content.split('\n').map((line, i) => (
+            <p
+              key={i}
+              className={
+                line.endsWith(':')
+                  ? "text-white font-bold mt-4"
+                  : ""
+              }
+            >
+              {line}
+            </p>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
+};
 const ContactCard = ({ name, role, phone }) => (
   <div className="bg-[#1a0b05]/60 border border-orange-900/30 p-5 md:p-6 rounded-2xl backdrop-blur-md hover:border-orange-500/50 transition-all group">
     <h4 className="text-white font-black uppercase italic tracking-tighter text-lg md:xl leading-none mb-1">{name}</h4>
@@ -25,30 +109,115 @@ const ContactCard = ({ name, role, phone }) => (
   </div>
 );
 
-const EventCard = ({ icon: Icon, title, description, accentColor }) => {
-  const googleDocUrl = "https://docs.google.com/document/d/19ryYEEEZXfbJv_Y-pm2emfYXjBiWuAkIojKMiyd-wGU/edit?tab=t.0";
+// const EventCard = ({ icon: Icon, title, description, accentColor }) => {
+//   const googleDocUrl = "https://docs.google.com/document/d/19ryYEEEZXfbJv_Y-pm2emfYXjBiWuAkIojKMiyd-wGU/edit?tab=t.0";
+  
+//   return (
+//     <div className="group relative p-6 md:p-8 rounded-3xl bg-[#2a1309]/40 border border-[#4a2311] hover:border-orange-500/50 transition-all duration-500 flex flex-col h-full backdrop-blur-xl overflow-hidden shadow-2xl">
+//       <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl ${accentColor} flex items-center justify-center mb-5 md:mb-6 border border-orange-500/20`}>
+//         <Icon size={24} className="md:size-[28px]" />
+//       </div>
+//       <h3 className="text-xl md:text-2xl font-black text-white mb-3 md:mb-4 tracking-tighter uppercase italic">{title}</h3>
+//       <p className="text-[#d4a373] leading-relaxed mb-6 md:mb-8 flex-grow text-sm md:text-[15px] font-medium uppercase tracking-tight">
+//         {description}
+//       </p>
+//       <a 
+//         href={googleDocUrl}
+//         target="_blank"
+//         rel="noopener noreferrer"
+//         className="flex items-center text-xs md:text-sm font-black tracking-widest text-orange-500 uppercase italic cursor-pointer group-hover:gap-3 transition-all"
+//       >
+//         Register <HiArrowRight size={16} className="ml-1" />
+//       </a>
+//     </div>
+//   );
+// };
+const EventCard = ({ icon: Icon,link, title, description, accentColor, fullContent }) => {
+  const [open, setOpen] = React.useState(false);
+  const googleDocUrl = link;
   
   return (
-    <div className="group relative p-6 md:p-8 rounded-3xl bg-[#2a1309]/40 border border-[#4a2311] hover:border-orange-500/50 transition-all duration-500 flex flex-col h-full backdrop-blur-xl overflow-hidden shadow-2xl">
-      <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl ${accentColor} flex items-center justify-center mb-5 md:mb-6 border border-orange-500/20`}>
-        <Icon size={24} className="md:size-[28px]" />
+    <>
+      <div className="group relative p-6 md:p-8 rounded-3xl bg-[#2a1309]/40 border border-[#4a2311] hover:border-orange-500/50 transition-all duration-500 flex flex-col h-full backdrop-blur-xl overflow-hidden shadow-2xl">
+        
+        <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl ${accentColor} flex items-center justify-center mb-5 md:mb-6 border border-orange-500/20`}>
+          <Icon size={24} className="md:size-[28px]" />
+        </div>
+
+        <h3 className="text-xl md:text-2xl font-black text-white mb-3 md:mb-4 tracking-tighter uppercase italic">
+          {title}
+        </h3>
+
+        <p className="text-[#d4a373] leading-relaxed mb-6 md:mb-8 flex-grow text-sm md:text-[15px] font-medium uppercase tracking-tight">
+          {description}
+        </p>
+
+        <div className="flex justify-between items-center mt-auto">
+          <button
+            onClick={() => setOpen(true)}
+            className="text-xs md:text-sm font-black tracking-widest text-orange-400 uppercase italic hover:text-white"
+          >
+            About →
+          </button>
+
+          <a 
+            href={googleDocUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center text-xs md:text-sm font-black tracking-widest text-orange-500 uppercase italic"
+          >
+            Register <HiArrowRight size={16} className="ml-1" />
+          </a>
+        </div>
       </div>
-      <h3 className="text-xl md:text-2xl font-black text-white mb-3 md:mb-4 tracking-tighter uppercase italic">{title}</h3>
-      <p className="text-[#d4a373] leading-relaxed mb-6 md:mb-8 flex-grow text-sm md:text-[15px] font-medium uppercase tracking-tight">
-        {description}
-      </p>
-      <a 
-        href={googleDocUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center text-xs md:text-sm font-black tracking-widest text-orange-500 uppercase italic cursor-pointer group-hover:gap-3 transition-all"
-      >
-        Register <HiArrowRight size={16} className="ml-1" />
-      </a>
-    </div>
+
+      <Modal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        title={title}
+        content={fullContent}
+      />
+    </>
   );
 };
+// Destructure 'link' from props
+// const EventCard = ({ icon: Icon, title, description, accentColor, fullContent, link }) => {
+//   const [open, setOpen] = React.useState(false);
+  
+//   return (
+//     <>
+//       <div className="group ...">
+//         {/* ... existing icon and title code ... */}
 
+//         <div className="flex justify-between items-center mt-auto">
+//           <button
+//             onClick={() => setOpen(true)}
+//             className="text-xs md:text-sm font-black tracking-widest text-orange-400 uppercase italic hover:text-white"
+//           >
+//             About →
+//           </button>
+
+//           {/* Change googleDocUrl to link */}
+//           <a 
+//             href={link} 
+//             target="_blank"
+//             rel="noopener noreferrer"
+//             className="flex items-center text-xs md:text-sm font-black tracking-widest text-orange-500 uppercase italic"
+//           >
+//             Register <HiArrowRight size={16} className="ml-1" />
+//           </a>
+//         </div>
+//       </div>
+
+//       <Modal
+//         isOpen={open}
+//         onClose={() => setOpen(false)}
+//         title={title}
+//         content={fullContent}
+//       />
+//     </>
+//   );
+// };
 const OpulenceLanding = () => {
   const googleDocUrl = "https://docs.google.com/document/d/19ryYEEEZXfbJv_Y-pm2emfYXjBiWuAkIojKMiyd-wGU/edit?tab=t.0";
   const mapsUrl = "https://maps.google.com";
@@ -61,10 +230,93 @@ const OpulenceLanding = () => {
   ];
 
   const events = [
-    { icon: HiLightBulb, title: "IdeaSprint", description: "An innovation challenge where teams develop and pitch real-world solutions to NGO-driven problem statements.", accentColor: "bg-orange-600/10 text-orange-500" },
-    { icon: HiUsers, title: "DevOps Workshop", description: "A hands-on session introducing CI/CD, Docker, and cloud workflows with real-world implementation experience.", accentColor: "bg-red-600/10 text-red-500" },
-    { icon: HiCommandLine, title: "G-Prime", description: "A high-intensity competitive programming contest testing algorithmic thinking, speed, and coding efficiency across multiple rounds.", accentColor: "bg-amber-600/10 text-amber-500" }
-  ];
+{
+  icon: HiLightBulb,
+  link:"https://forms.gle/UDKzUwvdBvfGd9Up9",
+  title: "IdeaSprint",
+  description: "Strategic brainstorming and creative problem solving for the final mission frontiers.",
+  accentColor: "bg-orange-600/10 text-orange-500",
+  fullContent: `Innovation & Problem-Solving Challenge
+
+About the Event :  
+IdeaSprint is the flagship ideation challenge of Opulence 2026, organized by the Advanced Academic Center (AAC) of GRIET, Hyderabad. It is a multi-stage innovation competition designed to test creativity, critical thinking, and problem-solving skills, with problem statements provided and evaluated by NGOs to ensure real-world relevance and impact. Participants will brainstorm, build, and present impactful ideas that address real-world challenges across technology, society, and business. Open to students from colleges across Hyderabad, IdeaSprint offers a platform for innovators and thinkers to showcase their skills and transform imagination into actionable solutions.
+
+Guidelines :
+Open to all undergraduate students from any college or stream.
+Participants must register in teams of 3 to 4 members.
+Registration Fee: ₹200 per person.
+
+Event Format :
+Pre-Event Activity: Problem Statement Selection
+Mode: During Online registration
+Teams will choose their problem statement at the time of registration.
+Allotment will be based on a first-come, first-served basis.
+
+Round 1: One minute Pitch
+Round 2: Final Pitch (3 min + Q&A)
+
+Rules :
+Teams must consist of 3 to 4 members.
+A participant can only be part of one team.
+College ID verification required.
+
+Prizes :
+₹8,000 prize pool + certificates`
+},
+
+{
+  icon: HiUsers,
+  link:"https://unstop.com/p/devops-workshop-opulence-2026-advanced-academic-center-1661507",
+  title: "DevOps Workshop",
+  description: "Hands-on DevOps technical drills led by industry expedition leads and core experts.",
+  accentColor: "bg-red-600/10 text-red-500",
+  fullContent: `
+
+The DevOps Workshop at Opulence 2026 is a comprehensive, beginner-friendly session designed to introduce participants to the core principles and practices that power modern software development and deployment. It focuses on key DevOps concepts such as Continuous Integration and Continuous Deployment (CI/CD), containerization using Docker, and cloud-native workflows.
+
+Speaker:
+Varsha Verma – DevOps Engineer & Cloud Automation Specialist
+
+Eligibility:
+Open to all students. No prior experience required.
+
+Details:
+Venue: ECE Seminar Hall
+Date: 10 April 2026
+Time: 10 AM – 4 PM
+
+Topics:
+Git & GitHub, GitHub Actions, Docker & Containerization, Cloud basics (AWS), Infrastructure as Code, Kubernetes demo
+
+Why Attend:
+Hands-on project + certificate`
+},
+
+{
+  icon: HiCommandLine,
+  link:"https://unstop.com/p/g-prime-opulence-2026-advanced-academic-center-1661460",
+  title: "G-Prime",
+  description: "The premier technical coding contest across the entire Hyderabad technical frontier.",
+  accentColor: "bg-amber-600/10 text-amber-500",
+  fullContent: `About:
+G-Prime is a multi-stage competitive programming contest designed to challenge participants in algorithmic thinking, coding efficiency, and problem-solving. It offers a dynamic platform for students to test their skills, compete with peers, and gain real-world coding experience.
+
+Guidelines:
+Participants can register either individually or as a team of up to two members. The contest is open to all undergraduate students, regardless of their branch or prior experience.
+
+Round 1 (Preliminary):
+Conducted online and free for all participants, this round features a timed competitive programming contest. Top-performing participants/teams will be shortlisted for the final round based on their performance.
+
+Round 2 (Finale):
+The final round will be held offline at GRIET, Hyderabad. Shortlisted participants must pay a registration fee of ₹250 per person. The round will involve advanced problem-solving challenges, with details shared at the venue.
+
+Rules:
+Each team can have a maximum of two members, and a participant can be part of only one team. Strict action will be taken against plagiarism or any unfair practices, leading to disqualification. College ID verification is mandatory for the offline round, and all decisions made by the judges are final.
+
+Prizes:
+Participants will compete with top coders and stand a chance to win exciting prizes, certificates, and recognition for their performance.`
+}
+];
 
   return (
     <div className="min-h-screen bg-[#0f0704] text-[#fae1dd] selection:bg-orange-500/30 font-sans overflow-x-hidden">
@@ -144,10 +396,10 @@ const OpulenceLanding = () => {
             <div className="text-center md:text-left">
                 <p className="text-white font-black uppercase italic tracking-tighter text-xl md:text-2xl mb-1">Mail Id:- </p>
                 <p className="text-orange-200/60 font-bold uppercase tracking-widest text-xs md:text-sm flex items-center justify-center md:justify-start gap-2">
-                    <HiEnvelope size={16} /> aacgrietofficial@gmail.com
+                    <HiEnvelope size={16} /> aacgrietcore@gmail.com
                 </p>
             </div>
-            <a href="mailto:aacgrietofficial@gmail.com" className="w-full md:w-auto px-10 py-4 rounded-full bg-white text-black font-black uppercase italic text-sm hover:bg-orange-500 hover:text-white transition-all text-center shadow-lg">
+            <a href="mailto:aacgrietcore@gmail.com" className="w-full md:w-auto px-10 py-4 rounded-full bg-white text-black font-black uppercase italic text-sm hover:bg-orange-500 hover:text-white transition-all text-center shadow-lg">
                 Send Message
             </a>
           </div>
