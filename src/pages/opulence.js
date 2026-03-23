@@ -378,7 +378,7 @@ Rules:
 Each team can have a maximum of two members, and a participant can be part of only one team. Strict action will be taken against plagiarism or any unfair practices, leading to disqualification. College ID verification is mandatory for the offline round, and all decisions made by the judges are final.
 
 Prizes:
-Participants will compete with top coders and stand a chance to win exciting prizes worth 15K, certificates, and recognition for their performance.`
+₹15,000 Prize Pool + Certificates`
 }
 ];
 
