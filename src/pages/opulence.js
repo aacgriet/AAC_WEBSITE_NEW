@@ -132,14 +132,27 @@ const ContactCard = ({ name, role, phone }) => (
 //     </div>
 //   );
 // };
-const EventCard = ({ icon: Icon,link, title, description, accentColor, fullContent }) => {
+const EventCard = ({
+  icon: Icon,
+  link,
+  title,
+  description,
+  accentColor,
+  fullContent,
+  eligibility
+}) => {
   const [open, setOpen] = React.useState(false);
   const googleDocUrl = link;
-  
+
   return (
     <>
       <div className="group relative p-6 md:p-8 rounded-3xl bg-[#2a1309]/40 border border-[#4a2311] hover:border-orange-500/50 transition-all duration-500 flex flex-col h-full backdrop-blur-xl overflow-hidden shadow-2xl">
         
+        {/* Eligibility Tag */}
+        <span className="absolute top-4 right-4 text-[10px] md:text-xs px-3 py-1 rounded-full font-black tracking-widest uppercase italic bg-white/5 border border-white/10 text-orange-300">
+          {eligibility}
+        </span>
+
         <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl ${accentColor} flex items-center justify-center mb-5 md:mb-6 border border-orange-500/20`}>
           <Icon size={24} className="md:size-[28px]" />
         </div>
@@ -160,7 +173,7 @@ const EventCard = ({ icon: Icon,link, title, description, accentColor, fullConte
             About →
           </button>
 
-          <a 
+          <a
             href={googleDocUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -180,6 +193,54 @@ const EventCard = ({ icon: Icon,link, title, description, accentColor, fullConte
     </>
   );
 };
+// const EventCard = ({ icon: Icon,link, title, description, accentColor, fullContent }) => {
+//   const [open, setOpen] = React.useState(false);
+//   const googleDocUrl = link;
+  
+//   return (
+//     <>
+//       <div className="group relative p-6 md:p-8 rounded-3xl bg-[#2a1309]/40 border border-[#4a2311] hover:border-orange-500/50 transition-all duration-500 flex flex-col h-full backdrop-blur-xl overflow-hidden shadow-2xl">
+        
+//         <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl ${accentColor} flex items-center justify-center mb-5 md:mb-6 border border-orange-500/20`}>
+//           <Icon size={24} className="md:size-[28px]" />
+//         </div>
+
+//         <h3 className="text-xl md:text-2xl font-black text-white mb-3 md:mb-4 tracking-tighter uppercase italic">
+//           {title}
+//         </h3>
+
+//         <p className="text-[#d4a373] leading-relaxed mb-6 md:mb-8 flex-grow text-sm md:text-[15px] font-medium uppercase tracking-tight">
+//           {description}
+//         </p>
+
+//         <div className="flex justify-between items-center mt-auto">
+//           <button
+//             onClick={() => setOpen(true)}
+//             className="text-xs md:text-sm font-black tracking-widest text-orange-400 uppercase italic hover:text-white"
+//           >
+//             About →
+//           </button>
+
+//           <a 
+//             href={googleDocUrl}
+//             target="_blank"
+//             rel="noopener noreferrer"
+//             className="flex items-center text-xs md:text-sm font-black tracking-widest text-orange-500 uppercase italic"
+//           >
+//             Register <HiArrowRight size={16} className="ml-1" />
+//           </a>
+//         </div>
+//       </div>
+
+//       <Modal
+//         isOpen={open}
+//         onClose={() => setOpen(false)}
+//         title={title}
+//         content={fullContent}
+//       />
+//     </>
+//   );
+// };
 // Destructure 'link' from props
 // const EventCard = ({ icon: Icon, title, description, accentColor, fullContent, link }) => {
 //   const [open, setOpen] = React.useState(false);
@@ -234,11 +295,12 @@ const OpulenceLanding = () => {
   icon: HiLightBulb,
   link:"https://forms.gle/UDKzUwvdBvfGd9Up9",
   title: "IdeaSprint",
+  eligibility:"Open For All",
   description: "Strategic brainstorming and creative problem solving for the final mission frontiers.",
   accentColor: "bg-orange-600/10 text-orange-500",
   fullContent: `Innovation & Problem-Solving Challenge
 
-About the Event :  
+
 IdeaSprint is the flagship ideation challenge of Opulence 2026, organized by the Advanced Academic Center (AAC) of GRIET, Hyderabad. It is a multi-stage innovation competition designed to test creativity, critical thinking, and problem-solving skills, with problem statements provided and evaluated by NGOs to ensure real-world relevance and impact. Participants will brainstorm, build, and present impactful ideas that address real-world challenges across technology, society, and business. Open to students from colleges across Hyderabad, IdeaSprint offers a platform for innovators and thinkers to showcase their skills and transform imagination into actionable solutions.
 
 Guidelines :
@@ -268,6 +330,7 @@ Prizes :
   icon: HiUsers,
   link:"https://unstop.com/p/devops-workshop-opulence-2026-advanced-academic-center-1661507",
   title: "DevOps Workshop",
+  eligibility:"GRIET / GLEC",
   description: "Hands-on DevOps technical drills led by industry expedition leads and core experts.",
   accentColor: "bg-red-600/10 text-red-500",
   fullContent: `
@@ -289,13 +352,14 @@ Topics:
 Git & GitHub, GitHub Actions, Docker & Containerization, Cloud basics (AWS), Infrastructure as Code, Kubernetes demo
 
 Why Attend:
-Hands-on project + certificate`
+certificate`
 },
 
 {
   icon: HiCommandLine,
   link:"https://unstop.com/p/g-prime-opulence-2026-advanced-academic-center-1661460",
   title: "G-Prime",
+  eligibility:"Open For All",
   description: "The premier technical coding contest across the entire Hyderabad technical frontier.",
   accentColor: "bg-amber-600/10 text-amber-500",
   fullContent: `About:
@@ -314,7 +378,7 @@ Rules:
 Each team can have a maximum of two members, and a participant can be part of only one team. Strict action will be taken against plagiarism or any unfair practices, leading to disqualification. College ID verification is mandatory for the offline round, and all decisions made by the judges are final.
 
 Prizes:
-Participants will compete with top coders and stand a chance to win exciting prizes, certificates, and recognition for their performance.`
+Participants will compete with top coders and stand a chance to win exciting prizes worth 15K, certificates, and recognition for their performance.`
 }
 ];
 
@@ -353,17 +417,22 @@ Participants will compete with top coders and stand a chance to win exciting pri
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 px-4">
-            <a href={googleDocUrl} target="_blank" rel="noopener noreferrer" 
+            <a rel="noopener noreferrer" 
                className="w-full sm:w-auto group inline-flex items-center justify-center gap-4 bg-orange-600 hover:bg-orange-500 text-white px-8 py-4 md:px-12 md:py-5 rounded-full font-black tracking-tighter transition-all transform hover:scale-105 shadow-lg uppercase italic text-base md:text-lg">
               <HiCalendarDays size={20} />
               <span className="w-px h-6 bg-white/20 hidden sm:block"></span>
               April 10th
             </a>
             
-            <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
-               className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 md:px-10 md:py-5 bg-white/5 border border-white/10 rounded-full font-black text-orange-100 backdrop-blur-sm text-sm hover:border-orange-500/50 transition-all uppercase tracking-widest italic">
-              <HiMapPin size={18} className="text-orange-500" /> GRIET Campus
-            </a>
+            <a 
+  href="https://maps.app.goo.gl/q5SKfjuPFttacNL28" 
+  target="_blank" 
+  rel="noopener noreferrer" 
+  className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 md:px-10 md:py-5 bg-white/5 border border-white/10 rounded-full font-black text-orange-100 backdrop-blur-sm text-sm hover:border-orange-500/50 transition-all uppercase tracking-widest italic"
+>
+  <HiMapPin size={18} className="text-orange-500" />
+  GRIET Campus
+</a>
           </div>
         </header>
 
