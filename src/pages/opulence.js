@@ -352,7 +352,11 @@ Topics:
 Git & GitHub, GitHub Actions, Docker & Containerization, Cloud basics (AWS), Infrastructure as Code, Kubernetes demo
 
 Why Attend:
-certificate`
+Learn directly from a working DevOps professional
+Understand how real-world CI/CD pipelines work
+Apply concepts through guided walkthroughs and structured examples
+Explore the process of building and deploying a project through demonstrations
+Receive a certificate of participation and access to shared resources`
 },
 
 {
