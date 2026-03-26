@@ -344,7 +344,7 @@ Eligibility:
 Open to all students. No prior experience required.
 
 Details:
-Venue: ECE Seminar Hall
+Registration Fee: 250/-
 Date: 10 April 2026
 Time: 10 AM – 4 PM
 
