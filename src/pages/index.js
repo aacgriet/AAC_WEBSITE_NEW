@@ -467,113 +467,93 @@ const Home = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-              {[
-                {
-                  title: "AAC Project Expo 2025",
-                  date: "Coming Soon",
-                  gradient: "from-purple-500 to-pink-600",
-                  description:
-                    "Showcase of innovative student projects across all technology domains",
-                  icon: "🚀",
-                  highlights: [
-                    "Live Demos",
-                    "Expert Judges",
-                    "Awards & Recognition",
-                  ],
-                },
-                {
-                  title: "Opulence 2026",
-                  date: "Coming Soon",
-                  gradient: "from-blue-500 to-indigo-600",
-                  description:
-                    "AAC's flagship technical symposium featuring workshops and competitions",
-                  icon: "✨",
-                  highlights: ["Tech Talks", "Workshops", "Competitions"],
-                },
-              ].map((event, index) => (
-                <motion.div
-                  key={index}
-                  variants={itemVariants}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                  className="group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+  {[
+    {
+      title: "Opulence 2026",
+      date: "2026",
+      gradient: "from-blue-500 to-indigo-600",
+      description:
+        "AAC's flagship technical symposium featuring workshops and competitions",
+      icon: "✨",
+      highlights: ["Tech Talks", "Workshops", "Competitions"],
+      link: "/opulence",
+    },
+    {
+      title: "AAC Project Expo 2026",
+      date: "2026",
+      gradient: "from-purple-500 to-pink-600",
+      description:
+        "Showcase of innovative student projects across all technology domains",
+      icon: "🚀",
+      highlights: [
+        "Live Demos",
+        "Expert Judges",
+        "Awards & Recognition",
+      ],
+    },
+  ].map((event, index) => (
+    <motion.div
+      key={index}
+      variants={itemVariants}
+      whileHover={{ y: -8, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      onClick={() => {
+  if (event.link) {
+    window.location.href = event.link;
+  }
+}}
+      className={`group relative backdrop-blur-sm bg-white/5 rounded-2xl shadow-xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300 ${
+        event.link ? "cursor-pointer" : ""
+      }`}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
 
-                  {/* Enhanced Gradient Background with breathing effect */}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${event.gradient} opacity-20 relative overflow-hidden`}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-br ${event.gradient} opacity-30 animate-pulse`}
-                    ></div>
-                  </div>
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${event.gradient} opacity-20 relative overflow-hidden`}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
+        <div
+          className={`absolute inset-0 bg-gradient-to-br ${event.gradient} opacity-30 animate-pulse`}
+        ></div>
+      </div>
 
-                  {/* Enhanced Decorative Elements */}
-                  <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-4 right-4 w-24 h-24 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
-                    <div className="absolute bottom-8 left-8 w-20 h-20 bg-white/5 rounded-full blur-xl animate-pulse animation-delay-1000"></div>
-                    <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-white/5 rounded-full blur-2xl animate-pulse animation-delay-2000"></div>
-                  </div>
+      <div className="relative z-10 p-8">
+        <div className="flex items-start justify-between mb-6">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm flex items-center justify-center text-3xl border border-white/20 shadow-lg">
+            {event.icon}
+          </div>
 
-                  <div className="relative z-10 p-8">
-                    {/* Icon and Badge Section */}
-                    <div className="flex items-start justify-between mb-6">
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm flex items-center justify-center text-3xl border border-white/20 shadow-lg relative overflow-hidden group-hover:scale-110 transition-transform duration-300">
-                        <div className="absolute inset-0 bg-white/10 animate-pulse"></div>
-                        <span className="relative z-10">{event.icon}</span>
-                      </div>
+          <span className="px-3 py-1.5 bg-white/10 text-white rounded-lg text-xs font-medium border border-white/20">
+            {event.date}
+          </span>
+        </div>
 
-                      <span className="px-3 py-1.5 bg-white/10 text-white rounded-lg text-xs font-medium border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                        <div className="absolute inset-0 bg-white/5 animate-pulse"></div>
-                        <span className="relative z-10">{event.date}</span>
-                      </span>
-                    </div>
+        <h3 className="text-2xl font-bold text-white mb-3">
+          {event.title}
+        </h3>
 
-                    {/* Title */}
-                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-white group-hover:to-gray-300 transition-all duration-300">
-                      {event.title}
-                    </h3>
+        <p className="text-gray-300 text-sm leading-relaxed mb-6">
+          {event.description}
+        </p>
 
-                    {/* Description */}
-                    <p className="text-gray-300 text-sm leading-relaxed mb-6 group-hover:text-gray-200 transition-colors duration-300">
-                      {event.description}
-                    </p>
-
-                    {/* Highlights */}
-                    <div className="space-y-2">
-                      <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                        Event Highlights
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
-                        {event.highlights.map((highlight, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg text-xs text-gray-300 border border-white/10 backdrop-blur-sm relative overflow-hidden group-hover:bg-white/10 transition-all duration-300"
-                          >
-                            <div
-                              className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${event.gradient}`}
-                            ></div>
-                            <span>{highlight}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Bottom decoration line */}
-                    {/* <div className="mt-6 pt-4 border-t border-white/10">
-                      <div className="flex items-center gap-2 text-xs text-gray-400">
-                        <div
-                          className={`w-2 h-2 rounded-full bg-gradient-to-r ${event.gradient} animate-pulse`}
-                        ></div>
-                        <span>Registration details coming soon</span>
-                      </div>
-                    </div> */}
-                  </div>
-                </motion.div>
-              ))}
+        <div className="flex flex-wrap gap-2">
+          {event.highlights.map((highlight, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg text-xs text-gray-300 border border-white/10"
+            >
+              <div
+                className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${event.gradient}`}
+              ></div>
+              <span>{highlight}</span>
             </div>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  ))}
+</div>
+  
 
             <motion.div variants={itemVariants} className="text-center">
               <Link
