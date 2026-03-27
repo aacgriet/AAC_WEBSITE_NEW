@@ -479,7 +479,7 @@ Prizes:
         </section>
       </main>
 
-      <Footer />
+      <Footer variant="opulence" />
 
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&display=swap');

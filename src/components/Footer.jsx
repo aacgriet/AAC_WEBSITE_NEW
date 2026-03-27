@@ -58,7 +58,8 @@ const FooterLink = ({ href, children, external = false }) => {
   );
 };
 
-const Footer = () => {
+const Footer = ({ variant = "default" }) => {
+  const isOpulence = variant === "opulence";
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -99,13 +100,27 @@ const Footer = () => {
       </div>
 
       <footer
-        className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden -mt-8 pb-1"
+        className={`relative overflow-hidden -mt-8 pb-1 ${
+          isOpulence
+            ? "bg-gradient-to-br from-[#1a0b05] via-[#120905] to-[#1a0b05]"
+            : "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+        }`}
         style={{ zIndex: 1 }}
       >
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -bottom-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-blue-400/10 to-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-gradient-to-br from-indigo-400/10 to-pink-600/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
-          <div className="absolute top-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-br from-emerald-400/10 to-teal-600/10 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
+          {isOpulence ? (
+            <>
+              <div className="absolute -bottom-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-orange-900/20 to-red-900/10 rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-gradient-to-br from-amber-900/15 to-orange-900/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+              <div className="absolute top-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-br from-red-900/10 to-amber-900/10 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
+            </>
+          ) : (
+            <>
+              <div className="absolute -bottom-[20%] -left-[20%] w-[60%] h-[60%] bg-gradient-to-br from-blue-400/10 to-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-gradient-to-br from-indigo-400/10 to-pink-600/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+              <div className="absolute top-[10%] left-[20%] w-[40%] h-[40%] bg-gradient-to-br from-emerald-400/10 to-teal-600/10 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
+            </>
+          )}
         </div>
 
         <div className="absolute inset-0 opacity-5">
@@ -128,7 +143,7 @@ const Footer = () => {
                   className="space-y-6 text-center md:text-left"
                 >
                   <div>
-                    <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 h-1.5 w-24 mb-4 rounded-full shadow-lg mx-auto md:mx-0"></div>
+                    <div className={`h-1.5 w-24 mb-4 rounded-full shadow-lg mx-auto md:mx-0 ${isOpulence ? "bg-gradient-to-r from-orange-600 via-amber-500 to-orange-500" : "bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500"}`}></div>
                     <h3 className="text-2xl font-bold text-white">About AAC</h3>
                   </div>
                   <p className="text-gray-300 leading-relaxed">
@@ -139,9 +154,9 @@ const Footer = () => {
                     of innovative problem areas.
                   </p>
                   <div className="flex items-center gap-3 justify-center md:justify-start">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                    <div className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse animation-delay-500"></div>
-                    <div className="w-1 h-1 bg-indigo-500 rounded-full animate-pulse animation-delay-1000"></div>
+                    <div className={`w-2 h-2 rounded-full animate-pulse ${isOpulence ? "bg-orange-500" : "bg-blue-500"}`}></div>
+                    <div className={`w-1.5 h-1.5 rounded-full animate-pulse animation-delay-500 ${isOpulence ? "bg-amber-500" : "bg-purple-500"}`}></div>
+                    <div className={`w-1 h-1 rounded-full animate-pulse animation-delay-1000 ${isOpulence ? "bg-red-500" : "bg-indigo-500"}`}></div>
                   </div>
                 </motion.div>
 
@@ -151,7 +166,7 @@ const Footer = () => {
                   className="space-y-6 text-center md:text-left"
                 >
                   <div>
-                    <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 h-1.5 w-24 mb-4 rounded-full shadow-lg mx-auto md:mx-0"></div>
+                    <div className={`h-1.5 w-24 mb-4 rounded-full shadow-lg mx-auto md:mx-0 ${isOpulence ? "bg-gradient-to-r from-amber-600 via-orange-500 to-amber-500" : "bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500"}`}></div>
                     <h3 className="text-2xl font-bold text-white">
                       Quick Links
                     </h3>
@@ -174,7 +189,7 @@ const Footer = () => {
                   className="space-y-6 text-center md:text-left"
                 >
                   <div>
-                    <div className="bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 h-1.5 w-24 mb-4 rounded-full shadow-lg mx-auto md:mx-0"></div>
+                    <div className={`h-1.5 w-24 mb-4 rounded-full shadow-lg mx-auto md:mx-0 ${isOpulence ? "bg-gradient-to-r from-red-600 via-orange-500 to-red-500" : "bg-gradient-to-r from-pink-500 via-rose-500 to-red-500"}`}></div>
                     <h3 className="text-2xl font-bold text-white">
                       Connect With Us
                     </h3>
@@ -266,9 +281,9 @@ const Footer = () => {
               <div className="flex items-center justify-center gap-4 mb-4">
                 <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse animation-delay-300"></div>
-                  <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse animation-delay-600"></div>
+                  <div className={`w-2 h-2 rounded-full animate-pulse ${isOpulence ? "bg-orange-500" : "bg-blue-500"}`}></div>
+                  <div className={`w-2 h-2 rounded-full animate-pulse animation-delay-300 ${isOpulence ? "bg-amber-500" : "bg-purple-500"}`}></div>
+                  <div className={`w-2 h-2 rounded-full animate-pulse animation-delay-600 ${isOpulence ? "bg-red-500" : "bg-pink-500"}`}></div>
                 </div>
                 <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
               </div>
