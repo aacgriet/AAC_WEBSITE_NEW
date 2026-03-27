@@ -329,7 +329,7 @@ export const coreCommitteeData = {
     {
       name: "Aluri Surya Teja",
       designation: "President",
-      image: "https://res.cloudinary.com/aacgriet/image/upload/e_background_removal/f_png/v1771867382/6be24f88-b746-480e-8271-3df3e046f148_piic48.jpg",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/t_2025-Core%20Committee/aba9bfce-8f8c-4d66-a0f2-44df72b61b34.png",
       linkedin: null,
     },
     {
