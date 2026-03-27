@@ -335,7 +335,7 @@ export const coreCommitteeData = {
     {
       name: "Bhuvan Sai Ramisetti",
       designation: "Vice President",
-      image: "https://res.cloudinary.com/aacgriet/image/upload/t_2025-Core%20Committee/WhatsApp_Image_2026-03-15_at_6.54.25_PM_v3zgep",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/t_2025-Core%20Committee/4422d7fe-1b09-426a-9132-57747c676b31.png",
       linkedin: null,
     },
     {
@@ -383,7 +383,7 @@ export const coreCommitteeData = {
     {
       name: "Paruchuri Rohith ",
       designation: "Assistant Coordinator Database & Event Management",
-      image: "https://res.cloudinary.com/aacgriet/image/upload/t_2025-Core%20Committee/WhatsApp_Image_2026-03-15_at_6.54.20_PM_1_n1n98m",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/t_2025-Core%20Committee/9dab2f54-6cc4-4f0d-b8b9-e53cacf0e47d.png",
       linkedin: null,
     },
     {
