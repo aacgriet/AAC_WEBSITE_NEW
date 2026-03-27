@@ -2,14 +2,37 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { themeColors } from "./CSSHeroAnimation";
+import { BannerContext } from "@/context/BannerContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [activeItem, setActiveItem] = useState(null);
+  const bannerRefCtx = useContext(BannerContext);
+  const [bannerOffset, setBannerOffset] = useState(0);
+
+  useEffect(() => {
+    const updateBannerOffset = () => {
+      const height = bannerRefCtx?.current?.offsetHeight ?? 0;
+      setBannerOffset(height);
+    };
+
+    updateBannerOffset();
+
+    const resizeObserver = new ResizeObserver(updateBannerOffset);
+    if (bannerRefCtx?.current) {
+      resizeObserver.observe(bannerRefCtx.current);
+    }
+
+    window.addEventListener("resize", updateBannerOffset);
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateBannerOffset);
+    };
+  }, [bannerRefCtx]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -95,13 +118,12 @@ const Navbar = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           transition={{ duration: 0.3 }}
-          className={`fixed left-4 z-50 p-3 rounded-xl transition-all duration-300 ${
-            scrolled ? "top-4" : "top-8"
-          } ${
+          className={`fixed left-4 z-[70] p-3 rounded-xl transition-all duration-300 ${
             isOpen
               ? "bg-gradient-to-r from-red-500 to-pink-500 shadow-lg shadow-red-500/50"
               : "bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg shadow-blue-500/50"
           } hover:shadow-xl backdrop-blur-md`}
+          style={{ top: `calc(${bannerOffset}px + ${scrolled ? '16px' : '32px'})` }}
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle Menu"
         >
@@ -159,7 +181,7 @@ const Navbar = () => {
               animate={{ opacity: 1, height: "100vh" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 flex flex-col items-center justify-center z-40 backdrop-blur-xl"
+              className="fixed inset-0 flex flex-col items-center justify-center z-[70] backdrop-blur-xl"
               style={{
                 background: `linear-gradient(135deg, ${themeColors.darkBg}f0 0%, ${themeColors.lightBg}f0 100%)`,
               }}
@@ -194,7 +216,8 @@ const Navbar = () => {
       </div>
 
       {/* Desktop navbar - Hidden on mobile */}
-      <div className="hidden md:flex justify-center w-full fixed top-0 z-50 mt-[20px]">
+      <div className="hidden md:flex justify-center w-full fixed z-50"
+        style={{ top: `calc(${bannerOffset}px + 20px)` }}>
         <motion.nav
           initial="hidden"
           animate="visible"

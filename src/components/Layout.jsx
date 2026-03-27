@@ -1,7 +1,6 @@
 // src/components/Layout.jsx
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from './Navbar';
 import Footer from './Footer';
 
 const Layout = ({ children }) => {
@@ -56,8 +55,6 @@ const Layout = ({ children }) => {
         overflow: 'hidden'  // Prevent double scrollbars
       }}
     >
-      <Navbar />
-      
       <AnimatePresence mode="wait">
         <motion.main 
           className="flex-grow w-full"

@@ -1,8 +1,11 @@
 // src/pages/index.js - Enhanced Breathing Effect to Match Footer
 import Layout from "@/components/Layout";
+import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import Head from "next/head";
 import Link from "next/link";
+import { useRef } from "react";
+import { BannerContext } from "@/context/BannerContext";
 import {
   FaCalendar,
   FaEnvelope,
@@ -11,7 +14,54 @@ import {
   FaUsers,
 } from "react-icons/fa";
 
+// Registration Banner Component
+const RegistrationBanner = ({ bannerRef }) => {
+  const scrollToOpulence = () => {
+    const el = document.getElementById('opulence-2026');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  return (
+    <motion.div
+      ref={bannerRef}
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="w-full bg-slate-900 border-b border-white/10 shadow shadow-black/20 py-2.5"
+    >
+      <div className="flex items-center justify-center px-3 gap-2 md:gap-4">
+        {/* Pulsing live dot */}
+        <div className="relative flex items-center justify-center flex-shrink-0">
+          <div className="absolute w-4 h-4 bg-green-400/60 rounded-full animate-ping opacity-40"></div>
+          <div className="relative w-2 h-2 bg-green-400 rounded-full shadow-lg shadow-green-400/50"></div>
+        </div>
+
+        {/* Main text — mobile condensed, desktop full */}
+        <p className="text-white/90 text-xs sm:text-sm md:text-base font-medium text-center flex-1 leading-tight">
+          <span className="md:hidden">Registrations Open for </span>
+          <span className="font-bold bg-gradient-to-r from-blue-300 via-indigo-300 to-purple-300 bg-clip-text text-transparent">Opulence 2026</span>
+          <span className="md:hidden">!</span>
+          <span className="hidden md:inline"> — Join us for workshops, tech talks &amp; competitions!</span>
+        </p>
+
+        {/* CTA Button */}
+        <button
+          onClick={scrollToOpulence}
+          className="flex-shrink-0 flex items-center gap-1 px-3 py-1 sm:px-4 sm:py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-blue-900/30"
+        >
+          Register Now
+          <span className="text-xs">→</span>
+        </button>
+      </div>
+    </motion.div>
+  );
+};
+
 const Home = () => {
+  const bannerRef = useRef(null);
+
   // Unified animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -52,22 +102,22 @@ const Home = () => {
         <div className="absolute top-[80%] right-[30%] w-[45%] h-[45%] bg-gradient-to-br from-pink-400/8 to-purple-600/8 rounded-full blur-3xl animate-pulse animation-delay-3500"></div>
       </div>
 
-      {/* Animated grid pattern - subtle like footer */}
-      <div className="fixed inset-0 opacity-5 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent transform -skew-y-12 animate-pulse"></div>
-        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-white/3 to-transparent transform skew-y-6 animate-pulse animation-delay-2000"></div>
-      </div>
+      {/* Registration Banner */}
+      <RegistrationBanner bannerRef={bannerRef} />
+
+      <BannerContext.Provider value={bannerRef}>
+      <Navbar />
 
       <Layout>
-        <Head>
-          <title>AAC - Advanced Academic Center | GRIET</title>
-          <meta
-            name="description"
-            content="Advanced Academic Center (AAC) is an inter-disciplinary research centre at GRIET, Hyderabad focused on innovation and research."
-          />
-        </Head>
+          <Head>
+            <title>AAC - Advanced Academic Center | GRIET</title>
+            <meta
+              name="description"
+              content="Advanced Academic Center (AAC) is an inter-disciplinary research centre at GRIET, Hyderabad focused on innovation and research."
+            />
+          </Head>
 
-        {/* Hero Section */}
+          {/* Hero Section */}
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           <div className="container mx-auto px-4 relative z-10 text-center">
             {/* Logo with enhanced breathing effect */}
@@ -494,6 +544,7 @@ const Home = () => {
   ].map((event, index) => (
     <motion.div
       key={index}
+      id={index === 0 ? 'opulence-2026' : undefined}
       variants={itemVariants}
       whileHover={{ y: -8, scale: 1.02 }}
       transition={{ type: "spring", stiffness: 400, damping: 20 }}
@@ -685,6 +736,7 @@ const Home = () => {
           </motion.div>
         </section>
       </Layout>
+      </BannerContext.Provider>
     </div>
   );
 };

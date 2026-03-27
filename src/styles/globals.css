@@ -329,3 +329,16 @@
     left: 100%;
   }
 }
+
+@keyframes shimmer-banner {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer-banner 3s ease-in-out infinite;
+}
