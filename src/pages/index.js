@@ -6,6 +6,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRef } from "react";
 import { BannerContext } from "@/context/BannerContext";
+import { useDatabase } from "@/hooks/useDatabase";
 import {
   FaCalendar,
   FaEnvelope,
@@ -40,20 +41,24 @@ const RegistrationBanner = ({ bannerRef }) => {
 
         {/* Main text — mobile condensed, desktop full */}
         <p className="text-white/90 text-xs sm:text-sm md:text-base font-medium text-center flex-1 leading-tight">
-          <span className="md:hidden">Registrations Open for </span>
+          <span className="hidden md:inline">Registrations Open for </span>
           <span className="font-bold bg-gradient-to-r from-blue-300 via-indigo-300 to-purple-300 bg-clip-text text-transparent">Opulence 2026</span>
-          <span className="md:hidden">!</span>
+          <span className="hidden md:inline">!</span>
           <span className="hidden md:inline"> — Join us for workshops, tech talks &amp; competitions!</span>
         </p>
 
         {/* CTA Button */}
+        <Link href="/opulence"  className="flex-shrink-0">
         <button
-          onClick={scrollToOpulence}
           className="flex-shrink-0 flex items-center gap-1 px-3 py-1 sm:px-4 sm:py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-blue-900/30"
         >
           Register Now
           <span className="text-xs">→</span>
-        </button>
+        </button></Link>
+
+
+
+        
       </div>
     </motion.div>
   );
@@ -61,6 +66,66 @@ const RegistrationBanner = ({ bannerRef }) => {
 
 const Home = () => {
   const bannerRef = useRef(null);
+  const { data: dbEvents } = useDatabase("events");
+
+  // Default events for fallback
+  const defaultEvents = [
+    {
+      title: "Opulence 2026",
+      date: "2026",
+      gradient: "from-blue-500 to-indigo-600",
+      description:
+        "AAC's flagship technical symposium featuring workshops and competitions",
+      icon: "✨",
+      highlights: ["Tech Talks", "Workshops", "Competitions"],
+      link: "/opulence",
+    },
+    {
+      title: "AAC Project Expo 2026",
+      date: "2026",
+      gradient: "from-purple-500 to-pink-600",
+      description:
+        "Showcase of innovative student projects across all technology domains",
+      icon: "🚀",
+      highlights: ["Live Demos", "Expert Judges", "Awards & Recognition"],
+    },
+  ];
+
+  // Filter for upcoming events from database
+  const upcomingDbEvents = (dbEvents || [])
+    .filter((event) => event.status === "upcoming")
+    .map((event) => {
+      // Helper to choose icon based on title
+      const getIcon = (title) => {
+        const t = title.toLowerCase();
+        if (t.includes("expo")) return "🚀";
+        if (t.includes("workshop")) return "🛠️";
+        if (t.includes("talk") || t.includes("seminar")) return "🎤";
+        if (t.includes("hackathon") || t.includes("code")) return "💻";
+        return "✨";
+      };
+
+      // Helper to choose gradient based on title
+      const getGradient = (title) => {
+        const t = title.toLowerCase();
+        if (t.includes("expo")) return "from-purple-500 to-pink-600";
+        if (t.includes("workshop")) return "from-emerald-500 to-teal-600";
+        return "from-blue-500 to-indigo-600";
+      };
+
+      return {
+        title: event.title || event.event,
+        date: event.date,
+        gradient: event.gradient || getGradient(event.title || event.event),
+        description: event.description,
+        icon: event.icon || getIcon(event.title || event.event),
+        highlights: event.highlights || ["Upcoming Event", "Register Now"],
+        link: event.ctaLink || event.path,
+      };
+    });
+
+  // Use DB events if available, otherwise use defaults
+  const events = upcomingDbEvents.length > 0 ? upcomingDbEvents : defaultEvents;
 
   // Unified animation variants
   const containerVariants = {
@@ -516,35 +581,11 @@ const Home = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-  {[
-    {
-      title: "Opulence 2026",
-      date: "2026",
-      gradient: "from-blue-500 to-indigo-600",
-      description:
-        "AAC's flagship technical symposium featuring workshops and competitions",
-      icon: "✨",
-      highlights: ["Tech Talks", "Workshops", "Competitions"],
-      link: "/opulence",
-    },
-    {
-      title: "AAC Project Expo 2026",
-      date: "2026",
-      gradient: "from-purple-500 to-pink-600",
-      description:
-        "Showcase of innovative student projects across all technology domains",
-      icon: "🚀",
-      highlights: [
-        "Live Demos",
-        "Expert Judges",
-        "Awards & Recognition",
-      ],
-    },
-  ].map((event, index) => (
-    <motion.div
-      key={index}
-      id={index === 0 ? 'opulence-2026' : undefined}
-      variants={itemVariants}
+              {events.map((event, index) => (
+                <motion.div
+                  key={index}
+                  id={index === 0 ? "opulence-2026" : undefined}
+                  variants={itemVariants}
       whileHover={{ y: -8, scale: 1.02 }}
       transition={{ type: "spring", stiffness: 400, damping: 20 }}
       onClick={() => {
