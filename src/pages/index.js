@@ -106,7 +106,6 @@ const Home = () => {
       <RegistrationBanner bannerRef={bannerRef} />
 
       <BannerContext.Provider value={bannerRef}>
-      <Navbar />
 
       <Layout>
           <Head>
