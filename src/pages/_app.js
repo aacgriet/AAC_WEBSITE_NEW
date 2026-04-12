@@ -5,6 +5,7 @@ import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { Inter, Merriweather, Plus_Jakarta_Sans, Sora, Work_Sans } from 'next/font/google';
 import { AnimatePresence } from 'framer-motion';
 import '../styles/globals.css';
+import '../styles/gprime2026-results.css';
 
 // Import styles for Swiper
 import 'swiper/css';
