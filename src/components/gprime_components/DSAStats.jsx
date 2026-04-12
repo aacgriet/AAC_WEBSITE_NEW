@@ -1,4 +1,4 @@
-const DSA_TC_COUNTS = { 0: 3, 1: 3, 2: 2, 3: 2, 4: 3 }
+const DSA_TC_COUNTS = { 0: 2, 1: 2, 2: 3, 3: 3, 4: 3 }
 
 function TCDots({ passed, total }) {
     return (
@@ -40,7 +40,7 @@ export default function DSAStats({ team }) {
         <div className="card" style={{ padding: '1.5rem 1.75rem' }}>
             <div className="section-header">
                 <span className="material-symbols-outlined mat-icon" style={{ color: '#22c55e' }}>account_tree</span>
-                <span className="section-title">DSA Arena</span>
+                <span className="section-title">DSA Round</span>
                 <span style={{ marginLeft: 'auto', display: 'flex', gap: '0.4rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                     {solved > 0 && (
                         <span className="badge badge-green" style={{ fontSize: '0.7rem' }}>{solved} Solved</span>
@@ -85,7 +85,7 @@ export default function DSAStats({ team }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                     {[...questions].sort((a, b) => a.sequence_order - b.sequence_order).map((q, i) => {
                         const { label, cls } = statusBadge(q.status)
-                        const tcTotal = DSA_TC_COUNTS[q.sequence_order] ?? q.base_points > 100 ? 3 : 2
+                        const tcTotal = DSA_TC_COUNTS[q.sequence_order] || 0
                         const pct = q.base_points > 0 ? Math.round((q.score_awarded / q.base_points) * 100) : 0
 
                         return (
