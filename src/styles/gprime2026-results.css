@@ -183,7 +183,7 @@
   max-height: 360px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;overflow: hidden;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
 .dropdown-search {
