@@ -74,7 +74,7 @@ export default function OverallStats({ team, totalTeams }) {
             <div className="grid-3" style={{ marginBottom: '1.2rem' }}>
                 <StatCard icon="bolt" label="Rapid Fire" value={team.rapidfire_score.toFixed(3)} accent="#f97316" />
                 <StatCard icon="code" label="Cascade" value={team.cascade_score} accent="#3b82f6" />
-                <StatCard icon="account_tree" label="DSA Arena" value={team.dsa_score} accent="#22c55e" />
+                <StatCard icon="account_tree" label="DSA Round" value={team.dsa_score} accent="#22c55e" />
             </div>
 
             {/* Score breakdown bar */}
