@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useRef } from "react";
 import { BannerContext } from "@/context/BannerContext";
 import { useDatabase } from "@/hooks/useDatabase";
-import { useDatabase } from "@/hooks/useDatabase";
 import {
   FaCalendar,
   FaEnvelope,
@@ -15,6 +14,7 @@ import {
   FaRocket,
   FaUsers,
 } from "react-icons/fa";
+
 
 // Registration Banner Component
 const RegistrationBanner = ({ bannerRef }) => {
@@ -42,10 +42,10 @@ const RegistrationBanner = ({ bannerRef }) => {
 
         {/* Main text — mobile condensed, desktop full */}
         <p className="text-white/90 text-xs sm:text-sm md:text-base font-medium text-center flex-1 leading-tight">
-          <span className="hidden md:inline">Registrations Open for </span>
-          <span className="font-bold bg-gradient-to-r from-blue-300 via-indigo-300 to-purple-300 bg-clip-text text-transparent">Opulence 2026</span>
+          <span className="hidden md:inline">Results are out for </span>
+          <span className="font-bold bg-gradient-to-r from-blue-300 via-indigo-300 to-purple-300 bg-clip-text text-transparent">Gprime 2026</span>
           <span className="hidden md:inline">!</span>
-          <span className="hidden md:inline"> — Join us for workshops, tech talks &amp; competitions!</span>
+          <span className="hidden md:inline"> — Check your performance &amp; and solutions!</span>
         </p>
 
         {/* CTA Button */}
@@ -53,7 +53,7 @@ const RegistrationBanner = ({ bannerRef }) => {
         <button
           className="flex-shrink-0 flex items-center gap-1 px-3 py-1 sm:px-4 sm:py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-blue-900/30"
         >
-          Register Now
+          Check Now
           <span className="text-xs">→</span>
         </button></Link>
 
