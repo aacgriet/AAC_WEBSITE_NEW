@@ -61,7 +61,7 @@ const SORT_OPTIONS = [
     { id: 'total_score', label: 'Total Points', icon: 'military_tech' },
     { id: 'rapidfire_score', label: 'Rapid Fire', icon: 'bolt' },
     { id: 'cascade_score', label: 'Coding Cascade', icon: 'code' },
-    { id: 'dsa_score', label: 'DSA Round: 'account_tree' }
+    { id: 'dsa_score', label: 'DSA Round',icon: 'account_tree' }
 ];
 
 function PodiumCard({ team, score, type, index }) {
