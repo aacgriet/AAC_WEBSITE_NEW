@@ -277,6 +277,12 @@ export const coreCommitteeData = {
       linkedin: null,
     },
     {
+      name: "T Meghana",
+      designation: "Assistant Coordinator Training & Development",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/t_bg%20removed/cb8e926e-5a41-4a5d-832b-ab00f7880091_bcaqff.jpg",
+      linkedin: null,
+    },
+    {
       name: "Aayush",
       designation: "Assistant Coordinator Public & Corporate Relations",
       image: "1330Grir52SwhkX0nwh5fe1xigZRWrxSB",
@@ -286,6 +292,12 @@ export const coreCommitteeData = {
       name: "Anushka",
       designation: "Assistant Coordinator Public & Corporate Relations",
       image: "1mT0LF8drJmqe58GWxNVlFnOgdH19yAJP",
+      linkedin: null,
+    },
+    {
+      name: "Sneha Sharon",
+      designation: "Assistant Coordinator Public & Corporate Relations",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/t_bg%20removed/dc7bc57f-2497-42e3-aa14-9b3dfc38cc40_pbvixs.jpg",
       linkedin: null,
     },
     {
@@ -322,6 +334,12 @@ export const coreCommitteeData = {
       name: "Animesh",
       designation: "Assistant Coordinator Finance & Assets",
       image: "1lgjTHjhgK8xqmsAmhxelTKtofIAREztj",
+      linkedin: null,
+    },
+    {
+      name: "Yashasvi Acharya",
+      designation: "Assistant Coordinator Finance & Assets",
+      image: "https://res.cloudinary.com/aacgriet/image/upload/t_bg%20removed/3e2b5986-3f14-424d-8f86-fbc52b61e7ff_aienmk.jpg",
       linkedin: null,
     },
   ],
