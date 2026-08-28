@@ -341,7 +341,7 @@ const AboutAAC = () => {
                         {domain.title}
                       </h3>
                       <span
-                        className={`px-2 py-1 bg-gradient-to-r ${domain.color}/20 text-xs font-medium rounded border border-white/20`}
+                        className={`px-2 py-1 bg-gradient-to-r ${domain.color} text-xs font-medium rounded border border-white/20`}
                       >
                         {domain.shortName}
                       </span>
