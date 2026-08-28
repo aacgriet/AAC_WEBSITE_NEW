@@ -49,7 +49,7 @@ const AboutAAC = () => {
       shortName: "WEB",
       description:
         "Full-stack development using modern frameworks like React, Next.js, Node.js, and cloud technologies.",
-      color: "from-blue-500 to-blue-600",
+      color: "from-blue-500 to-blue-500",
       projects: [
         "E-commerce platforms",
         "Portfolio websites",
@@ -62,7 +62,7 @@ const AboutAAC = () => {
       shortName: "APP",
       description:
         "Mobile application development for Android and iOS using React Native, Flutter, and native technologies.",
-      color: "from-green-500 to-green-600",
+      color: "from-green-500 to-green-500",
       projects: ["Mobile apps", "Cross-platform solutions", "UI/UX design"],
     },
     {
@@ -71,7 +71,7 @@ const AboutAAC = () => {
       shortName: "DL",
       description:
         "Artificial Intelligence and Machine Learning solutions using Python, TensorFlow, and advanced algorithms.",
-      color: "from-purple-500 to-purple-600",
+      color: "from-purple-500 to-purple-500",
       projects: ["Predictive models", "Data analysis", "AI automation"],
     },
     {
@@ -80,7 +80,7 @@ const AboutAAC = () => {
       shortName: "IOT",
       description:
         "Smart device connectivity and automation using Arduino, Raspberry Pi, and sensor integration.",
-      color: "from-orange-500 to-orange-600",
+      color: "from-orange-500 to-orange-500",
       projects: [
         "Smart home systems",
         "Industrial automation",
@@ -94,7 +94,7 @@ const AboutAAC = () => {
       shortName: "ML-OPS",
       description:
         "Image processing and computer vision applications using OpenCV, deep learning, and neural networks.",
-      color: "from-indigo-500 to-indigo-600",
+      color: "from-indigo-500 to-indigo-500",
       projects: ["Object detection", "Image recognition", "Video analysis"],
       fullWidth: true,
     },
