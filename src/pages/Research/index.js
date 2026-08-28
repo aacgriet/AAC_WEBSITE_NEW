@@ -37,7 +37,7 @@ const QuickLinks = [
   },
   { 
     name: "Hackathon", 
-    path: "#",
+    path: "/Achievements",
     icon: "🏆",
     description: "Join exciting hackathon events and challenges",
     gradient: "from-red-500 to-red-600",
@@ -93,9 +93,6 @@ const LinkBox = ({ children, path, icon, description, gradient, isExternal, onCl
 
 const ResearchPage = () => {
   // Handle hackathon link click
-  const handleHackathonClick = () => {
-    window.open('https://docs.google.com/forms/d/1R9ANe21fM1yI1mhzR29ArysdJmNFARASlrfBE0gdVKQ/preview', '_blank');
-  };
 
   const parentVariants = {
     hidden: { opacity: 0 },
@@ -244,7 +241,6 @@ const ResearchPage = () => {
                     description={link.description}
                     gradient={link.gradient}
                     isExternal={link.isExternal}
-                    onClick={link.name === "Hackathon" ? handleHackathonClick : undefined}
                   >
                     {link.name}
                   </LinkBox>
