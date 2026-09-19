@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
-import { Inter, Merriweather, Plus_Jakarta_Sans, Sora, Work_Sans } from 'next/font/google';
 import { AnimatePresence } from 'framer-motion';
 import '../styles/globals.css';
 import '../styles/gprime2026-results.css';
@@ -11,39 +10,6 @@ import '../styles/gprime2026-results.css';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-
-// Load Work Sans Variable font
-const workSans = Work_Sans({
-  subsets: ['latin'],
-  variable: '--font-work-sans',
-  display: 'swap',
-});
-
-// Load other modern fonts
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const merriweather = Merriweather({
-  subsets: ['latin'],
-  weight: ['300', '400', '700', '900'],
-  variable: '--font-merriweather',
-  display: 'swap',
-});
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  variable: '--font-jakarta',
-  display: 'swap',
-});
-
-const sora = Sora({
-  subsets: ['latin'],
-  variable: '--font-sora',
-  display: 'swap',
-});
 
 // Custom Chakra theme
 const theme = extendTheme({
@@ -62,8 +28,8 @@ const theme = extendTheme({
     },
   },
   fonts: {
-    heading: 'var(--font-work-sans), var(--font-sora), var(--font-merriweather)',
-    body: 'var(--font-work-sans), var(--font-inter), var(--font-jakarta)',
+    heading: '"Segoe UI", system-ui, sans-serif',
+    body: '"Segoe UI", system-ui, sans-serif',
   },
   components: {
     Button: {
@@ -119,7 +85,7 @@ function MyApp({ Component, pageProps, router }) {
         <link rel="icon" href="/images/logo.png" />
       </Head>
       
-      <main className={`${inter.variable} ${merriweather.variable} ${jakarta.variable} ${sora.variable} ${workSans.variable} font-sans`}>
+      <main className="font-sans">
         <ChakraProvider theme={theme}>
           {loading && <LoadingScreen />}
           

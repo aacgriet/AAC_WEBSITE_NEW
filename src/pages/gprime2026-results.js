@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import Link from 'next/link'
 import statsData from '../components/Data/stats.json'
 
 import Background from '@/components/gprime_components/Background'
@@ -35,6 +36,31 @@ export default function Page() {
       }}
     >
       <Background />
+
+      <Link
+        href="/"
+        aria-label="Go to home page"
+        style={{
+          position: 'absolute',
+          top: '1.25rem',
+          left: '1.25rem',
+          zIndex: 20,
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '2.25rem',
+          height: '2.25rem',
+          borderRadius: '9999px',
+          border: '1px solid rgba(255,255,255,0.16)',
+          background: 'rgba(11,18,32,0.6)',
+          color: '#fff',
+          textDecoration: 'none',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+        }}
+      >
+        <span className="material-symbols-outlined">keyboard_double_arrow_left</span>
+      </Link>
 
       {/* ── Header ── */}
       <header style={{ position: 'relative', zIndex: 10, padding: '2rem 1.5rem 1rem', textAlign: 'center' }}>

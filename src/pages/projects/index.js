@@ -271,7 +271,7 @@ const Projects = () => {
               
               <div className="text-center">
                 <div className="text-3xl font-bold text-orange-400 mb-2">
-                  {years.length - 1}
+                  {(new Date().getFullYear()) - 2004}
                 </div>
                 <div className="text-gray-400">Active Years</div>
               </div>

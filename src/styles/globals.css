@@ -4,7 +4,7 @@
 
 @layer base {
   html {
-    font-family: "Work Sans Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-family: "Segoe UI", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     scroll-behavior: smooth;
     overflow-x: hidden; /* Prevent horizontal scrolling */
     background-color: #0e1421;
@@ -20,7 +20,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-merriweather), serif;
+    font-family: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   }
 
   a {
@@ -168,11 +168,11 @@
 
 /* Font Families */
 .font-serif {
-  font-family: var(--font-merriweather), serif;
+  font-family: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
 }
 
 .font-sans {
-  font-family: "Work Sans Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: "Segoe UI", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 /* Text gradient for hero section */
