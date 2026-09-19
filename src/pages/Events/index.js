@@ -122,8 +122,19 @@ const EventsPage = () => {
     return matchesSearch && matchesCategory && matchesYear && matchesStatus;
   });
 
-  // Sort events by date (newest first)
+  // Sort events: "Coming Soon" first (alphabetically), then by date (newest first)
   const sortedEvents = filteredEvents.sort((a, b) => {
+    const aIsComingSoon = a.date === 'Coming Soon';
+    const bIsComingSoon = b.date === 'Coming Soon';
+
+    if (aIsComingSoon && bIsComingSoon) {
+      const titleA = (a.event || a.title || '').toLowerCase();
+      const titleB = (b.event || b.title || '').toLowerCase();
+      return titleA.localeCompare(titleB);
+    }
+    if (aIsComingSoon) return -1;
+    if (bIsComingSoon) return 1;
+
     const dateA = new Date(a.actualDate || a.date || a.createdAt || 0);
     const dateB = new Date(b.actualDate || b.date || b.createdAt || 0);
     return dateB - dateA;

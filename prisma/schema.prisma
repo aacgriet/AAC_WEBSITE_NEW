@@ -27,6 +27,8 @@ model News {
   mainImageAltText String?
 
   links Json?
+  images Json?
+  isPoster Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -203,6 +205,7 @@ model CoreCommittee {
   year        Int     @default(2024)
   department  String?
   status      String  @default("active")
+  linkedin    String?
 
   legacyId String? @unique
 
@@ -227,4 +230,17 @@ model Achievement {
   updatedAt DateTime @updatedAt
 
   @@map("achievements")
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  message   String
+  highlight String?
+  link      String?
+  isActive  Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("announcements")
 }

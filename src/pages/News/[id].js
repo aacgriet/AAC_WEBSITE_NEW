@@ -359,8 +359,25 @@ const NewsDetailPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Article content */}
           <div className="lg:col-span-2">
-            {/* Featured image */}
-            {newsItem.mainImage && (
+            {/* Featured image - full poster display if isPoster flag is set */}
+            {newsItem.isPoster && newsItem.mainImage ? (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 mb-8 bg-black"
+              >
+                <div className="relative w-full" style={{ aspectRatio: '3/4', maxHeight: '90vh' }}>
+                  <Image
+                    src={getImageUrl(newsItem.mainImage)}
+                    alt={newsItem.title}
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+              </motion.div>
+            ) : newsItem.mainImage ? (
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -368,7 +385,7 @@ const NewsDetailPage = () => {
                 className="relative backdrop-blur-sm bg-white/5 rounded-2xl overflow-hidden shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300 mb-8"
               >
                 <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden">
-                  <Image 
+                  <Image
                     src={getImageUrl(newsItem.mainImage)}
                     alt={newsItem.title}
                     fill
@@ -377,7 +394,8 @@ const NewsDetailPage = () => {
                   />
                 </div>
               </motion.div>
-            )}
+            ) : null}
+
             
             {/* Article text */}
             <motion.div

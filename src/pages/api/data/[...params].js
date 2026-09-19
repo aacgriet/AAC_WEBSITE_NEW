@@ -14,7 +14,8 @@ const TABLE_MODELS = {
   alumni: 'alumni',
   startups: 'startup',
   corecommittee: 'coreCommittee',
-  achievements: 'achievement' // Added achievements mapping
+  achievements: 'achievement', // Added achievements mapping
+  announcements: 'announcement' // Added announcements mapping
 };
 
 // Helper function to get Prisma model
@@ -47,6 +48,17 @@ const transformDataForDB = (tableName, data) => {
         mainImageUrl: data.mainImage?.asset?.url,
         mainImageAltText: data.mainImage?.asset?.altText,
         links: data.links ? JSON.stringify(data.links) : null,
+        images: data.images ? JSON.stringify(data.images) : null,
+        isPoster: data.isPoster || false,
+      };
+
+    case 'announcements':
+      return {
+        id: data.id || `ann-${Date.now()}`,
+        message: data.message,
+        highlight: data.highlight || null,
+        link: data.link || null,
+        isActive: Boolean(data.isActive),
       };
       
     case 'projects':
@@ -213,6 +225,13 @@ const transformDataFromDB = (tableName, data) => {
           }
         } : null,
         links: parseJsonField(data.links),
+        images: parseJsonField(data.images) || [],
+        isPoster: data.isPoster,
+      };
+
+    case 'announcements':
+      return {
+        ...data,
       };
       
     case 'projects':

@@ -17,13 +17,11 @@ import {
 
 
 // Registration Banner Component
-const RegistrationBanner = ({ bannerRef }) => {
-  const scrollToOpulence = () => {
-    const el = document.getElementById('opulence-2026');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  };
+const RegistrationBanner = ({ bannerRef, announcement }) => {
+  if (!announcement) {
+    // Always render a zero-height div so the Navbar ref still mounts
+    return <div ref={bannerRef} />;
+  }
 
   return (
     <motion.div
@@ -40,26 +38,27 @@ const RegistrationBanner = ({ bannerRef }) => {
           <div className="relative w-2 h-2 bg-green-400 rounded-full shadow-lg shadow-green-400/50"></div>
         </div>
 
-        {/* Main text — mobile condensed, desktop full */}
+        {/* Main text */}
         <p className="text-white/90 text-xs sm:text-sm md:text-base font-medium text-center flex-1 leading-tight">
-          <span className="hidden md:inline">Results are out for </span>
-          <span className="font-bold bg-gradient-to-r from-blue-300 via-indigo-300 to-purple-300 bg-clip-text text-transparent">Gprime 2026</span>
-          <span className="hidden md:inline">!</span>
-          <span className="hidden md:inline"> — Check your performance &amp; and solutions!</span>
+          <span className="hidden md:inline">{announcement.message} </span>
+          {announcement.highlight && (
+            <span className="font-bold bg-gradient-to-r from-blue-300 via-indigo-300 to-purple-300 bg-clip-text text-transparent">
+              {announcement.highlight}
+            </span>
+          )}
         </p>
 
         {/* CTA Button */}
-        <Link href="/gprime2026-results"  className="flex-shrink-0">
-        <button
-          className="flex-shrink-0 flex items-center gap-1 px-3 py-1 sm:px-4 sm:py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-blue-900/30"
-        >
-          Check Now
-          <span className="text-xs">→</span>
-        </button></Link>
-
-
-
-        
+        {announcement.link && (
+          <Link href={announcement.link} className="flex-shrink-0">
+            <button
+              className="flex-shrink-0 flex items-center gap-1 px-3 py-1 sm:px-4 sm:py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-blue-900/30"
+            >
+              Check Now
+              <span className="text-xs">→</span>
+            </button>
+          </Link>
+        )}
       </div>
     </motion.div>
   );
@@ -68,6 +67,9 @@ const RegistrationBanner = ({ bannerRef }) => {
 const Home = () => {
   const bannerRef = useRef(null);
   const { data: dbEvents } = useDatabase("events");
+  const { data: announcementsData } = useDatabase("announcements");
+
+  const activeAnnouncement = (announcementsData || []).find(a => a.isActive);
 
   // Default events for fallback
   const defaultEvents = [
@@ -169,7 +171,7 @@ const Home = () => {
       </div>
 
       {/* Registration Banner */}
-      <RegistrationBanner bannerRef={bannerRef} />
+      <RegistrationBanner bannerRef={bannerRef} announcement={activeAnnouncement} />
 
       <BannerContext.Provider value={bannerRef}>
 

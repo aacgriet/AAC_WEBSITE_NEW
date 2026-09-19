@@ -24,10 +24,11 @@ const NewsCard = ({ news, index }) => {
     }
   };
 
-  const getImageUrl = (image) => {
-    if (!image) return 'https://via.placeholder.com/400x200/1a2535/ffffff?text=News';
+  const getImageUrl = (news) => {
+    const image = news.mainImage;
+    if (image?.asset?.url) return image.asset.url;
     if (typeof image === 'string') return image;
-    if (image.asset?.url) return image.asset.url;
+    if (news.images && news.images.length > 0) return news.images[0];
     return 'https://via.placeholder.com/400x200/1a2535/ffffff?text=News';
   };
 
@@ -37,6 +38,7 @@ const NewsCard = ({ news, index }) => {
     if (news.content) return news.content.substring(0, 120) + '...';
     return 'Click to read more about this news article.';
   };
+
 
   return (
     <motion.div
@@ -52,7 +54,7 @@ const NewsCard = ({ news, index }) => {
       {/* News Image */}
       <div className="relative h-48 overflow-hidden rounded-t-2xl">
         <Image
-          src={getImageUrl(news.mainImage)}
+          src={getImageUrl(news)}
           alt={news.title}
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-110"

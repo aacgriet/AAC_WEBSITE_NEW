@@ -1,7 +1,7 @@
 // src/components/Forms/NewsForm.jsx - COMPLETE FINAL VERSION
 import React, { useState, useEffect } from 'react';
 import BaseForm, { FormField, TextAreaField, SelectField } from './BaseForm';
-import ImageUpload from './ImageUpload';
+import { MultiImageUpload } from './ImageUpload';
 import { useDatabase } from '@/hooks/useDatabase';
 
 const NEWS_CATEGORIES = [
@@ -28,14 +28,9 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
     _rawBody: '',
     publishedAt: '',
     categories: 'news',
-    mainImage: {
-      _type: 'image',
-      asset: {
-        _ref: '',
-        _type: 'reference',
-        url: ''
-      }
-    },
+    images: [],
+    isPoster: false,
+    mainImageUrl: '',
     links: [],
     _type: 'News'
   });
@@ -56,6 +51,8 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
         setFormData({
           ...existingNews,
           publishedAt: publishedDate,
+          mainImageUrl: existingNews.mainImage?.asset?.url || existingNews.img || '',
+          images: existingNews.images || [],
         });
         
         // Force date input to re-render
@@ -107,18 +104,16 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
     }
   };
 
-  const handleImageChange = (url) => {
+  const handleImagesChange = (images) => {
     setFormData(prev => ({
       ...prev,
-      mainImage: {
-        ...prev.mainImage,
-        asset: {
-          ...prev.mainImage.asset,
-          url: url,
-          _ref: url ? `image-${Date.now()}` : ''
-        }
-      }
+      images
     }));
+  };
+
+  const handleToggleChange = (e) => {
+    const { name, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: checked }));
   };
 
   const handleLinkChange = (index, field, value) => {
@@ -191,7 +186,16 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
         _rev: `rev-${Date.now()}`,
         publishedAt: new Date(formData.publishedAt).toISOString(),
         links: validLinks,
-        mainImage: formData.mainImage.asset.url ? formData.mainImage : null
+        images: formData.images || [],
+        isPoster: formData.isPoster || false,
+        mainImage: formData.mainImageUrl ? {
+          _type: 'image',
+          asset: {
+            _ref: `image-${Date.now()}`,
+            _type: 'reference',
+            url: formData.mainImageUrl
+          }
+        } : null
       };
       
       let result;
@@ -289,11 +293,37 @@ const NewsForm = ({ newsId = null, onSuccess, onCancel }) => {
         error={errors._rawBody}
       />
 
-      <ImageUpload
-        label="Featured Image"
-        value={formData.mainImage?.asset?.url || ''}
-        onChange={handleImageChange}
-        error={errors.mainImage}
+      <FormField
+        label="Main Image URL"
+        name="mainImageUrl"
+        type="url"
+        value={formData.mainImageUrl}
+        onChange={handleInputChange}
+        placeholder="URL for the main news card image"
+        required
+        error={errors.mainImageUrl}
+      />
+
+      <div className="flex items-center gap-3 bg-[#0e1421] p-4 rounded-lg border border-gray-600">
+        <input
+          type="checkbox"
+          id="isPoster"
+          name="isPoster"
+          checked={formData.isPoster}
+          onChange={handleToggleChange}
+          className="w-5 h-5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+        />
+        <label htmlFor="isPoster" className="text-white font-medium">
+          Render as full poster (instead of standard news card)
+        </label>
+      </div>
+
+      <MultiImageUpload
+        label="News Detail Images (Gallery)"
+        values={formData.images || []}
+        onChange={handleImagesChange}
+        maxImages={10}
+        error={errors.images}
       />
 
       <div className="space-y-4">

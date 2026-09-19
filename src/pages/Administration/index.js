@@ -1,22 +1,44 @@
 // src/pages/Administration/index.js - Updated with Core Committee Import and Year Filters
-import {
-  coreCommitteeData,
-  getAvailableYears,
-} from "@/components/Data/coreCommitteeData";
 import Layout from "@/components/Layout";
 import { motion } from "framer-motion";
 import Head from "next/head";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { FaLightbulb, FaUsers, FaUserTie } from "react-icons/fa";
+import { useDatabase } from "@/hooks/useDatabase";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const AdministrationPage = () => {
   // State to track the active category
   const [activeCategory, setActiveCategory] = useState("instigators");
 
-  // State for Core Committee year filter
-  const availableYears = getAvailableYears();
-  const [selectedYear, setSelectedYear] = useState(availableYears[0]);
+  // Fetch Core Committee from DB
+  const { data: dbCoreCommittee, loading: dbLoading } = useDatabase('corecommittee');
+
+  const coreCommitteeData = useMemo(() => {
+    const grouped = {};
+    if (dbCoreCommittee && dbCoreCommittee.length > 0) {
+      dbCoreCommittee.forEach(member => {
+        if (member.status === 'active') {
+          if (!grouped[member.year]) grouped[member.year] = [];
+          grouped[member.year].push(member);
+        }
+      });
+    }
+    return grouped;
+  }, [dbCoreCommittee]);
+
+  const availableYears = useMemo(() => {
+    return Object.keys(coreCommitteeData).map(Number).sort((a, b) => b - a);
+  }, [coreCommitteeData]);
+
+  const [selectedYear, setSelectedYear] = useState(null);
+
+  useEffect(() => {
+    if (availableYears.length > 0 && !selectedYear) {
+      setSelectedYear(availableYears[0]);
+    }
+  }, [availableYears, selectedYear]);
 
   // Animation variants
   const pageVariants = {
@@ -616,7 +638,7 @@ const AdministrationPage = () => {
               <motion.div key={selectedYear} variants={pageVariants}>
                 {/* President and Vice President Row */}
                 <div className="flex justify-center gap-6 mb-8 flex-wrap">
-                  {coreCommitteeData[selectedYear]
+                  {(coreCommitteeData[selectedYear] || [])
                     .filter(
                       (m) =>
                         m.designation === "President" ||
@@ -633,7 +655,7 @@ const AdministrationPage = () => {
 
                 {/* All Heads Row */}
                 <div className="flex justify-center gap-6 mb-8 flex-wrap">
-                  {coreCommitteeData[selectedYear]
+                  {(coreCommitteeData[selectedYear] || [])
                     .filter(
                       (m) =>
                         m.designation.includes("Head") &&
@@ -651,7 +673,7 @@ const AdministrationPage = () => {
 
                 {/* Other Members - Grid Layout */}
                 <div className="flex justify-center gap-6 flex-wrap">
-                  {coreCommitteeData[selectedYear]
+                  {(coreCommitteeData[selectedYear] || [])
                     .filter(
                       (m) =>
                         m.designation !== "President" &&

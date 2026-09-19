@@ -224,15 +224,24 @@ const EventsForm = ({ eventId = null, onSuccess, onCancel }) => {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <FormField
-          label="Display Date"
-          name="date"
-          value={formData.date}
-          onChange={handleInputChange}
-          placeholder="e.g., JUNE 2024, DEC 2023"
-          required
-          error={errors.date}
-        />
+        <div className="flex flex-col gap-2">
+          <FormField
+            label="Display Date"
+            name="date"
+            value={formData.date}
+            onChange={handleInputChange}
+            placeholder="e.g., JUNE 2024 or Coming Soon"
+            required
+            error={errors.date}
+          />
+          <button
+            type="button"
+            onClick={() => setFormData(prev => ({ ...prev, date: 'Coming Soon' }))}
+            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded border border-slate-600 text-xs transition-colors self-start"
+          >
+            Set to "Coming Soon"
+          </button>
+        </div>
 
         <FormField
           label="Location"

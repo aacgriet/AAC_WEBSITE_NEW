@@ -81,9 +81,9 @@ import {
   FaFileImport,
   FaFileExport,
   FaDatabase,
-  FaExclamationTriangle,
   FaTachometerAlt,
-  FaTrophy
+  FaTrophy,
+  FaBullhorn
 } from 'react-icons/fa';
 
 // Form components
@@ -96,6 +96,8 @@ import BooksForm from '@/components/Forms/BooksForm';
 import StartupsForm from '@/components/Forms/StartupsForm';
 import AlumniForm from '@/components/Forms/AlumniForm';
 import AchievementsForm from '@/components/Forms/AchievementsForm';
+import CoreCommitteeForm from '@/components/Forms/CoreCommitteeForm';
+import AnnouncementForm from '@/components/Forms/AnnouncementForm';
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -139,6 +141,8 @@ const AdminDashboard = () => {
   const booksDB = useDatabase('books');
   const startupsDB = useDatabase('startups');
   const alumniDB = useDatabase('alumni');
+  const coreCommitteeDB = useDatabase('corecommittee');
+  const announcementsDB = useDatabase('announcements');
 
   const handleEditAchievement = (achievementId) => {
     setEditingAchievementId(achievementId);
@@ -161,6 +165,8 @@ const AdminDashboard = () => {
       books: booksDB,
       startups: startupsDB,
       alumni: alumniDB,
+      corecommittee: coreCommitteeDB,
+      announcements: announcementsDB,
       achievements: { data: achievementsData, deleteItem: deleteAchievement }
     };
     return dbMap[section];
@@ -222,8 +228,15 @@ const AdminDashboard = () => {
         title: 'Alumni', 
         count: alumniDB.data.length, 
         icon: <FaGraduationCap />, 
-        color: 'from-teal-500 to-teal-600',
+        color: 'from-blue-500 to-indigo-600',
         section: 'alumni'
+      },
+      { 
+        title: 'Core Committee', 
+        count: coreCommitteeDB.data.length, 
+        icon: <FaUsers />, 
+        color: 'from-orange-500 to-orange-600',
+        section: 'corecommittee'
       },
       { 
         title: 'Achievements', 
@@ -231,6 +244,13 @@ const AdminDashboard = () => {
         icon: <FaTrophy />, 
         color: 'from-yellow-500 to-yellow-600',
         section: 'achievements'
+      },
+      { 
+        title: 'Announcements', 
+        count: announcementsDB.data.length, 
+        icon: <FaBullhorn />, 
+        color: 'from-red-500 to-pink-600',
+        section: 'announcements'
       }
     ];
   };
@@ -246,7 +266,9 @@ const AdminDashboard = () => {
     { id: 'books', label: 'Books & Blogs', icon: <FaBook /> },
     { id: 'startups', label: 'Startups', icon: <FaRocket /> },
     { id: 'alumni', label: 'Alumni', icon: <FaGraduationCap /> },
-    { id: 'achievements', label: 'Achievements', icon: <FaTrophy /> }
+    { id: 'corecommittee', label: 'Core Committee', icon: <FaUsers /> },
+    { id: 'achievements', label: 'Achievements', icon: <FaTrophy /> },
+    { id: 'announcements', label: 'Announcements', icon: <FaBullhorn /> }
   ];
 
   // Handle form submission success
@@ -419,6 +441,7 @@ const AdminDashboard = () => {
        activeSection === 'books' ? 'bookId' :
        activeSection === 'startups' ? 'startupId' :
        activeSection === 'achievements' ? 'achievementId' :
+       activeSection === 'announcements' ? 'announcementId' :
        'alumnusId']: formType === 'edit' ? (selectedItem?.id || selectedItem?._id) : null,
       onSuccess: handleFormSuccess,
       onCancel: handleFormCancel
@@ -433,7 +456,9 @@ const AdminDashboard = () => {
       case 'books': return <BooksForm {...formProps} />;
       case 'startups': return <StartupsForm {...formProps} />;
       case 'alumni': return <AlumniForm {...formProps} />;
+      case 'corecommittee': return <CoreCommitteeForm {...formProps} />;
       case 'achievements': return <AchievementsForm {...formProps} />;
+      case 'announcements': return <AnnouncementForm {...formProps} />;
       default: return null;
     }
   };
@@ -660,22 +685,26 @@ const AdminDashboard = () => {
                       className="hover:bg-white/5 transition-all duration-300"
                     >
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-white">
-                          {item.title || item.name || item.shortTitle || 'Untitled'}
+                        <div className="text-sm font-medium text-white truncate max-w-xs">
+                          {item.title || item.name || item.shortTitle || item.message || 'Untitled'}
                         </div>
                         <div className="text-sm text-gray-400 truncate max-w-xs">
-                          {item.slug?.current || item.description || item.abstract || 'No description'}
+                          {item.slug?.current || item.description || item.abstract || item.highlight || 'No description'}
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <span className="px-3 py-1.5 bg-blue-500/20 text-blue-300 rounded-lg text-xs font-medium border border-blue-500/30">
-                          {item.categories || item.category || item.status || 'Uncategorized'}
+                          {activeSection === 'announcements' 
+                            ? (item.isActive ? 'Active' : 'Inactive') 
+                            : (item.categories || item.category || item.status || 'Uncategorized')}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-400">
                         {item.publishedAt ? new Date(item.publishedAt).toLocaleDateString() :
                          item.date ? new Date(item.date).toLocaleDateString() :
                          item.establishedDate ? new Date(item.establishedDate).toLocaleDateString() :
+                         item.year ? item.year.toString() :
+                         item.createdAt ? new Date(item.createdAt).toLocaleDateString() :
                          'No date'}
                       </td>
                       <td className="px-6 py-4 text-right text-sm font-medium">
@@ -711,9 +740,9 @@ const AdminDashboard = () => {
     <AdminAuth>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         {/* Main Content */}
-        <div className="flex">
+        <div className="flex min-h-screen bg-slate-900 text-white">
           {/* Sidebar */}
-          <div className="w-64 backdrop-blur-sm bg-white/5 min-h-screen border-r border-white/10 fixed left-0 top-0 pt-24 z-40">
+          <div className="w-64 backdrop-blur-sm bg-white/5 h-screen border-r border-white/10 fixed left-0 top-0 pt-24 pb-24 z-40 overflow-y-auto">
             <div className="p-6">
               <div className="mb-8">
                 <h2 className="text-xl font-bold text-white mb-2">Admin Panel</h2>
