@@ -49,7 +49,7 @@ const RegistrationBanner = ({ bannerRef }) => {
         </p>
 
         {/* CTA Button */}
-        <Link href="/opulence"  className="flex-shrink-0">
+        <Link href="/gprime2026-results"  className="flex-shrink-0">
         <button
           className="flex-shrink-0 flex items-center gap-1 px-3 py-1 sm:px-4 sm:py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-blue-900/30"
         >

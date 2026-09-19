@@ -227,7 +227,7 @@ const Footer = ({ variant = "default" }) => {
                   </div>
 
                   <motion.a
-                    href="mailto:aacgrietofficial@gmail.com"
+                    href="mailto:aacgrietcore@gmail.com"
                     whileHover={{ scale: 1.02 }}
                     className="group inline-flex items-center gap-3 px-4 py-3 backdrop-blur-sm bg-white/5 hover:bg-white/10 rounded-xl border border-white/20 hover:border-white/30 transition-all duration-300 mx-auto md:mx-0"
                   >
@@ -239,7 +239,7 @@ const Footer = ({ variant = "default" }) => {
                         Get In Touch
                       </div>
                       <div className="text-gray-400 text-sm group-hover:text-gray-300 transition-colors duration-300">
-                        aacgrietofficial@gmail.com
+                        aacgrietcore@gmail.com
                       </div>
                     </div>
                   </motion.a>
