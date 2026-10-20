@@ -4,7 +4,893 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { FaArrowLeft } from 'react-icons/fa'
 
-const GLEC_RESULT_ROWS = [
+
+
+const GRIET_ROWS = [
+  {
+    "S. No": 1,
+    "Name": "B. Yashwanth Reddy",
+    "Roll No": "26241A0508",
+    "Branch": "CSE",
+    "Section": "A"
+  },
+  {
+    "S. No": 2,
+    "Name": "Sree Prakhyath Mandava",
+    "Roll No": "26241A0524",
+    "Branch": "CSE",
+    "Section": "A"
+  },
+  {
+    "S. No": 3,
+    "Name": "Jagirthi Tanviya",
+    "Roll No": "26241A0527",
+    "Branch": "CSE",
+    "Section": "A"
+  },
+  {
+    "S. No": 4,
+    "Name": "Pandaga lohith",
+    "Roll No": "26241A0529",
+    "Branch": "CSE",
+    "Section": "A"
+  },
+  {
+    "S. No": 5,
+    "Name": "Kutumbaka Sai Saranya",
+    "Roll No": "26241A0537",
+    "Branch": "CSE",
+    "Section": "A"
+  },
+  {
+    "S. No": 6,
+    "Name": "Manchala Haasvith Varma",
+    "Roll No": "26241A0541",
+    "Branch": "CSE",
+    "Section": "A"
+  },
+  {
+    "S. No": 7,
+    "Name": "Mannapuram Nakshatra",
+    "Roll No": "26241A0542",
+    "Branch": "CSE",
+    "Section": "A"
+  },
+  {
+    "S. No": 8,
+    "Name": "Ganga Singh",
+    "Roll No": "26241A0550",
+    "Branch": "CSE",
+    "Section": "A"
+  },
+  {
+    "S. No": 9,
+    "Name": "Sai Vidhush",
+    "Roll No": "26241A0557",
+    "Branch": "CSE",
+    "Section": "A"
+  },
+  {
+    "S. No": 10,
+    "Name": "K Arjun goud",
+    "Roll No": "26241A0559",
+    "Branch": "CSE",
+    "Section": "A"
+  },
+  {
+    "S. No": 11,
+    "Name": "Vegi Chandra Rishith",
+    "Roll No": "26241A0564",
+    "Branch": "CSE",
+    "Section": "A"
+  },
+  {
+    "S. No": 12,
+    "Name": "Abhinav Katevarapu",
+    "Roll No": "26241A0566",
+    "Branch": "CSE",
+    "Section": "B"
+  },
+  {
+    "S. No": 13,
+    "Name": "Budda Nikhil",
+    "Roll No": "26241A0576",
+    "Branch": "CSE",
+    "Section": "B"
+  },
+  {
+    "S. No": 14,
+    "Name": "DHADI RAMYA SRI",
+    "Roll No": "26241a0582",
+    "Branch": "CSE",
+    "Section": "B"
+  },
+  {
+    "S. No": 15,
+    "Name": "Kadaverugu Tejaswini",
+    "Roll No": "26241A0594",
+    "Branch": "CSE",
+    "Section": "B"
+  },
+  {
+    "S. No": 16,
+    "Name": "K.Shiva Teja",
+    "Roll No": "26241A0597",
+    "Branch": "CSE",
+    "Section": "B"
+  },
+  {
+    "S. No": 17,
+    "Name": "Peram Nishitha Reddy",
+    "Roll No": "26241A05AE",
+    "Branch": "CSE",
+    "Section": "B"
+  },
+  {
+    "S. No": 18,
+    "Name": "Thota Lalith Narayana",
+    "Roll No": "26241A05AS",
+    "Branch": "CSE",
+    "Section": "B"
+  },
+  {
+    "S. No": 19,
+    "Name": "Alankrita Biswas",
+    "Roll No": "26241A05AY",
+    "Branch": "CSE",
+    "Section": "C"
+  },
+  {
+    "S. No": 20,
+    "Name": "C.R.Shrika",
+    "Roll No": "26241A05B6",
+    "Branch": "CSE",
+    "Section": "C"
+  },
+  {
+    "S. No": 21,
+    "Name": "MOHAMMED ABDUL RAOOF",
+    "Roll No": "26241A05C3",
+    "Branch": "CSE",
+    "Section": "C"
+  },
+  {
+    "S. No": 22,
+    "Name": "MOLUGURI RAMCHARAN",
+    "Roll No": "26241A05C8",
+    "Branch": "CSE",
+    "Section": "C"
+  },
+  {
+    "S. No": 23,
+    "Name": "Devarakonda Satya Ajay",
+    "Roll No": "26241A05DB",
+    "Branch": "CSE",
+    "Section": "D"
+  },
+  {
+    "S. No": 24,
+    "Name": "Mohammed Muzammil Ahmed",
+    "Roll No": "26241A05DY",
+    "Branch": "CSE",
+    "Section": "D"
+  },
+  {
+    "S. No": 25,
+    "Name": "Poreddy Adhitya Laxmi",
+    "Roll No": "26241A05E5",
+    "Branch": "CSE",
+    "Section": "D"
+  },
+  {
+    "S. No": 26,
+    "Name": "Pakide.Vaishnavi",
+    "Roll No": "26241A05E6",
+    "Branch": "CSE",
+    "Section": "D"
+  },
+  {
+    "S. No": 27,
+    "Name": "Sai Atharvan Bunde",
+    "Roll No": "26241A05EB",
+    "Branch": "CSE",
+    "Section": "D"
+  },
+  {
+    "S. No": 28,
+    "Name": "Vadla Sharath",
+    "Roll No": "26241A05EK",
+    "Branch": "CSE",
+    "Section": "D"
+  },
+  {
+    "S. No": 29,
+    "Name": "Dubasi Sraavya Sree",
+    "Roll No": "26241A05F5",
+    "Branch": "CSE",
+    "Section": "E"
+  },
+  {
+    "S. No": 30,
+    "Name": "Gunji Praveen Kumar",
+    "Roll No": "26241A05FH",
+    "Branch": "CSE",
+    "Section": "E"
+  },
+  {
+    "S. No": 31,
+    "Name": "Kashish Saini",
+    "Roll No": "26241A05FS",
+    "Branch": "CSE",
+    "Section": "E"
+  },
+  {
+    "S. No": 32,
+    "Name": "Katepally snehal",
+    "Roll No": "26241A05FT",
+    "Branch": "CSE",
+    "Section": "E"
+  },
+  {
+    "S. No": 33,
+    "Name": "SAI KAUSHIK CHALLARI",
+    "Roll No": "26241A05GC",
+    "Branch": "CSE",
+    "Section": "E"
+  },
+  {
+    "S. No": 34,
+    "Name": "Apeksha Dhummansure",
+    "Roll No": "26241A05GR",
+    "Branch": "CSE",
+    "Section": "F"
+  },
+  {
+    "S. No": 35,
+    "Name": "BABAYOLLA BHARDWAJ",
+    "Roll No": "26241A05GT",
+    "Branch": "CSE",
+    "Section": "F"
+  },
+  {
+    "S. No": 36,
+    "Name": "Balla Lakshya Surya Snigdha",
+    "Roll No": "26241A05GV",
+    "Branch": "CSE",
+    "Section": "F"
+  },
+  {
+    "S. No": 37,
+    "Name": "ESHWAROJU SRI ANSHITHA",
+    "Roll No": "26241A05H8",
+    "Branch": "CSE",
+    "Section": "F"
+  },
+  {
+    "S. No": 38,
+    "Name": "Lakshveer Singh Jahagirdar",
+    "Roll No": "26241A05HR",
+    "Branch": "CSE",
+    "Section": "F"
+  },
+  {
+    "S. No": 39,
+    "Name": "Ananya Agarwal",
+    "Roll No": "26241A05JN",
+    "Branch": "CSE",
+    "Section": "G"
+  },
+  {
+    "S. No": 40,
+    "Name": "CHILUKURI SATHWIK",
+    "Roll No": "26241A05JY",
+    "Branch": "CSE",
+    "Section": "G"
+  },
+  {
+    "S. No": 41,
+    "Name": "Koppanathi Om Raghu Ram",
+    "Roll No": "26241A05KC",
+    "Branch": "CSE",
+    "Section": "G"
+  },
+  {
+    "S. No": 42,
+    "Name": "Kondamalla Ramcharan",
+    "Roll No": "26241A05KE",
+    "Branch": "CSE",
+    "Section": "G"
+  },
+  {
+    "S. No": 43,
+    "Name": "MANCHINELLA NIKITHA",
+    "Roll No": "26241A05KK",
+    "Branch": "CSE",
+    "Section": "G"
+  },
+  {
+    "S. No": 44,
+    "Name": "M.Aarnav Harshith",
+    "Roll No": "26241A05KM",
+    "Branch": "CSE",
+    "Section": "G"
+  },
+  {
+    "S. No": 45,
+    "Name": "Harshit Pokala",
+    "Roll No": "26241A05L0",
+    "Branch": "CSE",
+    "Section": "G"
+  },
+  {
+    "S. No": 46,
+    "Name": "THOUTA SAI VIJAYA LAXMI",
+    "Roll No": "26241A05LB",
+    "Branch": "CSE",
+    "Section": "G"
+  },
+  {
+    "S. No": 47,
+    "Name": "Bharath krishna",
+    "Roll No": "26241a05ld",
+    "Branch": "CSE",
+    "Section": "G"
+  },
+  {
+    "S. No": 48,
+    "Name": "Yellam Keerthana",
+    "Roll No": "26241A05LF",
+    "Branch": "CSE",
+    "Section": "G"
+  },
+  {
+    "S. No": 49,
+    "Name": "D.Hasith Vardhan",
+    "Roll No": "26241A05LU",
+    "Branch": "CSE",
+    "Section": "H"
+  },
+  {
+    "S. No": 50,
+    "Name": "G.SRIKAR",
+    "Roll No": "26241A05M0",
+    "Branch": "CSE",
+    "Section": "H"
+  },
+  {
+    "S. No": 51,
+    "Name": "Mohammed ishaq ahmad",
+    "Roll No": "26241A05MK",
+    "Branch": "CSE",
+    "Section": "H"
+  },
+  {
+    "S. No": 52,
+    "Name": "Paleti Abhiram",
+    "Roll No": "26241A05MS",
+    "Branch": "CSE",
+    "Section": "H"
+  },
+  {
+    "S. No": 53,
+    "Name": "A.Sai Rishitha",
+    "Roll No": "26241A05ND",
+    "Branch": "CSE",
+    "Section": "I"
+  },
+  {
+    "S. No": 54,
+    "Name": "Rishitha Suroju",
+    "Roll No": "26241A05PT",
+    "Branch": "CSE",
+    "Section": "I"
+  },
+  {
+    "S. No": 55,
+    "Name": "Suhas Rajapudi",
+    "Roll No": "26241A05PU",
+    "Branch": "CSE",
+    "Section": "I"
+  },
+  {
+    "S. No": 56,
+    "Name": "Tanush Reddy",
+    "Roll No": "26241A05QJ",
+    "Branch": "CSE",
+    "Section": "J"
+  },
+  {
+    "S. No": 57,
+    "Name": "Karamkonda Harshita",
+    "Roll No": "26241A05QZ",
+    "Branch": "CSE",
+    "Section": "J"
+  },
+  {
+    "S. No": 58,
+    "Name": "KOTA VAISHNAVI",
+    "Roll No": "26241A05R1",
+    "Branch": "CSE",
+    "Section": "J"
+  },
+  {
+    "S. No": 59,
+    "Name": "Kurapati Pranav",
+    "Roll No": "26241A05R5",
+    "Branch": "CSE",
+    "Section": "J"
+  },
+  {
+    "S. No": 60,
+    "Name": "PALLEPATI HASINI RAO",
+    "Roll No": "26241A05RJ",
+    "Branch": "CSE",
+    "Section": "J"
+  },
+  {
+    "S. No": 61,
+    "Name": "Shaik Khasim Moula Vizdania",
+    "Roll No": "26241A05RQ",
+    "Branch": "CSE",
+    "Section": "J"
+  },
+  {
+    "S. No": 62,
+    "Name": "Yuva Tej Chintapalli",
+    "Roll No": "26241A05RV",
+    "Branch": "CSE",
+    "Section": "J"
+  },
+  {
+    "S. No": 63,
+    "Name": "Jalda Mrunal sai",
+    "Roll No": "26241A05S2",
+    "Branch": "CSE",
+    "Section": "J"
+  },
+  {
+    "S. No": 64,
+    "Name": "D.Akshitha reddy",
+    "Roll No": "26241A6610",
+    "Branch": "AIML",
+    "Section": "A"
+  },
+  {
+    "S. No": 65,
+    "Name": "Karupakula Neha",
+    "Roll No": "26241A6621",
+    "Branch": "AIML",
+    "Section": "A"
+  },
+  {
+    "S. No": 66,
+    "Name": "MADA.SPOORTHI REDDY",
+    "Roll No": "26241a6634",
+    "Branch": "AIML",
+    "Section": "A"
+  },
+  {
+    "S. No": 67,
+    "Name": "Mutukundu Jyotsna Reddy",
+    "Roll No": "26241A6648",
+    "Branch": "AIML",
+    "Section": "A"
+  },
+  {
+    "S. No": 68,
+    "Name": "Vanipenta Kaushik Reddy",
+    "Roll No": "26241A6665",
+    "Branch": "AIML",
+    "Section": "A"
+  },
+  {
+    "S. No": 69,
+    "Name": "AALURI SRUTHI",
+    "Roll No": "26241A6666",
+    "Branch": "AIML",
+    "Section": "B"
+  },
+  {
+    "S. No": 70,
+    "Name": "Anushree Bhattad",
+    "Roll No": "26241A6674",
+    "Branch": "AIML",
+    "Section": "B"
+  },
+  {
+    "S. No": 71,
+    "Name": "Gutta Abhigna Veda",
+    "Roll No": "26241A6689",
+    "Branch": "AIML",
+    "Section": "B"
+  },
+  {
+    "S. No": 72,
+    "Name": "Nekkanti Sahasra Choudary",
+    "Roll No": "26241A66A8",
+    "Branch": "AIML",
+    "Section": "B"
+  },
+  {
+    "S. No": 73,
+    "Name": "Rangu Shiva Krishna Prasad",
+    "Roll No": "26241A66AE",
+    "Branch": "AIML",
+    "Section": "B"
+  },
+  {
+    "S. No": 74,
+    "Name": "Wadiyala Mallik Anurod",
+    "Roll No": "26241A66AW",
+    "Branch": "AIML",
+    "Section": "B"
+  },
+  {
+    "S. No": 75,
+    "Name": "Sai spoorthi",
+    "Roll No": "26241A66B7",
+    "Branch": "AIML",
+    "Section": "C"
+  },
+  {
+    "S. No": 76,
+    "Name": "Javisetty Sai Chaitanya",
+    "Roll No": "26241A66BM",
+    "Branch": "AIML",
+    "Section": "C"
+  },
+  {
+    "S. No": 77,
+    "Name": "Stephen Paul",
+    "Roll No": "26241A66BP",
+    "Branch": "AIML",
+    "Section": "C"
+  },
+  {
+    "S. No": 78,
+    "Name": "Singam Reddy Ashvitha Reddy",
+    "Roll No": "26241A66CM",
+    "Branch": "AIML",
+    "Section": "C"
+  },
+  {
+    "S. No": 79,
+    "Name": "EDUPALLI MAHATI",
+    "Roll No": "26241A66DA",
+    "Branch": "AIML",
+    "Section": "D"
+  },
+  {
+    "S. No": 80,
+    "Name": "Madanu Abhishek",
+    "Roll No": "26241A66DW",
+    "Branch": "AIML",
+    "Section": "D"
+  },
+  {
+    "S. No": 81,
+    "Name": "MAGULURI SAI SHRUTI",
+    "Roll No": "26241A66DX",
+    "Branch": "AIML",
+    "Section": "D"
+  },
+  {
+    "S. No": 82,
+    "Name": "MAKKAPATI SANJANA",
+    "Roll No": "26241A66DY",
+    "Branch": "AIML",
+    "Section": "D"
+  },
+  {
+    "S. No": 83,
+    "Name": "Mohammed Affan Hussain",
+    "Roll No": "26241A66E2",
+    "Branch": "AIML",
+    "Section": "D"
+  },
+  {
+    "S. No": 84,
+    "Name": "Sai Rithvik Rangineni",
+    "Roll No": "26241A66E8",
+    "Branch": "AIML",
+    "Section": "D"
+  },
+  {
+    "S. No": 85,
+    "Name": "Kanchari rakshith",
+    "Roll No": "26241A66FM",
+    "Branch": "AIML",
+    "Section": "E"
+  },
+  {
+    "S. No": 86,
+    "Name": "Kushal Krishna Lotti",
+    "Roll No": "26241A66FV",
+    "Branch": "AIML",
+    "Section": "E"
+  },
+  {
+    "S. No": 87,
+    "Name": "Aryan Panda",
+    "Roll No": "26241A6703",
+    "Branch": "CSDS",
+    "Section": "A"
+  },
+  {
+    "S. No": 88,
+    "Name": "Ladi Pavan santosh sai",
+    "Roll No": "26241A6732",
+    "Branch": "CSDS",
+    "Section": "A"
+  },
+  {
+    "S. No": 89,
+    "Name": "Palavalasa Jitendra",
+    "Roll No": "26241A6745",
+    "Branch": "CSDS",
+    "Section": "A"
+  },
+  {
+    "S. No": 90,
+    "Name": "Rajaboina Prashasth",
+    "Roll No": "26241A6750",
+    "Branch": "CSDS",
+    "Section": "A"
+  },
+  {
+    "S. No": 91,
+    "Name": "Suras Ritvik",
+    "Roll No": "26241A6758",
+    "Branch": "CSDS",
+    "Section": "A"
+  },
+  {
+    "S. No": 92,
+    "Name": "Varakala Tanusree",
+    "Roll No": "26241A6764",
+    "Branch": "CSDS",
+    "Section": "A"
+  },
+  {
+    "S. No": 93,
+    "Name": "D Karishma",
+    "Roll No": "26241A6780",
+    "Branch": "CSDS",
+    "Section": "B"
+  },
+  {
+    "S. No": 94,
+    "Name": "GUNDETI NAGALAXMI PRASANNA",
+    "Roll No": "26241A6789",
+    "Branch": "CSDS",
+    "Section": "B"
+  },
+  {
+    "S. No": 95,
+    "Name": "Jangiti Saanvi",
+    "Roll No": "26241A6792",
+    "Branch": "CSDS",
+    "Section": "B"
+  },
+  {
+    "S. No": 96,
+    "Name": "Nayini Aasritha Reddy",
+    "Roll No": "26241A67AA",
+    "Branch": "CSDS",
+    "Section": "B"
+  },
+  {
+    "S. No": 97,
+    "Name": "THADAKAPALLY NIHAL",
+    "Roll No": "26241A67AN",
+    "Branch": "CSDS",
+    "Section": "B"
+  },
+  {
+    "S. No": 98,
+    "Name": "ADDULA SAI BHARATH REDDY",
+    "Roll No": "26241A67AY",
+    "Branch": "CSDS",
+    "Section": "C"
+  },
+  {
+    "S. No": 99,
+    "Name": "Arjala Rithvik Reddy",
+    "Roll No": "26241A67B3",
+    "Branch": "CSDS",
+    "Section": "C"
+  },
+  {
+    "S. No": 100,
+    "Name": "Abhiram deevi",
+    "Roll No": "26241A67BC",
+    "Branch": "CSDS",
+    "Section": "C"
+  },
+  {
+    "S. No": 101,
+    "Name": "Rupesh Roshan Goud",
+    "Roll No": "26241A67BH",
+    "Branch": "CSDS",
+    "Section": "C"
+  },
+  {
+    "S. No": 102,
+    "Name": "Guttikonda Nikhil Koushik",
+    "Roll No": "26241A67BK",
+    "Branch": "CSDS",
+    "Section": "C"
+  },
+  {
+    "S. No": 103,
+    "Name": "Hasini Gunishetty",
+    "Roll No": "26241A67BL",
+    "Branch": "CSDS",
+    "Section": "C"
+  },
+  {
+    "S. No": 104,
+    "Name": "NALLOLA SATHVIKESHWAR",
+    "Roll No": "26241A67C5",
+    "Branch": "CSDS",
+    "Section": "C"
+  },
+  {
+    "S. No": 105,
+    "Name": "Sorapalli Yogveer Kaushik",
+    "Roll No": "26241A67CJ",
+    "Branch": "CSDS",
+    "Section": "C"
+  },
+  {
+    "S. No": 106,
+    "Name": "MULUKA SHIVANI",
+    "Roll No": "26241A67D8",
+    "Branch": "CSDS",
+    "Section": "D"
+  },
+  {
+    "S. No": 107,
+    "Name": "N. Chris Rose",
+    "Roll No": "26241A67DB",
+    "Branch": "CSDS",
+    "Section": "D"
+  },
+  {
+    "S. No": 108,
+    "Name": "Rangineni Thanusri",
+    "Roll No": "26241A67DF",
+    "Branch": "CSDS",
+    "Section": "D"
+  },
+  {
+    "S. No": 109,
+    "Name": "Manish reddy",
+    "Roll No": "26241a3218",
+    "Branch": "CSBS",
+    "Section": "SS"
+  },
+  {
+    "S. No": 110,
+    "Name": "M sindhu",
+    "Roll No": "26241A3226",
+    "Branch": "CSBS",
+    "Section": "SS"
+  },
+  {
+    "S. No": 111,
+    "Name": "Meesala Serene Asar",
+    "Roll No": "26241A3231",
+    "Branch": "CSBS",
+    "Section": "SS"
+  },
+  {
+    "S. No": 112,
+    "Name": "Padala Sai Maitri Sahithi Reddy",
+    "Roll No": "26241A3233",
+    "Branch": "CSBS",
+    "Section": "SS"
+  },
+  {
+    "S. No": 113,
+    "Name": "Punyala Varun Adithya Reddy",
+    "Roll No": "26241A3239",
+    "Branch": "CSBS",
+    "Section": "SS"
+  },
+  {
+    "S. No": 114,
+    "Name": "ANCHE AVANIKA",
+    "Roll No": "26241a0401",
+    "Branch": "ECE",
+    "Section": "SS"
+  },
+  {
+    "S. No": 115,
+    "Name": "G. Yashwanth Kumar",
+    "Roll No": "26241A0420",
+    "Branch": "ECE",
+    "Section": "SS"
+  },
+  {
+    "S. No": 116,
+    "Name": "Guvva Preethi",
+    "Roll No": "26241A0423",
+    "Branch": "ECE",
+    "Section": "SS"
+  },
+  {
+    "S. No": 117,
+    "Name": "Krishna Prasad Jena",
+    "Roll No": "26241A0434",
+    "Branch": "ECE",
+    "Section": "SS"
+  },
+  {
+    "S. No": 118,
+    "Name": "Aakarsh Ram Purama",
+    "Roll No": "26241A0450",
+    "Branch": "ECE",
+    "Section": "SS"
+  },
+  {
+    "S. No": 119,
+    "Name": "Tammineni Sri Balaji",
+    "Roll No": "26241A0457",
+    "Branch": "ECE",
+    "Section": "SS"
+  },
+  {
+    "S. No": 120,
+    "Name": "Y.Puneet Chandra",
+    "Roll No": "26241A0463",
+    "Branch": "ECE",
+    "Section": "SS"
+  },
+  {
+    "S. No": 121,
+    "Name": "Advaith Jagannath",
+    "Roll No": "26241A0201",
+    "Branch": "EEE",
+    "Section": "SS"
+  },
+  {
+    "S. No": 122,
+    "Name": "Endrakanti Sindhuja",
+    "Roll No": "26241A0211",
+    "Branch": "EEE",
+    "Section": "SS"
+  },
+  {
+    "S. No": 123,
+    "Name": "Lakshmi Narayana kollapudi",
+    "Roll No": "26241A0215",
+    "Branch": "EEE",
+    "Section": "SS"
+  },
+  {
+    "S. No": 124,
+    "Name": "Sayala Nikhil Venkat",
+    "Roll No": "26241A0227",
+    "Branch": "EEE",
+    "Section": "SS"
+  },
+  {
+    "S. No": 125,
+    "Name": "Sri Dhruthi Naraparaju",
+    "Roll No": "26241A0323",
+    "Branch": "MECH",
+    "Section": "SS"
+  },
+  {
+    "S. No": 126,
+    "Name": "Khagesh raj v",
+    "Roll No": "26241A0328",
+    "Branch": "MECH",
+    "Section": "SS"
+  }
+]
+const GLEC_ROWS = [
   {
     "S.No": 1,
     "Name": "DEEKSHITHA NARRA",
@@ -224,158 +1110,173 @@ const GLEC_RESULT_ROWS = [
   },
   {
     "S.No": 32,
+    "Name": "KOMMINENI REVANTH",
+    "Roll No": 245626733293,
+    "Branch": "CSE",
+    "Section": "E"
+  },
+  {
+    "S.No": 33,
     "Name": "Koppadi Vijay",
     "Roll No": 245626733295,
     "Branch": "CSE",
     "Section": "E"
   },
   {
-    "S.No": 33,
+    "S.No": 34,
     "Name": "Maanaboina Hari thej",
     "Roll No": 245626733297,
     "Branch": "CSE",
     "Section": "E"
   },
   {
-    "S.No": 34,
+    "S.No": 35,
     "Name": "Sontireddy Ashish",
     "Roll No": 245626733414,
     "Branch": "CSE",
     "Section": "E"
   },
   {
-    "S.No": 35,
+    "S.No": 36,
     "Name": "Thati. Vyshnavi",
     "Roll No": 245626733417,
     "Branch": "CSE",
     "Section": "E"
   },
   {
-    "S.No": 36,
+    "S.No": 37,
     "Name": "Sahasra Mamidyala",
     "Roll No": 245626733451,
     "Branch": "CSE",
     "Section": "F"
   },
   {
-    "S.No": 37,
+    "S.No": 38,
+    "Name": "Nelluri abhinav chowdary",
+    "Roll No": 245626733457,
+    "Branch": "CSE",
+    "Section": "F"
+  },
+  {
+    "S.No": 39,
     "Name": "Hasini Samudrala",
     "Roll No": 245626733471,
     "Branch": "CSE",
     "Section": "F"
   },
   {
-    "S.No": 38,
+    "S.No": 40,
     "Name": "Chava Sri Lakshmi Unnathi",
     "Roll No": 245626748014,
     "Branch": "AIML",
     "Section": "A"
   },
   {
-    "S.No": 39,
+    "S.No": 41,
     "Name": "Dhanush Naidu Veera",
     "Roll No": 245626748021,
     "Branch": "AIML",
     "Section": "A"
   },
   {
-    "S.No": 40,
+    "S.No": 42,
     "Name": "Gullakota Bhagyasree",
     "Roll No": 245626748030,
     "Branch": "AIML",
     "Section": "A"
   },
   {
-    "S.No": 41,
+    "S.No": 43,
     "Name": "LAHARI KASANAGOTTU",
     "Roll No": 245626748037,
     "Branch": "AIML",
     "Section": "A"
   },
   {
-    "S.No": 42,
+    "S.No": 44,
     "Name": "Kuppireddy Medhaswi Reddy",
     "Roll No": 245626748039,
     "Branch": "AIML",
     "Section": "A"
   },
   {
-    "S.No": 43,
+    "S.No": 45,
     "Name": "P. SAI DEEPTHI",
     "Roll No": 245626748049,
     "Branch": "AIML",
     "Section": "A"
   },
   {
-    "S.No": 44,
+    "S.No": 46,
     "Name": "Achyuth sai",
     "Roll No": 245626748059,
     "Branch": "AIML",
     "Section": "A"
   },
   {
-    "S.No": 45,
+    "S.No": 47,
     "Name": "Timmareddygari Charan Kumar Reddy",
     "Roll No": 245626748064,
     "Branch": "AIML",
     "Section": "A"
   },
   {
-    "S.No": 46,
+    "S.No": 48,
     "Name": "B. Premkumar",
     "Roll No": 245626748071,
     "Branch": "AIML",
     "Section": "B"
   },
   {
-    "S.No": 47,
+    "S.No": 49,
     "Name": "Dhulipudi Vinay Sanjay Ram",
     "Roll No": 245626748075,
     "Branch": "AIML",
     "Section": "B"
   },
   {
-    "S.No": 48,
+    "S.No": 50,
+    "Name": "Juluri Krishna Manohar",
+    "Roll No": 245626748086,
+    "Branch": "AIML",
+    "Section": "B"
+  },
+  {
+    "S.No": 51,
     "Name": "KOYA CHARITH",
     "Roll No": 245626748096,
     "Branch": "AIML",
     "Section": "B"
   },
   {
-    "S.No": 49,
+    "S.No": 52,
     "Name": "Madanu Ashwitha Mary",
     "Roll No": 245626748100,
     "Branch": "AIML",
     "Section": "B"
   },
   {
-    "S.No": 50,
+    "S.No": 53,
     "Name": "Nammi Havish",
     "Roll No": 245626748108,
     "Branch": "AIML",
     "Section": "B"
   },
   {
-    "S.No": 51,
+    "S.No": 54,
     "Name": "Sai Dhanush Mittapally",
     "Roll No": 245626748118,
     "Branch": "AIML",
     "Section": "B"
   },
   {
-    "S.No": 52,
+    "S.No": 55,
     "Name": "Tadi Manasa Reddy",
     "Roll No": 245626748124,
     "Branch": "AIML",
     "Section": "B"
   }
-]
-
-const GRIET_RESULT_ROWS = []
-
-
-const GLEC_ROWS = []
-const GRIET_ROWS = [] // GRIET results are currently under review
+] 
 
 const getRowData = (row, index) => ({
   sNo: row['S.No'] ?? row.sNo ?? row.rank ?? index + 1,
