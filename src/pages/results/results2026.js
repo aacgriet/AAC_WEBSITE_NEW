@@ -1382,7 +1382,7 @@ export default function Results2026() {
           <FaArrowLeft aria-hidden="true" /> 
         </Link>
         <div className="eyebrow">
-          <i /> AEE 2026 · RESULTS
+          <i /> AAC Entrance Exam 2026 · RESULTS
         </div>
         <h1>
           Recruitments <em>2026</em>
@@ -1429,7 +1429,7 @@ export default function Results2026() {
                 setQuery(event.target.value)
                 setPage(1)
               }}
-              placeholder={`Search ${selectedCollege} student by name, roll number, branch or section...`}
+              placeholder={`Find your result by entering your name, roll number, branch, or section...`}
               aria-label="Search results"
             />
           </div>
